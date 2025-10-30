@@ -701,6 +701,38 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ## Recent Updates
 
+### Version 3.7.0 (2025-10-30)
+
+#### Post Type Migration to Standard WordPress Pages
+- **Major Architectural Change**: Converted custom post type from `local` to standard WordPress `page` type
+- **Motivation**: Simplify architecture and improve WordPress integration
+- **Implementation Changes**:
+  1. **Deleted Custom Post Type Class**: Removed `src/PostTypes/LocalPostType.php` entirely
+  2. **Removed Registration**: Eliminated LocalPostType registration from Plugin.php initialization
+  3. **Removed Activation Hooks**: No longer calls flush_rewrite_rules() on activation
+  4. **Updated Queries**: All WP_Query operations changed from `post_type=local` to `post_type=page`
+  5. **Updated Content Generators**: StateContentGenerator and CityContentGenerator now create standard pages
+- **Preserved Functionality**:
+  - All custom meta fields remain (_local_page_state, _local_page_city, _local_page_type)
+  - Hierarchical parent-child structure maintained through post_parent
+  - All interlinking functionality preserved
+  - SEO meta data and LD-JSON schema unchanged
+  - URL structure remains the same
+- **Benefits**:
+  - Simpler plugin architecture (eliminated custom post type complexity)
+  - Better WordPress core integration
+  - No custom rewrite rules needed
+  - Reduced code maintenance overhead
+  - Standard WordPress pages UI/UX for editing
+- **Modified Files**:
+  - `src/Plugin.php` - Removed LocalPostType registration and activation hooks
+  - `src/Cli/Commands/GenerateCommand.php` - Updated all WP_Query calls to use post_type=page
+  - `src/Content/StateContentGenerator.php` - Updated post creation to use page type
+  - `src/Content/CityContentGenerator.php` - Updated post creation to use page type
+- **Deleted Files**:
+  - `src/PostTypes/LocalPostType.php` - Custom post type class no longer needed
+- **Migration Note**: Existing installations with 'local' post type pages will need manual migration or regeneration
+
 ### Version 3.6.1 (2025-10-25)
 
 #### Enhanced Keyword Linking Safeguards
@@ -814,14 +846,15 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 
 ---
 
-**Last Updated**: October 25, 2025
+**Last Updated**: October 30, 2025
 **Claude Model**: claude-sonnet-4-20250514
 **Content Format**: WordPress Block Editor (Gutenberg) with concise sentence-per-line structure
 **API Version**: 2023-06-01
 **Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking
 **Word Count**: 200-300 words per page (both states and cities)
 **Total Pages**: 350 (50 states + 300 cities)
-**Plugin Version**: 3.6.1
+**Plugin Version**: 3.7.0
+**Post Type**: Standard WordPress pages (migrated from custom 'local' post type in v3.7.0)
 **Architecture**: Modular PSR-4 autoloaded classes with dependency injection
 **Model Selection**: Dynamic fetching from Claude Models API with interactive selection
 **Keyword Matching**: Intelligent fuzzy matching with safeguards to prevent linking bolded titles and double-linking

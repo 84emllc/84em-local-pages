@@ -18,7 +18,7 @@ This plugin creates unique, locally-focused landing pages for WordPress developm
 
 ## Features
 
-- **Hierarchical Post Type**: Creates "Local Pages" with parent-child relationships (states → cities)
+- **Standard WordPress Pages**: Creates hierarchical pages with parent-child relationships (states → cities)
 - **Comprehensive Coverage**: 50 state pages + 300 city pages (6 cities per state) = 350 total pages
 - **WP-CLI Integration**: Complete command-line management interface with progress bars
 - **Claude AI Content**: Generates unique content using Claude AI
@@ -130,11 +130,11 @@ wp 84em local-pages --generate-sitemap
 
 ### Step 4: Verify Results
 ```bash
-# Check created pages
-wp post list --post_type=local --format=count
+# Check created pages (using meta query to find local pages)
+wp post list --post_type=page --meta_key=_local_page_state --format=count
 
 # Check hierarchical structure
-wp post list --post_type=local --format=table
+wp post list --post_type=page --meta_key=_local_page_state --format=table
 
 # Check index page
 wp post list --post_type=page --name=wordpress-development-services-usa --format=table
@@ -347,7 +347,7 @@ https://84em.com/wordpress-development-services-texas/dallas/
 5. **Automatic Interlinking**: Links city names to city pages, service keywords to contact page
 6. **CTA Integration**: Adds call-to-action blocks before each H2 heading
 7. **SEO Integration**: Adds optimized titles, meta descriptions, and LD-JSON Schema data
-8. **Post Creation**: Saves as hierarchical "local" custom post type with clean URLs
+8. **Page Creation**: Saves as hierarchical WordPress pages with clean URLs
 
 ### Content Strategy
 
@@ -416,16 +416,15 @@ https://84em.com/wordpress-development-services-texas/dallas/
 'rate_limit' => 1 second delay between requests
 ```
 
-## Custom Post Type Details
+## WordPress Pages Configuration
 
-### Post Type Configuration
-- **Name**: Local Pages
-- **Slug**: local (but URLs don't include /local/)
-- **Hierarchical**: Yes (supports parent-child relationships)
+### Page Type Details
+- **Type**: Standard WordPress pages
+- **Hierarchical**: Yes (supports parent-child relationships via post_parent)
 - **Public**: Yes
-- **Archive**: Yes
 - **REST API**: Enabled
-- **Supports**: Title, editor, thumbnail, excerpt, custom fields
+- **Supports**: All standard WordPress page features
+- **Note**: Migrated from custom 'local' post type in v3.7.0 for simplified architecture
 
 ### Custom Fields Stored
 
@@ -493,7 +492,7 @@ wp 84em local-pages --generate-index
 wp 84em local-pages --generate-sitemap
 
 # 4. Verify results
-wp post list --post_type=local --format=count
+wp post list --post_type=page --meta_key=_local_page_state --format=count
 ```
 
 ### Monthly Maintenance Workflow
@@ -523,10 +522,10 @@ wp 84em local-pages --state="California" --city="Los Angeles,San Diego"
 ### Troubleshooting Workflow
 ```bash
 # Check for failed pages
-wp post list --post_type=local --post_status=draft --format=table
+wp post list --post_type=page --meta_key=_local_page_state --post_status=draft --format=table
 
 # Check page counts
-wp post list --post_type=local --format=count
+wp post list --post_type=page --meta_key=_local_page_state --format=count
 
 # Regenerate specific failed locations
 wp 84em local-pages --update --state="California"
@@ -640,21 +639,23 @@ The plugin works with most caching plugins, but consider:
 ### Monitoring Commands
 
 ```bash
-# Check total page count
-wp post list --post_type=local --format=count
+# Check total local page count
+wp post list --post_type=page --meta_key=_local_page_state --format=count
 
 # List all local pages with hierarchy
-wp post list --post_type=local --format=table
+wp post list --post_type=page --meta_key=_local_page_state --format=table
 
 # Check for drafts (potential failures)
-wp post list --post_type=local --post_status=draft --format=table
+wp post list --post_type=page --meta_key=_local_page_state --post_status=draft --format=table
 
-# Count state vs city pages
-wp post list --post_type=local --meta_key=_local_page_city --format=count
-wp post list --post_type=local --meta_key=_local_page_state --format=count
+# Count city pages specifically
+wp post list --post_type=page --meta_key=_local_page_city --format=count
+
+# Count state pages (pages without city meta)
+wp post list --post_type=page --meta_key=_local_page_state --format=count
 
 # Export all local pages
-wp export --post_type=local
+wp export --post_type=page --start_date=2025-01-01
 ```
 
 ## Backup and Recovery
@@ -664,8 +665,8 @@ wp export --post_type=local
 # Backup database
 wp db export 84em-local-pages-backup-$(date +%Y%m%d).sql
 
-# Export existing local pages
-wp export --post_type=local --dir=/backups/local-pages/
+# Export existing local pages (using meta key to identify)
+wp export --post_type=page --start_date=2025-01-01 --dir=/backups/local-pages/
 ```
 
 ### Recovery Process

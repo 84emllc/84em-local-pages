@@ -5,6 +5,68 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] - 2025-10-30
+
+### ⚠️ BREAKING CHANGES
+
+This release contains **major architectural changes** that require action when upgrading:
+
+**IMPORTANT**: This version migrates from a custom 'local' post type to standard WordPress 'page' type. Existing local pages will no longer be visible after upgrading until you complete the migration steps below.
+
+#### Required Migration Steps
+
+**Option 1: Regenerate All Pages (Recommended)**
+```bash
+# Delete existing local pages
+wp post delete $(wp post list --post_type=local --format=ids) --force
+
+# Regenerate all pages with new structure
+wp 84em local-pages --generate-all
+wp 84em local-pages --generate-index
+wp 84em local-pages --generate-sitemap
+```
+
+**Option 2: Manual Post Type Migration**
+```bash
+# Convert existing local posts to pages
+wp post list --post_type=local --format=ids | xargs -I % wp db query "UPDATE wp_posts SET post_type='page' WHERE ID=%"
+
+# Flush permalinks
+wp rewrite flush
+```
+
+**Why This Change?**
+- Eliminates custom post type complexity and maintenance overhead
+- Provides better WordPress core integration
+- Standard WordPress pages UI/UX for editing
+- No custom rewrite rules needed
+- Simpler, more maintainable codebase
+
+### Changed
+- **Post Type Migration**: Converted from custom 'local' post type to standard WordPress 'page' type
+  - Updated all WP_Query operations in `GenerateCommand.php` to use `post_type=page` instead of `post_type=local`
+  - Modified `StateContentGenerator.php` to create standard WordPress pages
+  - Modified `CityContentGenerator.php` to create standard WordPress pages
+  - Removed custom post type registration from `Plugin.php` initialization
+  - Removed custom post type activation hooks from `Plugin.php`
+  - All custom meta fields preserved (_local_page_state, _local_page_city, _local_page_type)
+  - Hierarchical parent-child relationships maintained via post_parent
+  - URL structure remains unchanged after migration
+  - All interlinking functionality preserved
+
+### Removed
+- **Custom Post Type Infrastructure**: Eliminated custom post type complexity
+  - Deleted `src/PostTypes/LocalPostType.php` file entirely
+  - Removed LocalPostType class registration from dependency injection container
+  - Removed flush_rewrite_rules() calls from activation process
+  - No custom rewrite rules for post type needed
+
+### Technical Details
+- WP-CLI commands now query pages using `--post_type=page --meta_key=_local_page_state`
+- All monitoring and troubleshooting commands updated in documentation
+- Custom meta fields serve as identifiers for local pages among all WordPress pages
+- Parent-child hierarchy maintained through standard post_parent relationships
+
 ## [3.6.1] - 2025-10-25
 
 ### Fixed
