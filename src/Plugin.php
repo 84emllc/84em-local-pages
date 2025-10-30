@@ -12,14 +12,12 @@ namespace EightyFourEM\LocalPages;
 use EightyFourEM\LocalPages\Core\Requirements;
 use EightyFourEM\LocalPages\Core\Activator;
 use EightyFourEM\LocalPages\Core\Deactivator;
-use EightyFourEM\LocalPages\PostTypes\LocalPostType;
 use EightyFourEM\LocalPages\Api\Encryption;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Api\HealthCheckEndpoint;
 use EightyFourEM\LocalPages\Data\StatesProvider;
 use EightyFourEM\LocalPages\Data\KeywordsProvider;
-use EightyFourEM\LocalPages\Data\ServicesProvider;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
@@ -84,9 +82,6 @@ class Plugin {
      * Initialize plugin components
      */
     private function initializeComponents(): void {
-        // Register custom post type
-        $postType = $this->container->get( LocalPostType::class );
-        $postType->register();
 
         // Register health check endpoint
         $healthCheck = $this->container->get( HealthCheckEndpoint::class );
@@ -114,11 +109,6 @@ class Plugin {
 
         $this->container->register( Deactivator::class, function () {
             return new Deactivator();
-        } );
-
-        // Post Types
-        $this->container->register( LocalPostType::class, function () {
-            return new LocalPostType();
         } );
 
         // Data Providers
@@ -237,10 +227,6 @@ class Plugin {
         $activator = $instance->getContainer()->get( Activator::class );
         $activator->activate();
 
-        // Register post type and flush rewrite rules
-        $postType = $instance->getContainer()->get( LocalPostType::class );
-        $postType->registerPostType();
-        flush_rewrite_rules();
     }
 
     /**

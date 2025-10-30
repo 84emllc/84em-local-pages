@@ -776,7 +776,7 @@ class GenerateCommand {
      */
     private function findStatePage( string $state ): ?\WP_Post {
         $query = new \WP_Query( [
-            'post_type'      => 'local',
+            'post_type'      => 'page',
             'posts_per_page' => 1,
             'post_status'    => 'any',
             'meta_query'     => [
@@ -809,7 +809,7 @@ class GenerateCommand {
      */
     private function findCityPage( string $state, string $city ): ?\WP_Post {
         $query = new \WP_Query( [
-            'post_type'      => 'local',
+            'post_type'      => 'page',
             'posts_per_page' => 1,
             'post_status'    => 'any',
             'meta_query'     => [
@@ -840,7 +840,7 @@ class GenerateCommand {
      */
     private function findLocalPages( array $args = [] ): array {
         $defaults = [
-            'post_type'      => 'local',
+            'post_type'      => 'page',
             'posts_per_page' => -1,
             'post_status'    => 'any',
             'orderby'        => 'title',

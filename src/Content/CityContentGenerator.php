@@ -175,7 +175,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
             // Find or get state parent page
             $state_posts = get_posts( [
-                'post_type'   => 'local',
+                'post_type'   => 'page',
                 'meta_query'  => [
                     'relation' => 'AND',
                     [
@@ -204,7 +204,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
                 'post_content' => $content,
                 'post_excerpt' => $sections['excerpt'] ?? '',
                 'post_status'  => 'publish',
-                'post_type'    => 'local',
+                'post_type'    => 'page',
                 'post_parent'  => $parent_id,
                 'meta_input'   => [
                     '_local_page_type'      => 'city',

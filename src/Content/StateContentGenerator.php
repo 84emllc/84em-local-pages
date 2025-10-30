@@ -181,7 +181,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
                 'post_content' => $sections['content'],
                 'post_excerpt' => $sections['excerpt'],
                 'post_status'  => 'publish',
-                'post_type'    => 'local',
+                'post_type'    => 'page',
                 'post_author'  => 1,
                 'meta_input'   => [
                     '_local_page_state'    => $state,
