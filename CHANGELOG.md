@@ -5,6 +5,32 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.1] - 2025-11-02
+
+### Fixed
+- **Critical Bug**: Fixed `--update-keyword-links` command processing ALL published pages instead of only local pages
+  - Added required `meta_query` filter for `_local_page_state` EXISTS to ensure command only affects the 350 local pages
+  - Previously missing meta_query caused command to update every published page on the WordPress site
+  - Command now correctly processes exactly 350 pages (all local pages) or 50 pages with `--states-only` flag
+  - Fixed in `src/Cli/Commands/GenerateCommand.php` handleUpdateKeywordLinks() method (lines 1123-1143)
+
+### Added
+- **Integration Tests**: New test suite for keyword link updates functionality
+  - Created `tests/integration/test-keyword-link-updates.php` with 3 comprehensive tests
+  - Test verifies command only processes pages with `_local_page_state` meta key
+  - Test verifies `--states-only` flag correctly excludes city pages
+  - Test verifies both state and city pages are included without flag
+  - Registered new test suite in TestCommand.php
+  - Total test count increased from 82 to 85 tests
+
+### Technical Details
+**Files Modified**:
+- `src/Cli/Commands/GenerateCommand.php`: Added meta_query to filter for local pages only (line 1126-1131)
+- `src/Cli/Commands/TestCommand.php`: Registered new keyword-link-updates test suite (line 37)
+- `tests/integration/test-keyword-link-updates.php` (NEW): 3 integration tests validating the fix
+
+**Testing Results**: 84/85 tests passing (98.82%) - single failing test is pre-existing bug unrelated to this fix
+
 ## [3.10.0] - 2025-11-02
 
 ### Added

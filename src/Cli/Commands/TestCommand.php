@@ -24,16 +24,17 @@ class TestCommand {
      */
     private array $testSuites
         = [
-            'encryption'         => 'test-encryption.php',
-            'data-structures'    => 'test-data-structures.php',
-            'content-processing' => 'test-content-processing.php',
-            'cli-args'           => 'test-wp-cli-args.php',
-            'ld-json'            => 'test-ld-json-schema.php',
-            'api-client'         => 'test-api-client.php',
-            'content-generators' => 'test-content-generators.php',
-            'error-handling'     => 'test-error-handling.php',
-            'security'           => 'test-security.php',
-            'model-management'   => 'test-model-management.php',
+            'encryption'           => 'test-encryption.php',
+            'data-structures'      => 'test-data-structures.php',
+            'content-processing'   => 'test-content-processing.php',
+            'cli-args'             => 'test-wp-cli-args.php',
+            'ld-json'              => 'test-ld-json-schema.php',
+            'api-client'           => 'test-api-client.php',
+            'content-generators'   => 'test-content-generators.php',
+            'error-handling'       => 'test-error-handling.php',
+            'security'             => 'test-security.php',
+            'model-management'     => 'test-model-management.php',
+            'keyword-link-updates' => 'test-keyword-link-updates.php',
         ];
 
     /**

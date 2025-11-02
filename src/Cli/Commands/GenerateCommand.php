@@ -1120,18 +1120,22 @@ class GenerateCommand {
         // Check if we should update only states or all
         $states_only = isset( $assoc_args['states-only'] );
 
-        // Get all local pages
+        // Get all local pages (MUST have _local_page_state meta key)
         $query_args = [
             'post_status' => 'publish',
+            'meta_query'  => [
+                [
+                    'key'     => '_local_page_state',
+                    'compare' => 'EXISTS',
+                ],
+            ],
         ];
 
         // If states-only, exclude city pages
         if ( $states_only ) {
-            $query_args['meta_query'] = [
-                [
-                    'key'     => '_local_page_city',
-                    'compare' => 'NOT EXISTS',
-                ],
+            $query_args['meta_query'][] = [
+                'key'     => '_local_page_city',
+                'compare' => 'NOT EXISTS',
             ];
             WP_CLI::line( '📊 Processing state pages only...' );
         } else {
