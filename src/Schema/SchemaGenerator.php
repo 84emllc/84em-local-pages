@@ -78,7 +78,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
         $cities  = $data['cities'] ?? [];
         $post_id = $data['post_id'] ?? null;
 
-        $url = $post_id ? get_permalink( $post_id ) : site_url( '/wordpress-development-' . sanitize_title( $state ) . '/' );
+        $url = $post_id ? get_permalink( $post_id ) : site_url( '/wordpress-development-services-usa/' . sanitize_title( $state ) . '/' );
 
         $schema = [
             '@context'    => 'https://schema.org',
@@ -156,7 +156,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
 
         $state_slug = sanitize_title( $state );
         $city_slug  = sanitize_title( $city );
-        $url        = $post_id ? get_permalink( $post_id ) : site_url( "/wordpress-development-{$state_slug}/{$city_slug}/" );
+        $url        = $post_id ? get_permalink( $post_id ) : site_url( "/wordpress-development-services-usa/{$state_slug}/{$city_slug}/" );
 
         $schema = [
             '@context'    => 'https://schema.org',
@@ -182,7 +182,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                         '@type'    => 'ListItem',
                         'position' => 2,
                         'name'     => $state,
-                        'item'     => site_url( "/wordpress-development-{$state_slug}/" ),
+                        'item'     => site_url( "/wordpress-development-services-usa/{$state_slug}/" ),
                     ],
                     [
                         '@type'    => 'ListItem',

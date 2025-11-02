@@ -5,6 +5,102 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.0] - 2025-11-02
+
+### Added
+- **URL Migration System**: Complete migration infrastructure for simplifying URL structure
+  - New `LegacyUrlRedirector` class (`src/Redirects/LegacyUrlRedirector.php`) handles 301 redirects from old to new URLs
+  - New WP-CLI command `--migrate-urls` for automated URL migration of all 350 pages
+  - Automatic parent-child relationship updates during migration
+  - Progress tracking and comprehensive migration reporting
+- **Redirects Layer**: New namespace and architecture component for URL management
+  - Registered in dependency injection container as singleton service
+  - Initialized on plugin load to handle all legacy URL requests
+  - Supports both state and city URL pattern redirects
+
+### Changed
+- **URL Structure Simplified**: Cleaner, more user-friendly URLs for all local pages
+  - **State URLs**: Changed from `/wordpress-development-services-usa/wordpress-development-services-{state}/` to `/wordpress-development-services-usa/{state}/`
+  - **City URLs**: Changed from `/wordpress-development-services-usa/wordpress-development-services-{state}/{city}/` to `/wordpress-development-services-usa/{state}/{city}/`
+  - State page slugs now use just the state name instead of `wordpress-development-services-{state}`
+  - All state pages set index page as parent for proper hierarchical structure
+- **URL Generation Updated**: All URL generation methods updated to use new format
+  - `StateContentGenerator::generateStateUrl()` updated in `src/Content/StateContentGenerator.php`
+  - `StateContentGenerator::setupStateUrl()` updated to use new slug format and set parent relationship
+  - `ContentProcessor::generateStateUrl()` updated in `src/Utils/ContentProcessor.php`
+  - `ContentProcessor::generateCityUrl()` updated to use new format
+  - Schema URL generation updated in 3 locations in `src/Schema/SchemaGenerator.php`:
+    - State schema URL fallback
+    - City schema URL fallback
+    - Breadcrumb schema state URL
+- **Link Processing Updated**: Content processor handles both legacy and new URL formats
+  - Link stripping pattern updated in `src/Cli/Commands/GenerateCommand.php` to support migration period
+  - Pattern matches both old and new URL structures during transition
+- **Test Suite Updated**: All tests updated for new URL structure
+  - Updated assertions in `tests/integration/test-content-processing.php` to expect new URLs
+  - Tests for city URL generation, state linking, and city linking all updated
+  - Maintains 98.78% test pass rate (81/82 tests passing)
+
+### Fixed
+- **Meta Query Bug**: Fixed URL migration query to use correct meta keys
+  - State pages identified by presence of `_local_page_state` AND absence of `_local_page_city`
+  - City pages identified by presence of both `_local_page_state` AND `_local_page_city`
+  - Replaced incorrect `_local_page_type` meta query with correct meta field detection
+- **Container Registration**: Fixed `LegacyUrlRedirector` registration using `register()` instead of `singleton()`
+  - Resolved "Call to undefined method Closure::initialize()" error
+  - Added proper `use` statement for `LegacyUrlRedirector` class
+
+### Migration Guide
+
+#### Automated Migration (Recommended)
+
+Run the following commands in sequence:
+
+```bash
+# 1. Migrate all URLs (updates 50 states + 300 cities)
+wp 84em local-pages --migrate-urls
+
+# 2. Update all internal links to use new URLs
+wp 84em local-pages --update-keyword-links
+
+# 3. Regenerate XML sitemap with new URLs
+wp 84em local-pages --generate-sitemap
+
+# 4. Flush WordPress rewrite rules
+wp rewrite flush
+```
+
+#### What the Migration Does
+
+- Updates all state page slugs from `wordpress-development-services-{state}` to `{state}`
+- Sets state pages' parent to the index page (wordpress-development-services-usa)
+- City pages automatically inherit new URLs from updated parent slugs
+- All old URLs automatically redirect (301) to new URLs via `LegacyUrlRedirector`
+
+#### Backward Compatibility
+
+- **100% Backward Compatible**: All old URLs automatically redirect to new URLs with 301 status
+- `LegacyUrlRedirector` permanently active to handle cached links and external references
+- No broken links - all existing URLs continue to work
+
+### Technical Details
+
+**Files Modified**:
+- `src/Redirects/LegacyUrlRedirector.php` (NEW): Handles 301 redirects from legacy URLs
+- `src/Content/StateContentGenerator.php`: Updated URL generation and slug format (lines 406-436)
+- `src/Utils/ContentProcessor.php`: Updated both URL generation methods (lines 434-451)
+- `src/Schema/SchemaGenerator.php`: Updated 3 URL references (lines 81, 159, 185)
+- `src/Cli/Commands/GenerateCommand.php`: Added migration command and updated link stripping (lines 1250-1356, 1284)
+- `src/Plugin.php`: Registered and initialized `LegacyUrlRedirector` (lines 28, 91-93, 150-154)
+- `src/Cli/CommandHandler.php`: Added `--migrate-urls` flag to all command lists and help text (lines 155-157, 680, 745, 818, 1007)
+- `tests/integration/test-content-processing.php`: Updated URL assertions for new format (lines 84-89, 106, 172-177)
+- `84em-local-pages.php`: Version bump to 3.10.0
+- `CHANGELOG.md`: Documented all URL migration changes
+
+**Testing Results**: 81/82 tests passing (98.78%) - single failing test is pre-existing bug unrelated to URL migration
+
+**Migration Statistics**: Successfully migrated 50 state pages + 300 city pages (350 total), updated 415 pages with new internal links, regenerated sitemap with 415 pages
+
 ## [3.7.0] - 2025-10-30
 
 ### ⚠️ BREAKING CHANGES

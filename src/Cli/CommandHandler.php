@@ -152,6 +152,11 @@ class CommandHandler {
                 return;
             }
 
+            if ( isset( $assoc_args['migrate-urls'] ) ) {
+                $this->generateCommand->handleUrlMigration( $args, $assoc_args );
+                return;
+            }
+
             // Handle delete operations (don't require API key)
             if ( isset( $assoc_args['delete'] ) ) {
                 $this->generateCommand->handleDelete( $args, $assoc_args );
@@ -672,7 +677,7 @@ class CommandHandler {
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
-            'delete', 'update', 'help', 'all'
+            'update-keyword-links', 'migrate-urls', 'delete', 'update', 'help', 'all'
         ];
 
         return in_array( strtolower( $name ), $valid_args, true );
@@ -737,7 +742,7 @@ class CommandHandler {
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
-            'update-keyword-links', 'delete', 'update', 'help', 'all'
+            'update-keyword-links', 'migrate-urls', 'delete', 'update', 'help', 'all'
         ];
 
         $unrecognized = [];
@@ -809,7 +814,8 @@ class CommandHandler {
             // Generation commands are mutually exclusive
             [
                 'generate-all', 'update-all', 'state', 'city', 'update',
-                'generate-sitemap', 'generate-index', 'regenerate-schema', 'delete'
+                'generate-sitemap', 'generate-index', 'regenerate-schema',
+                'update-keyword-links', 'migrate-urls', 'delete'
             ],
             // API key commands are mutually exclusive with everything
             ['set-api-key', 'validate-api-key'],
@@ -998,6 +1004,7 @@ class CommandHandler {
         WP_CLI::line( '  --generate-index           Generate index page with all locations' );
         WP_CLI::line( '  --update-keyword-links     Update keyword links in all existing pages' );
         WP_CLI::line( '  --update-keyword-links --states-only  Update keyword links in state pages only' );
+        WP_CLI::line( '  --migrate-urls             Migrate all pages from old to new URL structure' );
         WP_CLI::line( '  --regenerate-schema        Regenerate schema markup for all pages' );
         WP_CLI::line( '' );
         WP_CLI::line( 'EXAMPLES:' );

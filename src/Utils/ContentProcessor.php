@@ -433,7 +433,7 @@ class ContentProcessor {
      */
     private function generateStateUrl( string $state ): string {
         $slug = sanitize_title( $state );
-        return home_url( "/wordpress-development-services-{$slug}/" );
+        return home_url( "/wordpress-development-services-usa/{$slug}/" );
     }
 
     /**
@@ -447,7 +447,7 @@ class ContentProcessor {
     public function generateCityUrl( string $state, string $city ): string {
         $state_slug = sanitize_title( $state );
         $city_slug  = sanitize_title( $city );
-        return home_url( "/wordpress-development-services-{$state_slug}/{$city_slug}/" );
+        return home_url( "/wordpress-development-services-usa/{$state_slug}/{$city_slug}/" );
     }
 
     /**
