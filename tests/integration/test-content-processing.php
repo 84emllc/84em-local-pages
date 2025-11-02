@@ -80,13 +80,13 @@ class Test_Content_Processing extends TestCase {
         
         $result = $this->contentProcessor->processContent( $content, $context );
         
-        // Cities should be linked to their respective pages
-        $this->assertStringContainsString( '/wordpress-development-services-california/los-angeles/', $result );
-        $this->assertStringContainsString( '/wordpress-development-services-california/san-francisco/', $result );
-        $this->assertStringContainsString( '/wordpress-development-services-california/san-diego/', $result );
-        
+        // Cities should be linked to their respective pages (new URL format)
+        $this->assertStringContainsString( '/wordpress-development-services-usa/california/los-angeles/', $result );
+        $this->assertStringContainsString( '/wordpress-development-services-usa/california/san-francisco/', $result );
+        $this->assertStringContainsString( '/wordpress-development-services-usa/california/san-diego/', $result );
+
         // Each city should be wrapped in a link
-        $this->assertStringContainsString( '<a href="' . home_url('/wordpress-development-services-california/los-angeles/') . '">Los Angeles</a>', $result );
+        $this->assertStringContainsString( '<a href="' . home_url('/wordpress-development-services-usa/california/los-angeles/') . '">Los Angeles</a>', $result );
     }
 
     /**
@@ -102,8 +102,8 @@ class Test_Content_Processing extends TestCase {
         
         $result = $this->contentProcessor->processContent( $content, $context );
         
-        // State should be linked to state page
-        $this->assertStringContainsString( '/wordpress-development-services-california/', $result );
+        // State should be linked to state page (new URL format)
+        $this->assertStringContainsString( '/wordpress-development-services-usa/california/', $result );
         $this->assertStringContainsString( '>California</a>', $result );
     }
 
@@ -168,13 +168,13 @@ class Test_Content_Processing extends TestCase {
      */
     public function test_generate_city_url() {
         $url = $this->contentProcessor->generateCityUrl( 'California', 'Los Angeles' );
-        
-        $expected = home_url( '/wordpress-development-services-california/los-angeles/' );
+
+        $expected = home_url( '/wordpress-development-services-usa/california/los-angeles/' );
         $this->assertEquals( $expected, $url );
-        
+
         // Test with spaces and special characters
         $url = $this->contentProcessor->generateCityUrl( 'New York', 'New York City' );
-        $expected = home_url( '/wordpress-development-services-new-york/new-york-city/' );
+        $expected = home_url( '/wordpress-development-services-usa/new-york/new-york-city/' );
         $this->assertEquals( $expected, $url );
     }
 

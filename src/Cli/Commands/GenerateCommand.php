@@ -1237,6 +1237,135 @@ class GenerateCommand {
     }
 
     /**
+     * Migrate all local pages from old URL structure to new URL structure
+     *
+     * Old format: /wordpress-development-services-usa/wordpress-development-services-{state}/
+     * New format: /wordpress-development-services-usa/{state}/
+     *
+     * @param  array  $args  Positional arguments
+     * @param  array  $assoc_args  Associative arguments
+     *
+     * @return void
+     */
+    public function handleUrlMigration( array $args, array $assoc_args ): void {
+        WP_CLI::line( '🔄 Starting URL Migration for All Local Pages' );
+        WP_CLI::line( '==============================================' );
+        WP_CLI::line( '' );
+
+        // Get index page ID
+        $index_page = get_page_by_path( 'wordpress-development-services-usa' );
+        if ( ! $index_page ) {
+            WP_CLI::error( 'Index page "wordpress-development-services-usa" not found. Please generate it first with: wp 84em local-pages --generate-index' );
+            return;
+        }
+        $index_page_id = $index_page->ID;
+
+        WP_CLI::log( "✅ Found index page (ID: {$index_page_id})" );
+        WP_CLI::line( '' );
+
+        // Get all state pages (currently have long slugs)
+        // State pages have _local_page_state but NOT _local_page_city
+        $state_pages = get_posts( [
+            'post_type'      => 'page',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'     => '_local_page_state',
+                    'compare' => 'EXISTS',
+                ],
+                [
+                    'key'     => '_local_page_city',
+                    'compare' => 'NOT EXISTS',
+                ],
+            ],
+        ] );
+
+        $total_states = count( $state_pages );
+        WP_CLI::log( "📍 Found {$total_states} state pages to migrate" );
+
+        if ( $total_states === 0 ) {
+            WP_CLI::warning( 'No state pages found to migrate.' );
+            return;
+        }
+
+        WP_CLI::line( '' );
+        $progress = \WP_CLI\Utils\make_progress_bar( 'Migrating state pages', $total_states );
+
+        $migrated_count = 0;
+        $skipped_count  = 0;
+
+        foreach ( $state_pages as $post ) {
+            $state = get_post_meta( $post->ID, '_local_page_state', true );
+            if ( ! $state ) {
+                $skipped_count++;
+                $progress->tick();
+                continue;
+            }
+
+            // New slug is just the state name (sanitized)
+            $new_slug = sanitize_title( $state );
+
+            // Only update if slug or parent needs changing
+            if ( $post->post_name !== $new_slug || $post->post_parent !== $index_page_id ) {
+                wp_update_post( [
+                    'ID'          => $post->ID,
+                    'post_name'   => $new_slug,
+                    'post_parent' => $index_page_id,
+                ] );
+                $migrated_count++;
+            } else {
+                $skipped_count++;
+            }
+
+            $progress->tick();
+        }
+
+        $progress->finish();
+
+        // Get all city pages (these will automatically update due to parent changes)
+        // City pages have both _local_page_state AND _local_page_city
+        $city_pages = get_posts( [
+            'post_type'      => 'page',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'     => '_local_page_state',
+                    'compare' => 'EXISTS',
+                ],
+                [
+                    'key'     => '_local_page_city',
+                    'compare' => 'EXISTS',
+                ],
+            ],
+        ] );
+
+        $total_cities = count( $city_pages );
+
+        // Flush rewrite rules to regenerate permalinks
+        flush_rewrite_rules();
+
+        WP_CLI::line( '' );
+        WP_CLI::line( '📊 Migration Summary' );
+        WP_CLI::line( '====================' );
+        WP_CLI::line( "State pages migrated: {$migrated_count}" );
+        WP_CLI::line( "State pages skipped: {$skipped_count}" );
+        WP_CLI::line( "City pages (auto-updated): {$total_cities}" );
+        WP_CLI::line( '' );
+        WP_CLI::success( "Migrated {$migrated_count} state pages. City page URLs updated automatically based on parent." );
+        WP_CLI::line( '' );
+        WP_CLI::line( '📝 Next Steps:' );
+        WP_CLI::line( '   1. wp 84em local-pages --update-keyword-links' );
+        WP_CLI::line( '   2. wp 84em local-pages --generate-sitemap' );
+        WP_CLI::line( '   3. wp rewrite flush' );
+        WP_CLI::line( '' );
+        WP_CLI::line( '✨ URL migration complete!' );
+    }
+
+    /**
      * Strip existing keyword and location links from content
      *
      * @param  string  $content  Content to strip links from
@@ -1278,9 +1407,11 @@ class GenerateCommand {
         }
         
         // Remove location links (state and city links)
-        // Pattern for local page links: /wordpress-development-services-[state]/[city]?/
-        $pattern = '/<a\s+href=["\']\/?wordpress-development-services-[^"\']+["\']>([^<]+)<\/a>/i';
-        $content = preg_replace( $pattern, '$1', $content );
+        // Pattern supports both legacy and new URL formats during migration
+        // Legacy: /wordpress-development-services-[state]/
+        // New: /wordpress-development-services-usa/[state]/
+        $pattern = '/<a\s+href=["\']\/?(wordpress-development-services-usa\/)?wordpress-development-services-[^"\']+["\']>([^<]+)<\/a>/i';
+        $content = preg_replace( $pattern, '$2', $content );
         
         return $content;
     }

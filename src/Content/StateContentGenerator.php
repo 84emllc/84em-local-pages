@@ -405,7 +405,7 @@ CRITICAL: do not add a link to a substring within a word.  for example AI is a s
      */
     private function generateStateUrl( string $state ): string {
         $slug = sanitize_title( $state );
-        return home_url( "/wordpress-development-services-{$slug}/" );
+        return home_url( "/wordpress-development-services-usa/{$slug}/" );
     }
 
     /**
@@ -418,14 +418,19 @@ CRITICAL: do not add a link to a substring within a word.  for example AI is a s
      */
     private function setupStateUrl( int $post_id, string $state ): void {
         $slug         = sanitize_title( $state );
-        $desired_slug = "wordpress-development-services-{$slug}";
+        $desired_slug = $slug;  // Just the state slug
 
-        // Update post slug if needed
+        // Get index page to set as parent
+        $index_page = get_page_by_path( 'wordpress-development-services-usa' );
+        $parent_id  = $index_page ? $index_page->ID : 0;
+
+        // Update post slug and parent if needed
         $current_post = get_post( $post_id );
-        if ( $current_post && $current_post->post_name !== $desired_slug ) {
+        if ( $current_post && ( $current_post->post_name !== $desired_slug || $current_post->post_parent !== $parent_id ) ) {
             wp_update_post( [
-                'ID'        => $post_id,
-                'post_name' => $desired_slug,
+                'ID'          => $post_id,
+                'post_name'   => $desired_slug,
+                'post_parent' => $parent_id,
             ] );
         }
     }

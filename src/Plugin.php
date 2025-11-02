@@ -25,6 +25,8 @@ use EightyFourEM\LocalPages\Utils\ContentProcessor;
 use EightyFourEM\LocalPages\Cli\CommandHandler;
 use EightyFourEM\LocalPages\Cli\Commands\TestCommand;
 use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
+use EightyFourEM\LocalPages\Redirects\LegacyUrlRedirector;
+use EightyFourEM\LocalPages\Admin\PluginLinks;
 
 /**
  * Main plugin bootstrap class
@@ -83,9 +85,17 @@ class Plugin {
      */
     private function initializeComponents(): void {
 
+        // Initialize plugin links
+        $pluginLinks = $this->container->get( PluginLinks::class );
+        $pluginLinks->init();
+
         // Register health check endpoint
         $healthCheck = $this->container->get( HealthCheckEndpoint::class );
         $healthCheck->register();
+
+        // Initialize legacy URL redirector
+        $redirector = $this->container->get( LegacyUrlRedirector::class );
+        $redirector->initialize();
 
         // Register WP-CLI commands if available
         if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -109,6 +119,11 @@ class Plugin {
 
         $this->container->register( Deactivator::class, function () {
             return new Deactivator();
+        } );
+
+        // Admin Services
+        $this->container->register( PluginLinks::class, function () {
+            return new PluginLinks();
         } );
 
         // Data Providers
@@ -139,6 +154,13 @@ class Plugin {
 
         $this->container->register( HealthCheckEndpoint::class, function () {
             return new HealthCheckEndpoint();
+        } );
+
+        // Redirects Services
+        $this->container->register( LegacyUrlRedirector::class, function ( $container ) {
+            return new LegacyUrlRedirector(
+                $container->get( StatesProvider::class )
+            );
         } );
 
         // Content Services
