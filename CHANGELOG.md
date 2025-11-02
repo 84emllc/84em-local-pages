@@ -5,6 +5,31 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.0] - 2025-11-02
+
+### Changed
+- **SEO Metadata**: Updated page titles and meta descriptions to emphasize AI-enhanced capabilities
+  - State page titles: Changed from "Custom WordPress Plugin Development, Consulting, and White-Label services" to "AI-Enhanced WordPress Development, White-Label Services, Plugins, Consulting"
+  - City page titles: Changed from "Custom WordPress Plugin Development, Consulting, and White-Label services" to "AI-Enhanced WordPress Development, White-Label Services, Plugins, Consulting"
+  - State meta descriptions: Updated to match new title format
+  - City meta descriptions: Updated to match new title format
+  - Reflects 84EM's integration of AI technology in WordPress development workflow
+
+### Added
+- **URL Migration Planning**: Comprehensive planning document for future URL structure simplification
+  - Document location: `planning/URL_MIGRATION.md`
+  - Plans to simplify state URLs from `/wordpress-development-services-usa/wordpress-development-services-{state}/` to `/wordpress-development-services-usa/{state}/`
+  - Plans to simplify city URLs from `/wordpress-development-services-usa/wordpress-development-services-{state}/{city}/` to `/wordpress-development-services-usa/{state}/{city}/`
+  - Includes complete implementation plan with LegacyUrlRedirector class following plugin's DI/container architecture
+  - Outlines required code changes across StateContentGenerator, CityContentGenerator, ContentProcessor, SchemaGenerator
+  - Provides migration workflow, testing plan, and rollback procedures
+  - Includes 301 redirect strategy to preserve SEO value
+
+### Technical Details
+- Modified `src/Content/StateContentGenerator.php` getPostTitle() and getMetaDescription() methods
+- Modified `src/Content/CityContentGenerator.php` getPostTitle() and getMetaDescription() methods
+- Created `planning/URL_MIGRATION.md` comprehensive migration planning document
+
 ## [3.8.0] - 2025-11-02
 
 ### Changed

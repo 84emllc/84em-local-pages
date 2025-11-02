@@ -276,7 +276,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
      */
     public function getPostTitle( $data ): string {
 
-        return "Custom WordPress Plugin Development, Consulting, and White-Label services in {$data} | 84EM";
+        return "AI-Enhanced WordPress Development, White-Label Services, Plugins, Consulting in {$data} | 84EM";
     }
 
     /**
@@ -289,7 +289,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
      */
     public function getMetaDescription( string $data, string $cities = null ): string {
 
-        return "Custom WordPress Plugin Development, Consulting, and White-Label services in {$data}, including {$cities}";
+        return "AI-Enhanced WordPress Development, White-Label Services, Plugins, Consulting in {$data}, including {$cities}";
     }
 
     /**
