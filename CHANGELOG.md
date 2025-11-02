@@ -5,6 +5,20 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.0] - 2025-11-02
+
+### Changed
+- **SEO Metadata**: Updated page titles and meta descriptions to emphasize AI-enhanced capabilities
+  - State page titles: Changed from "Custom WordPress Plugin Development, Consulting, and White-Label services" to "AI-Enhanced WordPress Development, White-Label Services, Plugins, Consulting"
+  - City page titles: Changed from "Custom WordPress Plugin Development, Consulting, and White-Label services" to "AI-Enhanced WordPress Development, White-Label Services, Plugins, Consulting"
+  - State meta descriptions: Updated to match new title format
+  - City meta descriptions: Updated to match new title format
+  - Reflects 84EM's integration of AI technology in WordPress development workflow
+
+### Technical Details
+- Modified `src/Content/StateContentGenerator.php` getPostTitle() and getMetaDescription() methods
+- Modified `src/Content/CityContentGenerator.php` getPostTitle() and getMetaDescription() methods
+
 ## [3.8.0] - 2025-11-02
 
 ### Changed
