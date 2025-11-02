@@ -5,6 +5,49 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.0] - 2025-11-02
+
+### Changed
+- **Content Generation Prompts**: Completely revamped prompts for more direct, authentic voice
+  - Added comprehensive voice and tone guidelines emphasizing matter-of-fact, no-fluff communication
+  - Explicitly banned marketing superlatives ("game-changing," "cutting-edge," "industry-leading," "best-in-class")
+  - Removed soft benefit language in favor of concrete deliverables
+  - Added natural contractions guidance ("won't," "you're," "we'll") for conversational tone
+  - Reduced opening section from 3-4 sentences to 2-3 sentences
+  - Changed section structure to 1 sentence per paragraph for better readability
+  - Added explicit instruction to never use em-dashes or hyphens
+  - Enhanced with tone examples showing "Not this" vs "Do this" patterns
+- **Service Lists**: Migrated to reusable WordPress blocks for consistency
+  - State services now use `<!-- wp:block {"ref":5031} /-->` (reusable block)
+  - City services now use `<!-- wp:block {"ref":5031} /-->` (reusable block)
+  - Eliminates AI-generated service lists in favor of consistent, controlled content
+  - Ensures all pages use identical service formatting
+- **Benefits Lists**: Enhanced with custom styling and structured HTML
+  - Added checkmark list style class: `is-style-checkmark-list`
+  - Added large font size class for better readability
+  - Structured as proper list-item blocks with specific benefits
+  - Varies content naturally while maintaining consistency
+- **CTA Blocks**: Simplified to reusable blocks
+  - End-of-content CTA now uses `<!-- wp:block {"ref":1219} /-->` (Free Consult button)
+  - Section separator now uses `<!-- wp:block {"ref":5034} /-->` (code icon separator)
+  - Reduces prompt complexity and ensures design consistency
+- **Critical Instructions**: Added safeguards for keyword linking
+  - Explicit instruction to avoid linking substrings within words (e.g., "AI" in "retail")
+  - Focus all service-related linking to main `/services/` page
+  - Lists 6 core service categories to emphasize: AI-Enhanced Development, White-Label Agency Services, Custom Plugin Development, Code Cleanup and Refactoring, Consulting & Strategy, Maintenance & Support
+
+### Improved
+- **Content Authenticity**: Generated content now reads more like genuine developer communication
+- **Prompt Clarity**: Removed ambiguity about tone, style, and formatting expectations
+- **Maintenance**: Using reusable blocks means design changes update across all pages instantly
+- **Readability**: One sentence per paragraph in opening/closing sections improves scannability
+
+### Technical Details
+- Modified `src/Content/StateContentGenerator.php` buildPrompt() method
+- Modified `src/Content/CityContentGenerator.php` buildPrompt() method
+- Prompts now reference specific WordPress reusable block IDs (5031, 1219, 5034)
+- All block references use `<!-- wp:block {"ref":XXXX} /-->` syntax
+
 ## [3.7.0] - 2025-10-30
 
 ### ⚠️ BREAKING CHANGES
