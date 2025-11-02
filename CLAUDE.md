@@ -864,5 +864,10 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 - Always ensure the README.md is up to date.
 - Always ensure TESTING.md is up to date after any change to the test framework.
 - Always ensure CHANGELOG.md is up to date with all changes following Keep a Changelog format.
-- Always work on the `dev` branch, never commit directly to `main`.
+- **NEVER commit directly to `main` branch** - always use feature branches and pull requests
+- **Branch naming conventions**:
+  - Releases: `release/v3.10.1`
+  - Bugfixes: `bugfix/descriptive-name`
+  - Features: `feature/descriptive-name`
+- **Release workflow**: Always create a release branch (e.g., `release/v3.10.1`), make changes there, push the branch, create a PR, then merge to main
 - When creating release commit messages, always put the version first in the format: "v4.2.1 - this is the release title"
