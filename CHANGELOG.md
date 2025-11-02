@@ -5,6 +5,25 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.2] - 2025-11-02
+
+### Fixed
+- **Critical Bug**: Fixed nested anchor tags in location links causing invalid HTML
+  - Nested links were created when old URL format links existed and new linking logic tried to link the same text again
+  - Example: `<a href="OLD_URL"><a href="NEW_URL">Wisconsin</a></a>`
+  - Added nested link detection and removal in `stripExistingKeywordLinks()` method
+  - Pattern now collapses nested links before processing: `/<a\s+href=["\'][^"\']*["\']>\s*<a\s+href=["\'][^"\']*["\']>([^<]+)<\/a>\s*<\/a>/i`
+  - Enhanced `addLocationLinks()` to prevent creating nested links in the first place
+  - Now checks if location name is already inside ANY link before attempting to link
+  - Uses tag-aware content splitting to avoid matching text inside HTML tags
+  - Fixed in `src/Cli/Commands/GenerateCommand.php` (lines 1380-1386) and `src/Utils/ContentProcessor.php` (lines 316-422)
+
+### Changed
+- **Improved Link Prevention**: Enhanced location linking logic to be more robust
+  - Checks for existing links with ANY URL, not just specific URLs
+  - Splits content by HTML tags before pattern matching to avoid tag attribute matches
+  - Early returns if URL or linked text already exists in content
+
 ## [3.10.1] - 2025-11-02
 
 ### Fixed

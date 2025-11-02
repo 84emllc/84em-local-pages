@@ -1377,22 +1377,30 @@ class GenerateCommand {
      * @return string Content with links removed
      */
     private function stripExistingKeywordLinks( string $content ): string {
+        // First, fix any nested anchor tags by collapsing them
+        // Pattern matches: <a href="..."><a href="...">text</a></a>
+        // Replace with just: text (we'll re-link it properly later)
+        $nested_pattern = '/<a\s+href=["\'][^"\']*["\']>\s*<a\s+href=["\'][^"\']*["\']>([^<]+)<\/a>\s*<\/a>/i';
+        while ( preg_match( $nested_pattern, $content ) ) {
+            $content = preg_replace( $nested_pattern, '$1', $content );
+        }
+
         // Get all keywords
         $keywords = $this->keywordsProvider->getAll();
-        
+
         // Strip ANY links containing our keywords, regardless of URL
         // This ensures we remove links with old URLs too
         foreach ( $keywords as $keyword => $url ) {
             // Escape special regex characters in the keyword
             $escaped_keyword = preg_quote( $keyword, '/' );
-            
+
             // Pattern to match: <a href="[any url]">[keyword]</a>
             // This removes any link where the link text exactly matches our keyword
             // Case-insensitive to catch variations
             $pattern = '/<a\s+href=["\'][^"\']*["\']>(' . $escaped_keyword . ')<\/a>/i';
             $content = preg_replace( $pattern, '$1', $content );
         }
-        
+
         // Also strip links to known service/work pages that might have old URLs
         // This catches links to /services/, /work/, /contact/ etc with keyword text
         $known_paths = [
@@ -1402,21 +1410,21 @@ class GenerateCommand {
             '/services/white-label-wordpress-development-for-agencies/',
             '/contact/',
         ];
-        
+
         foreach ( $known_paths as $path ) {
             $escaped_path = preg_quote( $path, '/' );
             // Remove any link to these paths, preserving the text content
             $pattern = '/<a\s+href=["\'][^"\']*' . $escaped_path . '[^"\']*["\']>([^<]+)<\/a>/i';
             $content = preg_replace( $pattern, '$1', $content );
         }
-        
+
         // Remove location links (state and city links)
         // Pattern supports both legacy and new URL formats during migration
         // Legacy: /wordpress-development-services-[state]/
         // New: /wordpress-development-services-usa/[state]/
         $pattern = '/<a\s+href=["\']\/?(wordpress-development-services-usa\/)?wordpress-development-services-[^"\']+["\']>([^<]+)<\/a>/i';
         $content = preg_replace( $pattern, '$2', $content );
-        
+
         return $content;
     }
 }

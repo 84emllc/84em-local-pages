@@ -323,34 +323,98 @@ class ContentProcessor {
             if ( ! $city && $cities ) {
                 foreach ( $cities as $city_name ) {
                     $city_url = $this->generateCityUrl( $state, $city_name );
-                    // Create a pattern that matches the city name but not if it's already in a link
-                    $pattern = '/\b' . preg_quote( $city_name, '/' ) . '\b(?![^<]*>)(?![^<]*<\/a>)/';
-                    
-                    // Only link the first occurrence of each city name
-                    if ( strpos( $content, $city_url ) === false ) {
-                        $content = preg_replace(
-                            $pattern,
-                            '<a href="' . esc_url( $city_url ) . '">' . $city_name . '</a>',
-                            $content,
-                            1  // Only replace first occurrence
-                        );
+
+                    // Only link if this URL doesn't already exist in content
+                    if ( strpos( $content, $city_url ) !== false ) {
+                        continue;
                     }
+
+                    // Check if city name is already inside ANY link (not just this specific URL)
+                    $already_linked_pattern = '/<a\s+href=["\'][^"\']*["\'][^>]*>\s*' . preg_quote( $city_name, '/' ) . '\s*<\/a>/i';
+                    if ( preg_match( $already_linked_pattern, $content ) ) {
+                        continue;
+                    }
+
+                    // Create a pattern that matches the city name as a whole word
+                    $pattern = '/\b(' . preg_quote( $city_name, '/' ) . ')\b/';
+
+                    // Split content by HTML tags to avoid matching text inside tags
+                    $parts = preg_split( '/(<[^>]+>)/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+                    $replaced = false;
+
+                    foreach ( $parts as $index => $part ) {
+                        // Skip HTML tags and empty parts
+                        if ( empty( $part ) || preg_match( '/^<[^>]+>$/', $part ) ) {
+                            continue;
+                        }
+
+                        // Skip if we already replaced once
+                        if ( $replaced ) {
+                            continue;
+                        }
+
+                        // Check if city name exists in this text part
+                        if ( preg_match( $pattern, $part ) ) {
+                            $parts[$index] = preg_replace(
+                                $pattern,
+                                '<a href="' . esc_url( $city_url ) . '">$1</a>',
+                                $part,
+                                1
+                            );
+                            $replaced = true;
+                        }
+                    }
+
+                    // Rejoin the parts
+                    $content = implode( '', $parts );
                 }
             }
             // For city pages: Link to state page
             elseif ( $city ) {
                 $state_url = $this->generateStateUrl( $state );
-                $pattern   = '/\b' . preg_quote( $state, '/' ) . '\b(?![^<]*>)/';
 
                 // Only add link if it doesn't already exist
-                if ( strpos( $content, $state_url ) === false ) {
-                    $content = preg_replace(
-                        $pattern,
-                        '<a href="' . esc_url( $state_url ) . '">' . $state . '</a>',
-                        $content,
-                        1
-                    );
+                if ( strpos( $content, $state_url ) !== false ) {
+                    return $content;
                 }
+
+                // Check if state name is already inside ANY link
+                $already_linked_pattern = '/<a\s+href=["\'][^"\']*["\'][^>]*>\s*' . preg_quote( $state, '/' ) . '\s*<\/a>/i';
+                if ( preg_match( $already_linked_pattern, $content ) ) {
+                    return $content;
+                }
+
+                $pattern = '/\b(' . preg_quote( $state, '/' ) . ')\b/';
+
+                // Split content by HTML tags to avoid matching text inside tags
+                $parts = preg_split( '/(<[^>]+>)/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+                $replaced = false;
+
+                foreach ( $parts as $index => $part ) {
+                    // Skip HTML tags and empty parts
+                    if ( empty( $part ) || preg_match( '/^<[^>]+>$/', $part ) ) {
+                        continue;
+                    }
+
+                    // Skip if we already replaced once
+                    if ( $replaced ) {
+                        continue;
+                    }
+
+                    // Check if state name exists in this text part
+                    if ( preg_match( $pattern, $part ) ) {
+                        $parts[$index] = preg_replace(
+                            $pattern,
+                            '<a href="' . esc_url( $state_url ) . '">$1</a>',
+                            $part,
+                            1
+                        );
+                        $replaced = true;
+                    }
+                }
+
+                // Rejoin the parts
+                $content = implode( '', $parts );
             }
         }
 
