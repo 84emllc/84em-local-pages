@@ -36,6 +36,7 @@ This plugin creates unique, locally-focused landing pages for WordPress developm
 - **Index Page Generation**: Create or update a master index page with alphabetized state list
 - **Schema Regeneration**: Fix LD-JSON schema issues without regenerating page content
 - **Keyword Link Updates**: Update service keyword links when URLs change without API calls (uses fuzzy matching)
+- **Checkpoint/Resume System**: Recover from non-retryable errors without losing progress (v3.12.0+)
 
 ## Requirements
 
@@ -161,6 +162,27 @@ wp 84em local-pages --update-all
 # Update existing states only
 wp 84em local-pages --update-all --states-only
 ```
+
+**Resume After Errors (v3.12.0+):**
+```bash
+# Resume generation from last checkpoint
+wp 84em local-pages --generate-all --resume
+
+# Resume update from last checkpoint
+wp 84em local-pages --update-all --resume
+
+# Resume state-only operations
+wp 84em local-pages --generate-all --states-only --resume
+wp 84em local-pages --update-all --states-only --resume
+```
+
+**When to Use Resume:**
+- After API quota exhaustion
+- After authentication errors (401, 403)
+- After invalid model errors (400, 404)
+- After any non-retryable API error
+- Checkpoints auto-expire after 24 hours
+- Note: Retryable errors (timeouts, rate limits) auto-retry up to 5 times
 
 ### API Key Management
 

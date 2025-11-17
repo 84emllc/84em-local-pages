@@ -16,6 +16,7 @@ use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
+use EightyFourEM\LocalPages\Utils\CheckpointManager;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use WP_CLI;
 use Exception;
@@ -75,6 +76,13 @@ class GenerateCommand {
     private SchemaGenerator $schemaGenerator;
 
     /**
+     * Checkpoint manager
+     *
+     * @var CheckpointManager
+     */
+    private CheckpointManager $checkpointManager;
+
+    /**
      * Constructor
      *
      * @param  ApiKeyManager  $apiKeyManager
@@ -84,6 +92,7 @@ class GenerateCommand {
      * @param  CityContentGenerator  $cityContentGenerator
      * @param  ContentProcessor  $contentProcessor
      * @param  SchemaGenerator  $schemaGenerator
+     * @param  CheckpointManager  $checkpointManager
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
@@ -92,7 +101,8 @@ class GenerateCommand {
         StateContentGenerator $stateContentGenerator,
         CityContentGenerator $cityContentGenerator,
         ContentProcessor $contentProcessor,
-        SchemaGenerator $schemaGenerator
+        SchemaGenerator $schemaGenerator,
+        CheckpointManager $checkpointManager
     ) {
         $this->apiKeyManager         = $apiKeyManager;
         $this->statesProvider        = $statesProvider;
@@ -101,6 +111,7 @@ class GenerateCommand {
         $this->cityContentGenerator  = $cityContentGenerator;
         $this->contentProcessor      = $contentProcessor;
         $this->schemaGenerator       = $schemaGenerator;
+        $this->checkpointManager     = $checkpointManager;
     }
 
     /**
@@ -113,34 +124,90 @@ class GenerateCommand {
      */
     public function handleGenerateAll( array $args, array $assoc_args ): void {
         $include_cities = ! isset( $assoc_args['states-only'] );
+        $resume         = isset( $assoc_args['resume'] );
 
-        WP_CLI::line( '🚀 Starting comprehensive generation process...' );
-        WP_CLI::line( '' );
+        // Operation type for checkpoint
+        $operation_type = $include_cities ? 'generate-all' : 'generate-all-states-only';
 
-        if ( $include_cities ) {
-            WP_CLI::line( '📊 This will generate/update:' );
-            WP_CLI::line( '   • 50 state pages' );
-            WP_CLI::line( '   • 300 city pages (6 per state)' );
-            WP_CLI::line( '   • Total: 350 pages' );
+        // Check for existing checkpoint
+        $checkpoint = $this->checkpointManager->loadCheckpoint( $operation_type );
+
+        if ( $resume && false !== $checkpoint ) {
+            $age = $this->checkpointManager->getCheckpointAge( $operation_type );
+            WP_CLI::line( '🔄 Resuming from checkpoint (' . $this->checkpointManager->formatAge( $age ) . ')...' );
+            WP_CLI::line( '' );
+
+            // Extract checkpoint data
+            $state_created_count = $checkpoint['state_created_count'] ?? 0;
+            $state_updated_count = $checkpoint['state_updated_count'] ?? 0;
+            $city_created_count  = $checkpoint['city_created_count'] ?? 0;
+            $city_updated_count  = $checkpoint['city_updated_count'] ?? 0;
+            $processed_states    = $checkpoint['processed_states'] ?? [];
+            $current_state       = $checkpoint['current_state'] ?? null;
+            $current_city_index  = $checkpoint['current_city_index'] ?? 0;
+
+            WP_CLI::line( '📊 Progress so far:' );
+            WP_CLI::line( "   • States created: {$state_created_count}" );
+            WP_CLI::line( "   • States updated: {$state_updated_count}" );
+            if ( $include_cities ) {
+                WP_CLI::line( "   • Cities created: {$city_created_count}" );
+                WP_CLI::line( "   • Cities updated: {$city_updated_count}" );
+            }
+            WP_CLI::line( "   • States processed: " . count( $processed_states ) );
+            WP_CLI::line( '' );
+        } else {
+            if ( $resume ) {
+                WP_CLI::warning( 'No checkpoint found. Starting fresh...' );
+                WP_CLI::line( '' );
+            }
+
+            // Delete any existing checkpoint to start fresh
+            $this->checkpointManager->deleteCheckpoint( $operation_type );
+
+            WP_CLI::line( '🚀 Starting comprehensive generation process...' );
+            WP_CLI::line( '' );
+
+            if ( $include_cities ) {
+                WP_CLI::line( '📊 This will generate/update:' );
+                WP_CLI::line( '   • 50 state pages' );
+                WP_CLI::line( '   • 300 city pages (6 per state)' );
+                WP_CLI::line( '   • Total: 350 pages' );
+            }
+            else {
+                WP_CLI::line( '📊 This will generate/update 50 state pages only.' );
+            }
+
+            WP_CLI::line( '' );
+
+            $state_created_count = 0;
+            $state_updated_count = 0;
+            $city_created_count  = 0;
+            $city_updated_count  = 0;
+            $processed_states    = [];
+            $current_state       = null;
+            $current_city_index  = 0;
         }
-        else {
-            WP_CLI::line( '📊 This will generate/update 50 state pages only.' );
-        }
-
-        WP_CLI::line( '' );
 
         $states_data  = $this->statesProvider->getAll();
         $total_states = count( $states_data );
 
-        $state_created_count = 0;
-        $state_updated_count = 0;
-        $city_created_count  = 0;
-        $city_updated_count  = 0;
+        // Calculate progress for progress bar
+        $states_remaining = $total_states - count( $processed_states );
 
         // Initialize progress bar for states
         $progress = \WP_CLI\Utils\make_progress_bar( 'Processing all states and cities', $total_states );
 
+        // Advance progress bar to current position
+        for ( $i = 0; $i < count( $processed_states ); $i++ ) {
+            $progress->tick();
+        }
+
         foreach ( $states_data as $state => $data ) {
+            // Skip already processed states
+            if ( in_array( $state, $processed_states, true ) ) {
+                continue;
+            }
+
             WP_CLI::log( "🏛️ Processing {$state}..." );
 
             // Generate/update state page first
@@ -169,7 +236,17 @@ class GenerateCommand {
             // Generate cities if requested
             if ( $include_cities ) {
                 $cities = $data['cities'] ?? [];
-                foreach ( $cities as $city ) {
+                $city_index = 0;
+
+                // Resume from specific city if we're resuming mid-state
+                if ( $current_state === $state && $current_city_index > 0 ) {
+                    $city_index = $current_city_index;
+                    WP_CLI::log( "    🔄 Resuming from city #{$city_index}..." );
+                }
+
+                for ( ; $city_index < count( $cities ); $city_index++ ) {
+                    $city = $cities[ $city_index ];
+
                     // Check if city page exists
                     $existing_city_post = $this->findCityPage( $state, $city );
 
@@ -193,10 +270,39 @@ class GenerateCommand {
                         }
                     }
 
+                    // Save checkpoint after each successful city
+                    $this->checkpointManager->saveCheckpoint( $operation_type, [
+                        'state_created_count' => $state_created_count,
+                        'state_updated_count' => $state_updated_count,
+                        'city_created_count'  => $city_created_count,
+                        'city_updated_count'  => $city_updated_count,
+                        'processed_states'    => $processed_states,
+                        'current_state'       => $state,
+                        'current_city_index'  => $city_index + 1, // Next city to process
+                    ] );
+
                     // Add delay between API requests to respect rate limits
                     sleep( 2 );
                 }
+
+                // Reset city tracking for next state
+                $current_state      = null;
+                $current_city_index = 0;
             }
+
+            // Mark state as processed
+            $processed_states[] = $state;
+
+            // Save checkpoint after completing state
+            $this->checkpointManager->saveCheckpoint( $operation_type, [
+                'state_created_count' => $state_created_count,
+                'state_updated_count' => $state_updated_count,
+                'city_created_count'  => $city_created_count,
+                'city_updated_count'  => $city_updated_count,
+                'processed_states'    => $processed_states,
+                'current_state'       => null,
+                'current_city_index'  => 0,
+            ] );
 
             $progress->tick();
 
@@ -205,6 +311,9 @@ class GenerateCommand {
         }
 
         $progress->finish();
+
+        // Delete checkpoint on successful completion
+        $this->checkpointManager->deleteCheckpoint( $operation_type );
 
         // Display final summary
         WP_CLI::line( '' );
@@ -235,13 +344,49 @@ class GenerateCommand {
      */
     public function handleUpdateAll( array $args, array $assoc_args ): void {
         $states_only = isset( $assoc_args['states-only'] );
+        $resume      = isset( $assoc_args['resume'] );
 
-        WP_CLI::line( '🔄 Starting update of all existing local pages...' );
-        WP_CLI::line( '' );
+        // Operation type for checkpoint
+        $operation_type = $states_only ? 'update-all-states-only' : 'update-all';
 
-        if ( $states_only ) {
-            WP_CLI::line( '📊 Updating state pages only (--states-only flag set)' );
+        // Check for existing checkpoint
+        $checkpoint = $this->checkpointManager->loadCheckpoint( $operation_type );
+
+        if ( $resume && false !== $checkpoint ) {
+            $age = $this->checkpointManager->getCheckpointAge( $operation_type );
+            WP_CLI::line( '🔄 Resuming from checkpoint (' . $this->checkpointManager->formatAge( $age ) . ')...' );
             WP_CLI::line( '' );
+
+            // Extract checkpoint data
+            $updated_count    = $checkpoint['updated_count'] ?? 0;
+            $failed_count     = $checkpoint['failed_count'] ?? 0;
+            $processed_ids    = $checkpoint['processed_ids'] ?? [];
+
+            WP_CLI::line( '📊 Progress so far:' );
+            WP_CLI::line( "   • Updated: {$updated_count}" );
+            WP_CLI::line( "   • Failed: {$failed_count}" );
+            WP_CLI::line( "   • Pages processed: " . count( $processed_ids ) );
+            WP_CLI::line( '' );
+        } else {
+            if ( $resume ) {
+                WP_CLI::warning( 'No checkpoint found. Starting fresh...' );
+                WP_CLI::line( '' );
+            }
+
+            // Delete any existing checkpoint to start fresh
+            $this->checkpointManager->deleteCheckpoint( $operation_type );
+
+            WP_CLI::line( '🔄 Starting update of all existing local pages...' );
+            WP_CLI::line( '' );
+
+            if ( $states_only ) {
+                WP_CLI::line( '📊 Updating state pages only (--states-only flag set)' );
+                WP_CLI::line( '' );
+            }
+
+            $updated_count = 0;
+            $failed_count  = 0;
+            $processed_ids = [];
         }
 
         $query_args = [];
@@ -263,12 +408,19 @@ class GenerateCommand {
             return;
         }
 
-        $updated_count = 0;
-        $failed_count  = 0;
-
         $progress = \WP_CLI\Utils\make_progress_bar( 'Updating local pages', count( $all_local_posts ) );
 
+        // Advance progress bar to current position
+        for ( $i = 0; $i < count( $processed_ids ); $i++ ) {
+            $progress->tick();
+        }
+
         foreach ( $all_local_posts as $post ) {
+            // Skip already processed pages
+            if ( in_array( $post->ID, $processed_ids, true ) ) {
+                continue;
+            }
+
             $state = get_post_meta( $post->ID, '_local_page_state', true );
             $city  = get_post_meta( $post->ID, '_local_page_city', true );
 
@@ -296,6 +448,16 @@ class GenerateCommand {
                     }
                 }
 
+                // Mark page as processed
+                $processed_ids[] = $post->ID;
+
+                // Save checkpoint after each successful update
+                $this->checkpointManager->saveCheckpoint( $operation_type, [
+                    'updated_count'  => $updated_count,
+                    'failed_count'   => $failed_count,
+                    'processed_ids'  => $processed_ids,
+                ] );
+
                 // Add delay between API requests
                 sleep( 2 );
 
@@ -303,12 +465,25 @@ class GenerateCommand {
                 $failed_count ++;
                 $location = $city ? "{$city}, {$state}" : $state;
                 WP_CLI::warning( "❌ Error updating {$location}: " . $e->getMessage() );
+
+                // Mark page as processed even on error to avoid retrying indefinitely
+                $processed_ids[] = $post->ID;
+
+                // Save checkpoint
+                $this->checkpointManager->saveCheckpoint( $operation_type, [
+                    'updated_count'  => $updated_count,
+                    'failed_count'   => $failed_count,
+                    'processed_ids'  => $processed_ids,
+                ] );
             }
 
             $progress->tick();
         }
 
         $progress->finish();
+
+        // Delete checkpoint on successful completion
+        $this->checkpointManager->deleteCheckpoint( $operation_type );
 
         WP_CLI::line( '' );
         WP_CLI::line( '📊 Update Summary' );
