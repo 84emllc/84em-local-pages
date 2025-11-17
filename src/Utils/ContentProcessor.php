@@ -49,7 +49,7 @@ class ContentProcessor {
         $processed_content = $this->addLocationLinks( $processed_content, $context );
 
         // Add internal links to service keywords AFTER location links
-        $processed_content = $this->addServiceLinks( $processed_content );
+        //$processed_content = $this->addServiceLinks( $processed_content );
 
         // Format headings properly
         $processed_content = $this->formatHeadings( $processed_content );
