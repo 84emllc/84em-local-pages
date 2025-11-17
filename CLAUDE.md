@@ -430,6 +430,45 @@ wp 84em local-pages --update-all
 wp 84em local-pages --update-all --states-only
 ```
 
+### Resume After Errors (v3.12.0+)
+
+All bulk operations (`--generate-all` and `--update-all`) now support checkpoint/resume functionality to recover from non-retryable errors:
+
+```bash
+# Resume generation from last checkpoint
+wp 84em local-pages --generate-all --resume
+
+# Resume update from last checkpoint
+wp 84em local-pages --update-all --resume
+
+# Resume state-only operations
+wp 84em local-pages --generate-all --states-only --resume
+wp 84em local-pages --update-all --states-only --resume
+```
+
+**How It Works:**
+- Checkpoints are saved after each successful API call (after each city or state page)
+- If a non-retryable error occurs, the operation stops but progress is preserved
+- Use `--resume` flag to continue from where you left off
+- Checkpoints expire after 24 hours
+- Checkpoints are automatically deleted on successful completion
+
+**Use Cases:**
+- Recovering from API quota exhaustion
+- Resuming after authentication errors (401, 403)
+- Continuing after invalid model errors (400, 404)
+- Recovering from other non-retryable API errors
+
+**Checkpoint Storage:**
+- Stored in WordPress options table
+- Operation-specific: `generate-all`, `generate-all-states-only`, `update-all`, `update-all-states-only`
+- Includes: progress counters, processed state/city lists, current position
+
+**Notes:**
+- Retryable errors (rate limits, timeouts, server errors) are automatically retried up to 5 times with exponential backoff
+- Only non-retryable errors (bad requests, auth failures, etc.) require manual resume
+- Starting a new operation without `--resume` will clear any existing checkpoint
+
 ### Individual Operations
 ```bash
 # State operations
@@ -633,6 +672,7 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 
 #### Utils Layer (`src/Utils/`)
 - **`ContentProcessor`**: Handles content processing, linking, and formatting
+- **`CheckpointManager`**: Manages progress checkpoints for bulk operations (v3.12.0+)
 
 ### Key Classes and Responsibilities
 
@@ -644,6 +684,7 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 | `StateContentGenerator` | State page generation | `src/Content/StateContentGenerator.php` |
 | `CityContentGenerator` | City page generation | `src/Content/CityContentGenerator.php` |
 | `ContentProcessor` | Content enhancement | `src/Utils/ContentProcessor.php` |
+| `CheckpointManager` | Bulk operation checkpoints | `src/Utils/CheckpointManager.php` |
 | `CommandHandler` | CLI command routing | `src/Cli/CommandHandler.php` |
 
 ### Namespace Structure
@@ -700,6 +741,39 @@ If not set, tests will use the production API key configured in the plugin (stor
 For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ## Recent Updates
+
+### Version 3.12.0 (2025-11-17)
+
+#### Checkpoint/Resume System for Bulk Operations
+- **Problem Solved**: Non-retryable API errors during bulk operations required starting over from scratch, wasting time and API quota
+- **Solution**: Implemented comprehensive checkpoint system to save progress and enable resuming
+- **New CheckpointManager Class** (`src/Utils/CheckpointManager.php`):
+  - Saves progress after each successful API call
+  - Stores checkpoints in WordPress options table
+  - Checkpoints expire after 24 hours
+  - Operation-specific checkpoints: `generate-all`, `generate-all-states-only`, `update-all`, `update-all-states-only`
+- **Enhanced Commands**:
+  - `--generate-all --resume` - Resume generation from last checkpoint
+  - `--update-all --resume` - Resume update from last checkpoint
+  - Works with `--states-only` flag as well
+- **Checkpoint Data Includes**:
+  - Progress counters (states/cities created/updated)
+  - List of processed state/city IDs
+  - Current position in processing (for mid-state resumption)
+  - Timestamp for expiration tracking
+- **Benefits**:
+  - Recover from API quota exhaustion without losing progress
+  - Resume after authentication errors (401, 403)
+  - Continue after invalid model errors (400, 404)
+  - Automatic cleanup on successful completion
+  - Progress visibility when resuming
+- **Modified Files**:
+  - `src/Utils/CheckpointManager.php` - New checkpoint management class
+  - `src/Cli/Commands/GenerateCommand.php` - Added checkpoint support to handleGenerateAll() and handleUpdateAll()
+  - `src/Plugin.php` - Registered CheckpointManager in dependency injection container
+  - `CLAUDE.md` - Added resume documentation
+- **Use Case**: When running `--generate-all` with 350 pages, if an error occurs on page 150, you can resume with `--generate-all --resume` to continue from page 151
+- **Note**: Retryable errors (timeouts, rate limits, server errors) are still automatically retried up to 5 times with exponential backoff. Checkpoints are only needed for non-retryable errors.
 
 ### Version 3.7.0 (2025-10-30)
 

@@ -22,6 +22,7 @@ use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
+use EightyFourEM\LocalPages\Utils\CheckpointManager;
 use EightyFourEM\LocalPages\Cli\CommandHandler;
 use EightyFourEM\LocalPages\Cli\Commands\TestCommand;
 use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
@@ -163,6 +164,11 @@ class Plugin {
             );
         } );
 
+        // Utils Services
+        $this->container->register( CheckpointManager::class, function () {
+            return new CheckpointManager();
+        } );
+
         // Content Services
         $this->container->register( ContentProcessor::class, function ( $container ) {
             return new ContentProcessor(
@@ -212,7 +218,8 @@ class Plugin {
                 $container->get( StateContentGenerator::class ),
                 $container->get( CityContentGenerator::class ),
                 $container->get( ContentProcessor::class ),
-                $container->get( SchemaGenerator::class )
+                $container->get( SchemaGenerator::class ),
+                $container->get( CheckpointManager::class )
             );
         } );
 

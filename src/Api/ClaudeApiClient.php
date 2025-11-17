@@ -495,6 +495,7 @@ class ClaudeApiClient implements ApiClientInterface {
             'name or service not known',
             'temporary failure',
             'network is unreachable',
+            'empty reply from server',
         ];
 
         $error_lower = strtolower( $error_message );
