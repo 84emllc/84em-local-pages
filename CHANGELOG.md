@@ -5,6 +5,29 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.11.0] - 2025-11-17
+
+### Changed
+- **SEO Metadata Update**: Revised page titles and meta descriptions to emphasize core services
+  - Removed "AI-Enhanced" prefix from titles and descriptions
+  - Reordered service emphasis: "WordPress Development, Plugins, Consulting, White-Label"
+  - State page titles: "WordPress Development, Plugins, Consulting, White-Label in {State} | 84EM"
+  - City page titles: "WordPress Development, Plugins, Consulting, White-Label in {City}, {State} | 84EM"
+  - Updated in both `StateContentGenerator.php` and `CityContentGenerator.php`
+  - Better aligns with current business positioning and market demands
+
+### Removed
+- **Automatic Service Keyword Linking**: Disabled automatic keyword linking in content processor
+  - Commented out `addServiceLinks()` call in `ContentProcessor.php`
+  - Reduces over-optimization and potential SEO penalties
+  - Focuses link equity on location-based links instead
+  - Service links in hardcoded reusable blocks remain active
+
+### Technical Details
+- Modified `src/Content/StateContentGenerator.php` getPostTitle() and getMetaDescription() methods
+- Modified `src/Content/CityContentGenerator.php` getPostTitle() and getMetaDescription() methods
+- Modified `src/Utils/ContentProcessor.php` processContent() method to skip service keyword linking
+
 ## [3.10.2] - 2025-11-02
 
 ### Fixed
