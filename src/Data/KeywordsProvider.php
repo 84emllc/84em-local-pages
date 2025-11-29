@@ -81,7 +81,7 @@ class KeywordsProvider implements DataProviderInterface {
         $work_page   = site_url( '/work/' );
         $services    = site_url( '/services/' );
         $plugins     = site_url( '/services/custom-wordpress-plugin-development/' );
-        $whitelabel  = site_url( '/services/white-label-wordpress-development-for-agencies/' );
+        $whitelabel  = site_url( '/services/wordpress-development-for-agencies/' );
         $ai          = site_url( '/services/ai-enhanced-wordpress-development/' );
         $consulting  = site_url( '/services/wordpress-consulting-strategy/' );
         $maintenance = site_url( '/services/wordpress-maintenance-support/' );
@@ -125,6 +125,7 @@ class KeywordsProvider implements DataProviderInterface {
             'white-label development'                   => $whitelabel,
             'White Label Development'                   => $whitelabel,
             'Agency Partnership'                        => $whitelabel,
+            'Agency Services'                           => $whitelabel,
         ];
     }
 }

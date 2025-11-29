@@ -276,7 +276,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
      */
     public function getPostTitle( $data ): string {
 
-        return "WordPress Development, Plugins, Consulting, White-Label in {$data} | 84EM";
+        return "WordPress Development, Plugins, Consulting, Agency Services in {$data} | 84EM";
     }
 
     /**
@@ -289,7 +289,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
      */
     public function getMetaDescription( string $data, string $cities = null ): string {
 
-        return "WordPress Development, Plugins, Consulting, White-Label in {$data}, including {$cities}";
+        return "WordPress Development, Plugins, Consulting, Agency Services in {$data}, including {$cities}";
     }
 
     /**
@@ -341,7 +341,7 @@ CRITICAL: never use <br> or <br/> tags.
 Present 4-5 key benefits as a list using this exact HTML structure but vary the content of each list item:
 <!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} -->
 <ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\">
-<!-- wp:list-item --><li><strong>Understands WordPress architecture</strong> deeply enough to solve complex problems fast.</li><!-- /wp:list-item -->
+<!-- wp:list-item --><li>Understands WordPress architecture deeply enough to solve complex problems fast.</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>30 years building for the web. 12 years of WordPress expertise</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>Fully remote team serving clients nationwide with proven processes</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>Proven track record across diverse industries</li><!-- /wp:list-item -->
