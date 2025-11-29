@@ -84,7 +84,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             '@context'    => 'https://schema.org',
             '@type'       => 'WebPage',
             'name'        => "WordPress Development Services in {$state}",
-            'description' => "Professional WordPress development, custom plugins, and white-label services for agencies in {$state}. Expert developers serving " . implode( ', ', array_slice( $cities, 0, 3 ) ) . " and beyond.",
+            'description' => "Professional WordPress development, custom plugins, and agency services in {$state}. Expert developers serving " . implode( ', ', array_slice( $cities, 0, 3 ) ) . " and beyond.",
             'url'         => $url,
             'isPartOf'    => [
                 '@type' => 'WebSite',
@@ -104,7 +104,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                     'WordPress Development',
                     'Custom Plugin Development',
                     'WordPress Maintenance',
-                    'White-Label Development',
+                    'Agency Services',
                     'WordPress Security',
                 ],
             ],
@@ -162,7 +162,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             '@context'    => 'https://schema.org',
             '@type'       => 'WebPage',
             'name'        => "WordPress Development Services in {$city}, {$state}",
-            'description' => "Professional WordPress development and custom plugin services in {$city}, {$state}. Expert developers providing white-label solutions for agencies.",
+            'description' => "Professional WordPress development and custom plugin services in {$city}, {$state}.",
             'url'         => $url,
             'isPartOf'    => [
                 '@type' => 'WebSite',
@@ -208,7 +208,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                     'WordPress Development',
                     'Custom Plugin Development',
                     'WordPress Maintenance',
-                    'White-Label Development',
+                    'Agency Services',
                 ],
             ],
         ];

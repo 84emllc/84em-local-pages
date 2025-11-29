@@ -1257,17 +1257,8 @@ class GenerateCommand {
 <p>As a fully remote WordPress development company, 84EM serves clients across the United States with:</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:list -->
-<ul>
-<li>Custom WordPress development and plugin creation</li>
-<li>API integrations and third-party service connections</li>
-<li>WordPress security audits and hardening</li>
-<li>White-label development services for agencies</li>
-<li>WordPress maintenance and ongoing support</li>
-<li>Data migration and platform transfers</li>
-<li>WordPress troubleshooting and optimization</li>
-</ul>
-<!-- /wp:list -->
+
+<!-- wp:block {"ref":5031} /-->
 
 <!-- wp:paragraph -->
 <p>Our experienced team delivers reliable, scalable WordPress solutions regardless of your location. <a href="/contact/">Contact us today</a> to discuss your WordPress development needs.</p>
@@ -1318,7 +1309,7 @@ class GenerateCommand {
         }
 
         $posts = $this->findLocalPages( $query_args );
-        
+
         if ( empty( $posts ) ) {
             WP_CLI::warning( 'No local pages found to update.' );
             return;
@@ -1339,7 +1330,7 @@ class GenerateCommand {
             try {
                 // Get the current content
                 $content = $post->post_content;
-                
+
                 if ( empty( $content ) ) {
                     $skipped_count++;
                     $progress->tick();
@@ -1349,12 +1340,12 @@ class GenerateCommand {
                 // Determine the context (state or city page)
                 $state = get_post_meta( $post->ID, '_local_page_state', true );
                 $city = get_post_meta( $post->ID, '_local_page_city', true );
-                
+
                 $context = [
                     'type' => ! empty( $city ) ? 'city' : 'state',
                     'state' => $state,
                 ];
-                
+
                 if ( ! empty( $city ) ) {
                     $context['city'] = $city;
                 }
@@ -1402,11 +1393,11 @@ class GenerateCommand {
         WP_CLI::line( '=================' );
         WP_CLI::line( "Total pages processed: {$total}" );
         WP_CLI::success( "Updated: {$updated_count}" );
-        
+
         if ( $skipped_count > 0 ) {
             WP_CLI::line( "Skipped (no changes): {$skipped_count}" );
         }
-        
+
         if ( $error_count > 0 ) {
             WP_CLI::warning( "Errors: {$error_count}" );
         }

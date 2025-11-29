@@ -5,6 +5,30 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.13.0] - 2025-11-29
+
+### Changed
+- **Rebranding**: Changed "White-Label" terminology to "Agency Services" throughout the plugin
+  - Updated post titles in `StateContentGenerator.php` and `CityContentGenerator.php`
+  - Updated meta descriptions in both content generators
+  - Updated LD-JSON schema descriptions in `SchemaGenerator.php`
+  - Updated service keyword mapping in `KeywordsProvider.php`
+  - Changed service URL from `/services/white-label-wordpress-development-for-agencies/` to `/services/wordpress-development-for-agencies/`
+- **Index Page Improvement**: Replaced hardcoded service list with WordPress reusable block
+  - Index page now uses `<!-- wp:block {"ref":5031} /-->` for consistent service listing
+  - Ensures design changes propagate automatically to index page
+- **Documentation Cleanup**: Removed outdated prompt templates from CLAUDE.md
+  - Prompt templates are now maintained only in source code files
+  - Reduced documentation maintenance overhead
+
+### Added
+- **New Keyword Mapping**: Added "Agency Services" keyword to `KeywordsProvider.php`
+
+### Fixed
+- **Content Generator**: Removed unnecessary `<strong>` tag from first benefit list item in prompts
+  - Ensures consistent formatting across all benefit list items
+  - Fixed in both `StateContentGenerator.php` and `CityContentGenerator.php`
+
 ## [3.12.0] - 2025-11-17
 
 ### Added

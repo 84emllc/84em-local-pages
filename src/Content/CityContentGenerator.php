@@ -296,7 +296,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
      */
     public function getPostTitle( $data ): string {
 
-        return "WordPress Development, Plugins, Consulting, White-Label in {$data} | 84EM";
+        return "WordPress Development, Plugins, Consulting, Agency Services in {$data} | 84EM";
     }
 
     /**
@@ -310,7 +310,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
      */
     public function getMetaDescription( string $data, string $cities = null ): string {
 
-        return "WordPress Development, Plugins, Consulting, White-Label in {$data}, {$data}";
+        return "WordPress Development, Plugins, Consulting, Agency Services in {$data}, {$data}";
     }
 
     /**
@@ -359,7 +359,7 @@ CRITICAL: never use <br> or <br/> tags.
 Present 4-5 key benefits as a list using this exact HTML structure but vary the content of each list item:
 <!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} -->
 <ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\">
-<!-- wp:list-item --><li><strong>Understands WordPress architecture</strong> deeply enough to solve complex problems fast.</li><!-- /wp:list-item -->
+<!-- wp:list-item --><li>Understands WordPress architecture deeply enough to solve complex problems fast.</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>30 years building for the web. 12 years of WordPress expertise</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>Fully remote team serving clients nationwide with proven processes</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>Proven track record across diverse industries</li><!-- /wp:list-item -->
@@ -414,7 +414,7 @@ CRITICAL: do not add a link to a substring within a word.  for example AI is a s
 
 CRITICAL: our main focus is on the following services, write text relevant to them and do not link any service related phrase or keyword to anything BUT our 84em.com/services page
 AI-Enhanced Development
-White-Label Agency Services
+Agency Services
 Custom Plugin Development
 Code Cleanup and Refactoring
 Consulting & Strategy
