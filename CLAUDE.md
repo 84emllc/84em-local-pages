@@ -10,7 +10,7 @@ The plugin uses two distinct prompt structures for generating location-specific 
 
 ### State Pages (Parent Pages)
 - **Content Length**: 200-300 words
-- **Geographic Focus**: State and 6 largest cities
+- **Geographic Focus**: State and 10 largest cities
 - **Automatic Interlinking**: City names link to child city pages
 - **Service Keywords**: Link to relevant service pages using fuzzy matching
 - **URL Format**: `/wordpress-development-services-california/`
@@ -86,7 +86,7 @@ The plugin replaces the following variables in prompts:
 ### Location Information
 - `{STATE}`: Full state name (e.g., "California")
 - `{CITY}`: City name (e.g., "Los Angeles") - city pages only
-- `{CITY_LIST}`: Comma-separated list of 6 largest cities - state pages only
+- `{CITY_LIST}`: Comma-separated list of 10 largest cities - state pages only
 
 ### Service Keywords
 - `{SERVICE_KEYWORDS_LIST}`: WordPress development, custom plugin development, Custom WordPress development, Data migration and platform transfers, WordPress security audits and hardening, WordPress Maintenance and Support, API integrations, WordPress security audits, security audits, white-label development, White Label Development, WordPress maintenance, WordPress support, data migration, platform transfers, Platform Migrations, WordPress maintenance and ongoing support, WordPress troubleshooting, custom WordPress themes, WordPress security, web development, WordPress migrations, digital agency services, WordPress plugin development, Custom WordPress plugin development, White label WordPress development, White label web development, White-label development services for agencies, WordPress plugin development services
@@ -255,7 +255,7 @@ If validation fails, the model will NOT be saved and you'll see a clear error me
 
 ### Bulk Operations
 ```bash
-# Generate everything (350 pages: 50 states + 300 cities)
+# Generate everything (550 pages: 50 states + 500 cities)
 wp 84em local-pages --generate-all
 
 # Generate states only (50 pages)
@@ -610,7 +610,7 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
   - `src/Cli/Commands/GenerateCommand.php` - Added checkpoint support to handleGenerateAll() and handleUpdateAll()
   - `src/Plugin.php` - Registered CheckpointManager in dependency injection container
   - `CLAUDE.md` - Added resume documentation
-- **Use Case**: When running `--generate-all` with 350 pages, if an error occurs on page 150, you can resume with `--generate-all --resume` to continue from page 151
+- **Use Case**: When running `--generate-all` with 550 pages, if an error occurs on page 150, you can resume with `--generate-all --resume` to continue from page 151
 - **Note**: Retryable errors (timeouts, rate limits, server errors) are still automatically retried up to 5 times with exponential backoff. Checkpoints are only needed for non-retryable errors.
 
 ### Version 3.7.0 (2025-10-30)
@@ -758,14 +758,14 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 
 ---
 
-**Last Updated**: November 29, 2025
+**Last Updated**: November 30, 2025
 **Claude Model**: claude-sonnet-4-20250514
 **Content Format**: WordPress Block Editor (Gutenberg) with concise sentence-per-line structure
 **API Version**: 2023-06-01
 **Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking
 **Word Count**: 200-300 words per page (both states and cities)
-**Total Pages**: 350 (50 states + 300 cities)
-**Plugin Version**: 3.13.0
+**Total Pages**: 550 (50 states + 500 cities)
+**Plugin Version**: 3.14.0
 **Post Type**: Standard WordPress pages (migrated from custom 'local' post type in v3.7.0)
 **Architecture**: Modular PSR-4 autoloaded classes with dependency injection
 **Model Selection**: Dynamic fetching from Claude Models API with interactive selection

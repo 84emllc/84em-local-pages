@@ -68,7 +68,7 @@ class Test_Data_Structures extends TestCase {
             $this->assertIsArray( $data );
             $this->assertArrayHasKey( 'cities', $data );
             $this->assertIsArray( $data['cities'] );
-            $this->assertCount( 6, $data['cities'] );
+            $this->assertCount( 10, $data['cities'] );
 
             // Each city should be a non-empty string
             foreach ( $data['cities'] as $city ) {

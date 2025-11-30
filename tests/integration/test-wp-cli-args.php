@@ -284,7 +284,7 @@ class Test_WP_CLI_Args extends TestCase {
         // When city=all, it should generate all cities for the state
         $california_data = $this->statesProvider->get( 'California' );
         $this->assertIsArray( $california_data['cities'] );
-        $this->assertEquals( 6, count( $california_data['cities'] ), 'California should have 6 cities' );
+        $this->assertEquals( 10, count( $california_data['cities'] ), 'California should have 10 cities' );
         $this->assertTrue( in_array( 'Los Angeles', $california_data['cities'] ), 'Los Angeles should be in California cities' );
         $this->assertTrue( in_array( 'San Francisco', $california_data['cities'] ), 'San Francisco should be in California cities' );
     }

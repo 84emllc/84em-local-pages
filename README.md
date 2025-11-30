@@ -19,7 +19,7 @@ This plugin creates unique, locally-focused landing pages for WordPress developm
 ## Features
 
 - **Standard WordPress Pages**: Creates hierarchical pages with parent-child relationships (states → cities)
-- **Comprehensive Coverage**: 50 state pages + 300 city pages (6 cities per state) = 350 total pages
+- **Comprehensive Coverage**: 50 state pages + 500 city pages (10 cities per state) = 550 total pages
 - **WP-CLI Integration**: Complete command-line management interface with progress bars
 - **Claude AI Content**: Generates unique content using Claude AI
 - **Dynamic Model Selection**: Fetches available models from Claude API for interactive selection
@@ -120,7 +120,7 @@ wp 84em local-pages --set-api-key
 ### Step 2: Generate Everything (Recommended)
 ```bash
 wp 84em local-pages --generate-all
-# Creates 50 state pages + 300 city pages = 350 total pages
+# Creates 50 state pages + 500 city pages = 550 total pages
 ```
 
 ### Step 3: Generate Supporting Pages
@@ -147,7 +147,7 @@ wp post list --post_type=page --name=wordpress-development-services-usa --format
 
 **Generate/Create Everything:**
 ```bash
-# Generate all states and cities (350 pages)
+# Generate all states and cities (550 pages)
 wp 84em local-pages --generate-all
 
 # Generate states only (50 pages)
@@ -362,7 +362,7 @@ https://84em.com/wordpress-development-services-texas/dallas/
 
 ### Content Generation Process
 
-1. **State Analysis**: Plugin identifies the state and its 6 largest cities
+1. **State Analysis**: Plugin identifies the state and its 10 largest cities
 2. **Hierarchical Creation**: Creates state page first, then child city pages
 3. **Claude Prompt**: Sends structured prompts to Claude AI API with location-specific context
 4. **Content Creation**: Generates unique content for each location
@@ -424,7 +424,7 @@ https://84em.com/wordpress-development-services-texas/dallas/
 
 ### Cost Estimates
 
-- **Full Generation** (350 pages): $14-28 per complete run
+- **Full Generation** (550 pages): $22-44 per complete run
 - **State Pages Only** (50 pages): $2-4 per run
 - **Individual Updates**: $0.04-0.08 per page
 - **Monthly Maintenance**: $20-40 depending on update frequency
@@ -452,7 +452,7 @@ https://84em.com/wordpress-development-services-texas/dallas/
 
 **State Pages:**
 - `_local_page_state`: State name (e.g., "California")
-- `_local_page_cities`: Comma-separated 6 largest cities
+- `_local_page_cities`: Comma-separated 10 largest cities
 - `_genesis_title`: SEO title
 - `_genesis_description`: SEO meta description
 - `schema`: LD-JSON structured data
@@ -506,7 +506,7 @@ The `generate-index` command creates or updates a master index page that serves 
 # 1. Set API key
 wp 84em local-pages --set-api-key
 
-# 2. Generate everything (350 pages)
+# 2. Generate everything (550 pages)
 wp 84em local-pages --generate-all
 
 # 3. Generate supporting pages
