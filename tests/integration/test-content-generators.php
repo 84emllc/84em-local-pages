@@ -112,7 +112,7 @@ class Test_Content_Generators extends TestCase {
         $california = $this->statesProvider->get( 'California' );
         $this->assertIsArray( $california );
         $this->assertArrayHasKey( 'cities', $california );
-        $this->assertCount( 6, $california['cities'] );
+        $this->assertCount( 10, $california['cities'] );
     }
     
     /**
@@ -246,7 +246,7 @@ class Test_Content_Generators extends TestCase {
             $this->assertIsArray( $stateData );
             $this->assertArrayHasKey( 'cities', $stateData );
             $this->assertIsArray( $stateData['cities'] );
-            $this->assertCount( 6, $stateData['cities'] );
+            $this->assertCount( 10, $stateData['cities'] );
             
             // Test first state more thoroughly
             if ( $stateName === 'Alabama' ) {

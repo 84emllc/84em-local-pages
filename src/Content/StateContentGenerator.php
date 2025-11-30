@@ -303,7 +303,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
         // Get state data and cities
         $state_data = $this->statesProvider->get( $state );
         $cities     = $state_data['cities'] ?? [];
-        $city_list  = implode( ', ', array_slice( $cities, 0, 6 ) );
+        $city_list  = implode( ', ', array_slice( $cities, 0, 10 ) );
 
         $prompt = "Write a concise, SEO-optimized landing page for 84EM's WordPress  services specifically for businesses in {$state}.
 
@@ -324,7 +324,7 @@ VOICE AND TONE (CRITICAL):
 CONTENT STRUCTURE (REQUIRED):
 
 **Opening Section (2-3 short sentences, each in their own paragraph using start tag of \"<!-- wp:paragraph --><p> and end tag of </p><!-- /wp:paragraph -->)\" -- NEVER USE <br> or <br/> tags.**
-- Brief introduction mentioning {$state} and ALL of these cities: {$city_list} (you MUST mention all 6 cities naturally)
+- Brief introduction phrased as \"across {$state}, including {$city_list}\" (you MUST mention the state name BEFORE listing all 10 cities)
 - Brief overview of 84EM's WordPress expertise
 - Include ONE contextual call-to-action link in the opening
 
@@ -367,7 +367,7 @@ TARGET METRICS:
 - Benefits: 4-5 list items
 - Closing: 2 sentences, each on their own line
 - Call-to-action links: 2-3 total (contextual, not in lists)
-- City mentions: All 6 cities mentioned at least once
+- City mentions: State name followed by all 10 cities (e.g., 'across Iowa, including Des Moines, Cedar Rapids...')
 
 TONE: Professional and factual. Avoid hyperbole and superlatives. Focus on concrete services, technical expertise, and actual capabilities. Make it locally relevant through geographic references.
 

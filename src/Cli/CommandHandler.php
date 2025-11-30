@@ -989,7 +989,7 @@ class CommandHandler {
         WP_CLI::line( '                             error-handling, security, model-management' );
         WP_CLI::line( '' );
         WP_CLI::line( 'CONTENT GENERATION:' );
-        WP_CLI::line( '  --generate-all             Generate/update all 350 pages (50 states + 300 cities)' );
+        WP_CLI::line( '  --generate-all             Generate/update all 550 pages (50 states + 500 cities)' );
         WP_CLI::line( '  --generate-all --states-only  Generate/update 50 state pages only' );
         WP_CLI::line( '  --update-all               Update all existing pages' );
         WP_CLI::line( '  --state="State Name"       Generate/update specific state page' );

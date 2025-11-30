@@ -170,8 +170,8 @@ class GenerateCommand {
             if ( $include_cities ) {
                 WP_CLI::line( '📊 This will generate/update:' );
                 WP_CLI::line( '   • 50 state pages' );
-                WP_CLI::line( '   • 300 city pages (6 per state)' );
-                WP_CLI::line( '   • Total: 350 pages' );
+                WP_CLI::line( '   • 500 city pages (10 per state)' );
+                WP_CLI::line( '   • Total: 550 pages' );
             }
             else {
                 WP_CLI::line( '📊 This will generate/update 50 state pages only.' );

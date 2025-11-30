@@ -5,6 +5,49 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.14.0] - 2025-11-30
+
+### Added
+- **Expanded City Coverage**: Increased from 6 cities to 10 cities per state
+  - Total pages increased from 350 to 550 (50 states + 500 cities)
+  - 200 new city pages added across all 50 states
+  - All existing 6 cities per state preserved (no data loss)
+  - New cities selected based on US Census population data (2024)
+- **Enhanced State Content**: State pages now mention all 10 major cities
+  - Updated `StateContentGenerator.php` prompts to reference 10 cities
+  - City list in content generation expanded from 6 to 10
+
+### Changed
+- **StatesProvider Data**: Expanded city arrays from 6 to 10 entries per state
+  - Research-based additions using US Census 2024 population data
+  - Alaska: Added Kenai, Palmer, Kodiak, Bethel (kept existing Sitka, Ketchikan)
+  - California: Added Long Beach, Oakland, Bakersfield, Anaheim
+  - Texas: Added Arlington, Corpus Christi, Plano, Laredo
+  - (All 50 states updated similarly)
+- **CLI Output**: Updated `GenerateCommand.php` progress messages
+  - "500 city pages (10 per state)" instead of "300 city pages (6 per state)"
+  - "550 pages" total instead of "350 pages"
+- **Help Text**: Updated `CommandHandler.php` usage information
+- **Documentation**: Updated all references in README.md, CLAUDE.md
+- **Cost Estimates**: Updated API cost estimates for 550 pages
+
+### Technical Details
+**Modified Files**:
+- `src/Data/StatesProvider.php`: Expanded all 50 state city arrays to 10 entries
+- `src/Content/StateContentGenerator.php`: Updated city slice from 6 to 10, updated prompt text
+- `src/Cli/Commands/GenerateCommand.php`: Updated CLI output messages
+- `src/Cli/CommandHandler.php`: Updated help text
+- `tests/integration/test-data-structures.php`: Updated assertions to expect 10 cities
+- `tests/integration/test-content-generators.php`: Updated assertions to expect 10 cities
+- `tests/integration/test-wp-cli-args.php`: Updated assertions to expect 10 cities
+- `README.md`: Updated all city count and total page references
+- `CLAUDE.md`: Updated all city count and total page references
+
+**Migration Notes**:
+- Existing state and city pages are preserved
+- New city pages can be generated incrementally using `--state="State" --city=all`
+- Or generate all new pages at once using `--generate-all`
+
 ## [3.13.0] - 2025-11-29
 
 ### Changed
