@@ -152,6 +152,11 @@ class CommandHandler {
                 return;
             }
 
+            if ( isset( $assoc_args['update-page-templates'] ) ) {
+                $this->generateCommand->handleUpdatePageTemplates( $args, $assoc_args );
+                return;
+            }
+
             if ( isset( $assoc_args['migrate-urls'] ) ) {
                 $this->generateCommand->handleUrlMigration( $args, $assoc_args );
                 return;
@@ -677,7 +682,8 @@ class CommandHandler {
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
-            'update-keyword-links', 'migrate-urls', 'delete', 'update', 'help', 'all'
+            'update-keyword-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
+            'template', 'dry-run', 'resume',
         ];
 
         return in_array( strtolower( $name ), $valid_args, true );
@@ -742,7 +748,8 @@ class CommandHandler {
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
-            'update-keyword-links', 'migrate-urls', 'delete', 'update', 'help', 'all'
+            'update-keyword-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
+            'template', 'dry-run', 'resume',
         ];
 
         $unrecognized = [];
