@@ -20,6 +20,7 @@ use EightyFourEM\LocalPages\Api\Encryption;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
+use EightyFourEM\LocalPages\Utils\CheckpointManager;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 
 class Test_WP_CLI_Args extends TestCase {
@@ -75,6 +76,8 @@ class Test_WP_CLI_Args extends TestCase {
         );
 
         // Initialize GenerateCommand with all dependencies
+        $checkpointManager = new CheckpointManager();
+
         $this->generateCommand = new GenerateCommand(
             $this->apiKeyManager,
             $this->statesProvider,
@@ -82,7 +85,8 @@ class Test_WP_CLI_Args extends TestCase {
             $stateContentGenerator,
             $cityContentGenerator,
             $contentProcessor,
-            $schemaGenerator
+            $schemaGenerator,
+            $checkpointManager
         );
     }
 
