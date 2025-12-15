@@ -123,6 +123,12 @@ class GenerateCommand {
      * @return void
      */
     public function handleGenerateAll( array $args, array $assoc_args ): void {
+        // Enable WordPress import mode to prevent plugin hooks during bulk operations.
+        if ( ! defined( 'WP_IMPORTING' ) ) {
+            define( 'WP_IMPORTING', true );
+            WP_CLI::log( 'Import mode enabled - plugin hooks suspended during bulk operation.' );
+        }
+
         $include_cities = ! isset( $assoc_args['states-only'] );
         $resume         = isset( $assoc_args['resume'] );
 
@@ -343,6 +349,12 @@ class GenerateCommand {
      * @return void
      */
     public function handleUpdateAll( array $args, array $assoc_args ): void {
+        // Enable WordPress import mode to prevent plugin hooks during bulk operations.
+        if ( ! defined( 'WP_IMPORTING' ) ) {
+            define( 'WP_IMPORTING', true );
+            WP_CLI::log( 'Import mode enabled - plugin hooks suspended during bulk operation.' );
+        }
+
         $states_only = isset( $assoc_args['states-only'] );
         $resume      = isset( $assoc_args['resume'] );
 
