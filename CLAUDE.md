@@ -285,6 +285,23 @@ wp 84em local-pages --update-all
 wp 84em local-pages --update-all --states-only
 ```
 
+### Import Mode (v3.16.0+)
+
+Bulk operations (`--generate-all` and `--update-all`) automatically enable WordPress import mode by defining the `WP_IMPORTING` constant. This signals to other plugins (caching plugins, SEO plugins, etc.) that a bulk import is in progress and they should skip their post update/insert hooks until processing is complete.
+
+**How It Works:**
+- The constant is defined at the very start of bulk operations, before any content generation begins
+- A log message confirms when import mode is enabled: "Import mode enabled - plugin hooks suspended during bulk operation."
+- Since PHP constants cannot be undefined, this persists for the duration of the WP-CLI request
+
+**Benefits:**
+- Prevents caching plugins from clearing/rebuilding cache on every page save
+- Prevents SEO plugins from running expensive analysis on each page
+- Reduces database writes from other plugin hooks
+- Significantly improves bulk operation performance
+
+**Note:** Individual operations (`--state`, `--city`) do not enable import mode as they only process a small number of pages.
+
 ### Resume After Errors (v3.12.0+)
 
 All bulk operations (`--generate-all` and `--update-all`) now support checkpoint/resume functionality to recover from non-retryable errors:
@@ -820,7 +837,7 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 **Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking
 **Word Count**: 200-300 words per page (both states and cities)
 **Total Pages**: 550 (50 states + 500 cities)
-**Plugin Version**: 3.15.1
+**Plugin Version**: 3.16.0
 **Post Type**: Standard WordPress pages (migrated from custom 'local' post type in v3.7.0)
 **Architecture**: Modular PSR-4 autoloaded classes with dependency injection
 **Model Selection**: Dynamic fetching from Claude Models API with interactive selection

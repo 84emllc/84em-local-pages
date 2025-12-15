@@ -5,6 +5,21 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.0] - 2025-12-15
+
+### Added
+- **WP_IMPORTING Support for Bulk Operations**: Bulk operations now define the `WP_IMPORTING` constant
+  - Signals to other plugins (caching, SEO, etc.) that a bulk import is in progress
+  - Prevents expensive hooks from running on every page save during bulk operations
+  - Applies to `--generate-all` and `--update-all` commands
+  - Log message confirms when import mode is enabled
+  - Significantly improves performance during bulk content generation/updates
+
+### Technical Details
+**Modified Files**:
+- `src/Cli/Commands/GenerateCommand.php`: Added WP_IMPORTING constant definition to `handleGenerateAll()` and `handleUpdateAll()` methods
+- `CLAUDE.md`: Added documentation for Import Mode feature
+
 ## [3.15.1] - 2025-12-15
 
 ### Fixed
