@@ -599,6 +599,16 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ## Recent Updates
 
+### Version 3.15.1 (2025-12-15)
+
+#### Critical Bugfix: MetadataGenerator Integration
+- **Problem**: v3.15.0 registered MetadataGenerator in the DI container but content generators did not accept or use it
+- **Fix**: Completed MetadataGenerator integration in both content generators
+  - Added MetadataGenerator as constructor dependency to `StateContentGenerator` and `CityContentGenerator`
+  - Both generators now call `generateStateMetadata()` / `generateCityMetadata()` during page creation and updates
+  - Added try/catch blocks with automatic fallback to template metadata when AI generation fails
+- **Result**: `--generate-all` and `--update-all` commands now properly trigger AI-generated metadata
+
 ### Version 3.15.0 (2025-12-15)
 
 #### AI-Generated SEO Metadata
@@ -810,7 +820,7 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 **Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking
 **Word Count**: 200-300 words per page (both states and cities)
 **Total Pages**: 550 (50 states + 500 cities)
-**Plugin Version**: 3.15.0
+**Plugin Version**: 3.15.1
 **Post Type**: Standard WordPress pages (migrated from custom 'local' post type in v3.7.0)
 **Architecture**: Modular PSR-4 autoloaded classes with dependency injection
 **Model Selection**: Dynamic fetching from Claude Models API with interactive selection

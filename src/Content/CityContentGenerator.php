@@ -15,6 +15,7 @@ use EightyFourEM\LocalPages\Data\StatesProvider;
 use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
+use EightyFourEM\LocalPages\Content\MetadataGenerator;
 use EightyFourEM\LocalPages\Contracts\ContentGeneratorInterface;
 use WP_CLI;
 use Exception;
@@ -66,6 +67,13 @@ class CityContentGenerator implements ContentGeneratorInterface {
     private ContentProcessor $contentProcessor;
 
     /**
+     * Metadata generator
+     *
+     * @var MetadataGenerator
+     */
+    private MetadataGenerator $metadataGenerator;
+
+    /**
      * Constructor
      *
      * @param  ApiKeyManager  $apiKeyManager  API key manager
@@ -74,6 +82,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
      * @param  KeywordsProvider  $keywordsProvider  Keywords provider
      * @param  SchemaGenerator  $schemaGenerator  Schema generator
      * @param  ContentProcessor  $contentProcessor  Content processor
+     * @param  MetadataGenerator  $metadataGenerator  Metadata generator
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
@@ -81,14 +90,16 @@ class CityContentGenerator implements ContentGeneratorInterface {
         StatesProvider $statesProvider,
         KeywordsProvider $keywordsProvider,
         SchemaGenerator $schemaGenerator,
-        ContentProcessor $contentProcessor
+        ContentProcessor $contentProcessor,
+        MetadataGenerator $metadataGenerator
     ) {
-        $this->apiKeyManager    = $apiKeyManager;
-        $this->apiClient        = $apiClient;
-        $this->statesProvider   = $statesProvider;
-        $this->keywordsProvider = $keywordsProvider;
-        $this->schemaGenerator  = $schemaGenerator;
-        $this->contentProcessor = $contentProcessor;
+        $this->apiKeyManager     = $apiKeyManager;
+        $this->apiClient         = $apiClient;
+        $this->statesProvider    = $statesProvider;
+        $this->keywordsProvider  = $keywordsProvider;
+        $this->schemaGenerator   = $schemaGenerator;
+        $this->contentProcessor  = $contentProcessor;
+        $this->metadataGenerator = $metadataGenerator;
     }
 
     /**
@@ -166,12 +177,21 @@ class CityContentGenerator implements ContentGeneratorInterface {
      */
     public function generateCityPage( string $state, string $city ): int|false {
         try {
-            WP_CLI::log( "🏙️ Generating content for {$city}, {$state}..." );
+            WP_CLI::log( "Generating content for {$city}, {$state}..." );
 
             $content = $this->generate( [ 'state' => $state, 'city' => $city ] );
 
             // Extract content sections
             $sections = $this->contentProcessor->extractContentSections( $content );
+
+            // Generate AI metadata with fallback
+            try {
+                WP_CLI::log( "Generating AI metadata for {$city}, {$state}..." );
+                $metadata = $this->metadataGenerator->generateCityMetadata( $state, $city );
+            } catch ( Exception $e ) {
+                WP_CLI::warning( "Metadata generation failed: {$e->getMessage()}. Using fallback." );
+                $metadata = $this->metadataGenerator->getFallbackCityMetadata( $state, $city );
+            }
 
             // Find or get state parent page
             $state_posts = get_posts( [
@@ -199,7 +219,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
             // Create post
             $post_data = [
-                'post_title'   => $this->getPostTitle( "$city, $state" ),
+                'post_title'   => $metadata['page_title'],
                 'post_name'    => $city_slug,
                 'post_content' => $content,
                 'post_excerpt' => $sections['excerpt'] ?? '',
@@ -211,8 +231,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
                     '_local_page_state'     => $state,
                     '_local_page_city'      => $city,
                     '_local_page_generated' => current_time( 'mysql' ),
-                    '_84em_seo_description'  => $this->getMetaDescription( "{$city}, {$state}" ),
-                    '_84em_seo_title'        => $this->getPostTitle( "{$city}, {$state}" ),
+                    '_84em_seo_description' => $metadata['meta_description'],
+                    '_84em_seo_title'       => $metadata['seo_title'],
                 ],
             ];
 
@@ -247,17 +267,26 @@ class CityContentGenerator implements ContentGeneratorInterface {
      */
     public function updateCityPage( int $post_id, string $state, string $city ): bool {
         try {
-            WP_CLI::log( "🔄 Updating content for {$city}, {$state}..." );
+            WP_CLI::log( "Updating content for {$city}, {$state}..." );
 
             $content = $this->generate( [ 'state' => $state, 'city' => $city ] );
 
             // Extract content sections
             $sections = $this->contentProcessor->extractContentSections( $content );
 
+            // Generate AI metadata with fallback
+            try {
+                WP_CLI::log( "Generating AI metadata for {$city}, {$state}..." );
+                $metadata = $this->metadataGenerator->generateCityMetadata( $state, $city );
+            } catch ( Exception $e ) {
+                WP_CLI::warning( "Metadata generation failed: {$e->getMessage()}. Using fallback." );
+                $metadata = $this->metadataGenerator->getFallbackCityMetadata( $state, $city );
+            }
+
             // Update post
             $post_data = [
                 'ID'            => $post_id,
-                'post_title'    => $this->getPostTitle( "$city, $state" ),
+                'post_title'    => $metadata['page_title'],
                 'post_content'  => $content,
                 'post_excerpt'  => $sections['excerpt'] ?? '',
                 'post_modified' => current_time( 'mysql' ),
@@ -271,8 +300,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
             // Update metadata
             update_post_meta( $post_id, '_local_page_generated', current_time( 'mysql' ) );
-            update_post_meta( $post_id, '_84em_seo_description', $this->getMetaDescription( "{$city}, {$state}" ) );
-            update_post_meta( $post_id, '_84em_seo_title', $this->getPostTitle( "$city, $state" ) );
+            update_post_meta( $post_id, '_84em_seo_description', $metadata['meta_description'] );
+            update_post_meta( $post_id, '_84em_seo_title', $metadata['seo_title'] );
 
             // Regenerate schema
             $schema = $this->schemaGenerator->generateCitySchema( $state, $city );

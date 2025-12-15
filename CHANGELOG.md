@@ -5,6 +5,25 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.15.1] - 2025-12-15
+
+### Fixed
+- **Critical Bug**: Completed MetadataGenerator integration that was incomplete in v3.15.0
+  - `StateContentGenerator` now properly accepts and uses MetadataGenerator dependency
+  - `CityContentGenerator` now properly accepts and uses MetadataGenerator dependency
+  - Both generators now call `generateStateMetadata()` / `generateCityMetadata()` during page creation and updates
+  - Added try/catch blocks with automatic fallback to template metadata when AI generation fails
+  - `--generate-all` and `--update-all` commands now trigger AI-generated metadata as intended
+
+### Technical Details
+**Problem**: v3.15.0 registered MetadataGenerator in the DI container and passed it to content generators, but the generators did not have the constructor parameter or property to accept it. The MetadataGenerator methods were never called.
+
+**Solution**: Added MetadataGenerator as 7th constructor parameter to both generators with proper property assignment and method calls in `generateStatePage()`, `updateStatePage()`, `generateCityPage()`, and `updateCityPage()`.
+
+**Modified Files**:
+- `src/Content/StateContentGenerator.php`: Added MetadataGenerator property, constructor parameter, and method calls
+- `src/Content/CityContentGenerator.php`: Added MetadataGenerator property, constructor parameter, and method calls
+
 ## [3.15.0] - 2025-12-15
 
 ### Added
