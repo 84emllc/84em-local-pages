@@ -805,7 +805,7 @@ class GenerateCommand {
 
             if ( $result && ! is_wp_error( $result ) ) {
                 // Update meta fields including schema
-                update_post_meta( $existing_page->ID, '_genesis_description', 'Professional WordPress development services across all 50 states in the USA. Expert custom plugins, API integrations, and web solutions for businesses nationwide.' );
+                update_post_meta( $existing_page->ID, '_84em_seo_description', 'Professional WordPress development services across all 50 states in the USA. Expert custom plugins, API integrations, and web solutions for businesses nationwide.' );
                 update_post_meta( $existing_page->ID, 'schema', $schema );
 
                 WP_CLI::success( "✅ Updated index page '{$page_title}' (ID: {$existing_page->ID})" );
@@ -822,8 +822,8 @@ class GenerateCommand {
                 'post_type'    => 'page',
                 'post_author'  => 1,
                 'meta_input'   => [
-                    '_genesis_title'       => $page_title,
-                    '_genesis_description' => 'Professional WordPress development services across all 50 states in the USA. Expert custom plugins, API integrations, and web solutions for businesses nationwide.',
+                    '_84em_seo_title'       => $page_title,
+                    '_84em_seo_description' => 'Professional WordPress development services across all 50 states in the USA. Expert custom plugins, API integrations, and web solutions for businesses nationwide.',
                     'schema'               => $schema,
                 ],
             ];

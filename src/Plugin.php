@@ -20,6 +20,7 @@ use EightyFourEM\LocalPages\Data\StatesProvider;
 use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
+use EightyFourEM\LocalPages\Content\MetadataGenerator;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
 use EightyFourEM\LocalPages\Utils\CheckpointManager;
@@ -176,6 +177,14 @@ class Plugin {
             );
         } );
 
+        $this->container->register( MetadataGenerator::class, function ( $container ) {
+            return new MetadataGenerator(
+                $container->get( ApiKeyManager::class ),
+                $container->get( ClaudeApiClient::class ),
+                $container->get( StatesProvider::class )
+            );
+        } );
+
         $this->container->register( StateContentGenerator::class, function ( $container ) {
             return new StateContentGenerator(
                 $container->get( ApiKeyManager::class ),
@@ -183,7 +192,8 @@ class Plugin {
                 $container->get( StatesProvider::class ),
                 $container->get( KeywordsProvider::class ),
                 $container->get( SchemaGenerator::class ),
-                $container->get( ContentProcessor::class )
+                $container->get( ContentProcessor::class ),
+                $container->get( MetadataGenerator::class )
             );
         } );
 
@@ -194,7 +204,8 @@ class Plugin {
                 $container->get( StatesProvider::class ),
                 $container->get( KeywordsProvider::class ),
                 $container->get( SchemaGenerator::class ),
-                $container->get( ContentProcessor::class )
+                $container->get( ContentProcessor::class ),
+                $container->get( MetadataGenerator::class )
             );
         } );
 

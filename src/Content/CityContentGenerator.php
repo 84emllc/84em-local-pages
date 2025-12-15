@@ -211,8 +211,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
                     '_local_page_state'     => $state,
                     '_local_page_city'      => $city,
                     '_local_page_generated' => current_time( 'mysql' ),
-                    '_genesis_description'  => $this->getMetaDescription( "{$city}, {$state}" ),
-                    '_genesis_title'        => $this->getPostTitle( "{$city}, {$state}" ),
+                    '_84em_seo_description'  => $this->getMetaDescription( "{$city}, {$state}" ),
+                    '_84em_seo_title'        => $this->getPostTitle( "{$city}, {$state}" ),
                 ],
             ];
 
@@ -271,8 +271,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
             // Update metadata
             update_post_meta( $post_id, '_local_page_generated', current_time( 'mysql' ) );
-            update_post_meta( $post_id, '_genesis_description', $this->getMetaDescription( "{$city}, {$state}" ) );
-            update_post_meta( $post_id, '_genesis_title', $this->getPostTitle( "$city, $state" ) );
+            update_post_meta( $post_id, '_84em_seo_description', $this->getMetaDescription( "{$city}, {$state}" ) );
+            update_post_meta( $post_id, '_84em_seo_title', $this->getPostTitle( "$city, $state" ) );
 
             // Regenerate schema
             $schema = $this->schemaGenerator->generateCitySchema( $state, $city );

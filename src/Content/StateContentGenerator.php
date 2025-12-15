@@ -185,8 +185,8 @@ class StateContentGenerator implements ContentGeneratorInterface {
                 'post_author'  => 1,
                 'meta_input'   => [
                     '_local_page_state'    => $state,
-                    '_genesis_description' => $this->getMetaDescription( $state, implode( ', ', $cities ) ),
-                    '_genesis_title'       => $this->getPostTitle( $state ),
+                    '_84em_seo_description' => $this->getMetaDescription( $state, implode( ', ', $cities ) ),
+                    '_84em_seo_title'       => $this->getPostTitle( $state ),
                 ],
             ];
 
@@ -250,8 +250,8 @@ class StateContentGenerator implements ContentGeneratorInterface {
             $cities     = $state_data['cities'] ?? [];
 
             // Update meta fields
-            update_post_meta( $post_id, '_genesis_description', $this->getMetaDescription( $state, implode( ', ', $cities ) ) );
-            update_post_meta( $post_id, '_genesis_title', $this->getPostTitle( $state) );
+            update_post_meta( $post_id, '_84em_seo_description', $this->getMetaDescription( $state, implode( ', ', $cities ) ) );
+            update_post_meta( $post_id, '_84em_seo_title', $this->getPostTitle( $state) );
 
             // Regenerate and save schema
             $schema = $this->schemaGenerator->generateStateSchema( $state );

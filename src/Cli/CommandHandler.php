@@ -243,12 +243,21 @@ class CommandHandler {
         WP_CLI::line( 'The key will not be visible as you type and will not appear in your shell history.' );
         WP_CLI::line( '' );
 
+        // Flush all output buffers before reading input to ensure proper display order
+        while ( ob_get_level() > 0 ) {
+            ob_end_flush();
+        }
+        flush();
+
         // Disable echo for secure input
         if ( function_exists( 'system' ) ) {
             system( 'stty -echo' );
         }
 
-        WP_CLI::out( 'Paste your Claude API key: ' );
+        // Now show the prompt and read input
+        fwrite( STDOUT, 'Paste your Claude API key: ' );
+        fflush( STDOUT );
+
         $handle  = fopen( 'php://stdin', 'r' );
         $api_key = trim( fgets( $handle ) );
         fclose( $handle );
@@ -437,7 +446,17 @@ class CommandHandler {
             }
 
             WP_CLI::line( '' );
-            WP_CLI::out( 'Enter the number of the model you want to use (or 0 to cancel): ' );
+
+            // Flush all output buffers before reading input to ensure proper display order
+            while ( ob_get_level() > 0 ) {
+                ob_end_flush();
+            }
+            flush();
+
+            // Now show the prompt and read input
+            fwrite( STDOUT, 'Enter the number of the model you want to use (or 0 to cancel): ' );
+            fflush( STDOUT );
+
             $handle = fopen( 'php://stdin', 'r' );
             $selection = trim( fgets( $handle ) );
             fclose( $handle );
