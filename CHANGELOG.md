@@ -5,6 +5,16 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.17.3] - 2025-12-29
+
+### Changed
+- **Index Page Content**: Reduced marketing speak and simplified structure
+  - Removed superlatives from meta description ("Professional", "Expert")
+  - Moved "What We Do" section above state list
+  - Shortened heading to "WordPress Services by State"
+  - Removed "Why Choose 84EM" section and closing CTA paragraph
+  - Kept content lean to match city/state page updates
+
 ## [3.17.2] - 2025-12-29
 
 ### Changed

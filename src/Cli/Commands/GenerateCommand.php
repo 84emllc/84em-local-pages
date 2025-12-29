@@ -794,7 +794,7 @@ class GenerateCommand {
 
             if ( $result && ! is_wp_error( $result ) ) {
                 // Update meta fields including schema
-                update_post_meta( $existing_page->ID, '_84em_seo_description', 'Professional WordPress development services across all 50 states in the USA. Expert custom plugins, API integrations, and web solutions for businesses nationwide.' );
+                update_post_meta( $existing_page->ID, '_84em_seo_description', 'WordPress development services in all 50 US states. Custom plugins, API integrations, and ongoing support for businesses nationwide.' );
                 update_post_meta( $existing_page->ID, 'schema', $schema );
 
                 WP_CLI::success( "✅ Updated index page '{$page_title}' (ID: {$existing_page->ID})" );
@@ -812,7 +812,7 @@ class GenerateCommand {
                 'post_author'  => 1,
                 'meta_input'   => [
                     '_84em_seo_title'       => $page_title,
-                    '_84em_seo_description' => 'Professional WordPress development services across all 50 states in the USA. Expert custom plugins, API integrations, and web solutions for businesses nationwide.',
+                    '_84em_seo_description' => 'WordPress development services in all 50 US states. Custom plugins, API integrations, and ongoing support for businesses nationwide.',
                     'schema'               => $schema,
                 ],
             ];
@@ -1215,16 +1215,22 @@ class GenerateCommand {
         } );
 
         // Build the content using WordPress block editor syntax
-        $content = '<!-- wp:paragraph -->
-<p>84EM provides professional WordPress development services across all 50 states in the USA. Our remote-first approach enables us to deliver expert WordPress solutions, custom plugins, API integrations, and comprehensive web development services to businesses nationwide.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:heading {"level":2} -->
-<h2><strong>WordPress Development Services by State</strong></h2>
+        $content = '<!-- wp:heading {"level":2} -->
+<h2><strong>What We Do</strong></h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Click on your state below to learn more about our WordPress development services in your area:</p>
+<p>84EM handles WordPress development for clients nationwide.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:block {"ref":5031} /-->
+
+<!-- wp:heading {"level":2} -->
+<h2><strong>WordPress Services by State</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Select your state to see what we offer in your area:</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:list -->
@@ -1236,22 +1242,7 @@ class GenerateCommand {
         }
 
         $content .= '</ul>
-<!-- /wp:list -->
-
-<!-- wp:heading {"level":2} -->
-<h2><strong>Why Choose 84EM for WordPress Development?</strong></h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>As a fully remote WordPress development company, 84EM serves clients across the United States with:</p>
-<!-- /wp:paragraph -->
-
-
-<!-- wp:block {"ref":5031} /-->
-
-<!-- wp:paragraph -->
-<p>Our experienced team delivers reliable, scalable WordPress solutions regardless of your location. <a href="/contact/">Contact us today</a> to discuss your WordPress development needs.</p>
-<!-- /wp:paragraph -->';
+<!-- /wp:list -->';
 
         return [
             'content'     => $content,
