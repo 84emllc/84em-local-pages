@@ -325,45 +325,30 @@ class StateContentGenerator implements ContentGeneratorInterface {
         $cities     = $state_data['cities'] ?? [];
         $city_list  = implode( ', ', array_slice( $cities, 0, 10 ) );
 
-        $services_block  = BlockIds::SERVICES;
-        $cta_block       = BlockIds::CTA;
-        $separator_block = BlockIds::SEPARATOR;
+        $services_block = BlockIds::SERVICES;
+        $cta_block      = BlockIds::CTA;
 
-        $prompt = "Write a 200-300 word landing page for 84EM's WordPress services in {$state}.
+        $prompt = "Write a short landing page for 84EM's WordPress services in {$state}.
 
 VOICE:
 - Direct and matter-of-fact, no marketing fluff
-- Lead with what businesses need, not what we offer
 - Short sentences, one idea per paragraph
-- Use contractions naturally (you're, we'll, won't)
+- Use contractions naturally
 
 STRUCTURE:
-1. Opening (2-3 sentences, each its own paragraph): Problem-focused intro mentioning {$state} and these cities: {$city_list}
-2. <!-- wp:block {\"ref\":{$separator_block}} /-->
-   H2: \"WordPress Services in {$state}\" followed by exactly: <!-- wp:block {\"ref\":{$services_block}} /-->
-3. <!-- wp:block {\"ref\":{$separator_block}} /-->
-   H2: \"Why {$state} Businesses Choose 84EM\" with 4-5 bullet benefits
-4. <!-- wp:block {\"ref\":{$separator_block}} /-->
-   Closing (2 sentences, each its own paragraph): CTA linking to /contact/
-5. End with exactly: <!-- wp:block {\"ref\":{$cta_block}} /-->
-
-BENEFITS (vary these, use this voice):
-- WordPress experts since 2012, building websites since 1995
-- Headquartered in Cedar Rapids, fully remote team serving clients nationwide
-- We've shipped plugins for fintech, healthcare, education, and nonprofits
-- You'll hear from us before deadlines, not after
+1. Intro (2-3 sentences, each its own paragraph): Why businesses in {$state} need reliable WordPress help. Mention these cities: {$city_list}
+2. H2: \"WordPress Services in {$state}\" followed by exactly: <!-- wp:block {\"ref\":{$services_block}} /-->
+3. End with exactly: <!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
 - Paragraphs: <!-- wp:paragraph {\"fontSize\":\"large\"} --><p class=\"has-large-font-size\">Text here.</p><!-- /wp:paragraph -->
 - Headings: <!-- wp:heading {\"level\":2,\"fontSize\":\"large\"} --><h2 class=\"has-large-font-size\"><strong>Heading</strong></h2><!-- /wp:heading -->
-- Lists: <!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} --><ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\"><!-- wp:list-item --><li>Item</li><!-- /wp:list-item --></ul><!-- /wp:list -->
 
 AVOID:
-- Superlatives (game-changing, cutting-edge, best-in-class, proven track record)
-- Emdashes or hyphens
-- Location as adjective (not \"{$state} solutions\", use \"solutions for {$state} businesses\")
-- <br> or <br/> tags
-- Linking inside list items";
+- Superlatives (game-changing, cutting-edge, best-in-class)
+- Emdashes
+- Bullet lists
+- Links in the intro";
 
         return $prompt;
     }
