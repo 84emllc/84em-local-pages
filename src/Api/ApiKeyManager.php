@@ -90,12 +90,15 @@ class ApiKeyManager {
             return false;
         }
 
-        $result = update_option( $this->getOptionName( self::OPTION_NAME ), $encrypted );
+        $option_name = $this->getOptionName( self::OPTION_NAME );
+        update_option( $option_name, $encrypted );
 
         // Store a dummy IV for legacy compatibility (encryption includes IV in the data)
         update_option( $this->getOptionName( '84em_local_pages_claude_api_key_iv' ), base64_encode( random_bytes( 16 ) ) );
 
-        return $result;
+        // Verify the option now contains the expected value
+        // (update_option returns false both on failure AND when value is unchanged)
+        return get_option( $option_name ) === $encrypted;
     }
 
     /**
@@ -172,7 +175,12 @@ class ApiKeyManager {
             return false;
         }
 
-        return update_option( $this->getOptionName( self::MODEL_OPTION_NAME ), $model );
+        $option_name = $this->getOptionName( self::MODEL_OPTION_NAME );
+        update_option( $option_name, $model );
+
+        // Verify the option now contains the expected value
+        // (update_option returns false both on failure AND when value is unchanged)
+        return get_option( $option_name ) === $model;
     }
 
     /**
