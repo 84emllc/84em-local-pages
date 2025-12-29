@@ -1,8 +1,8 @@
 <?php
 /**
- * Integration Tests for Keyword Link Updates
+ * Integration Tests for Location Link Updates
  *
- * Tests the --update-keyword-links command to ensure it only
+ * Tests the --update-location-links command to ensure it only
  * processes local pages (those with _local_page_state meta).
  *
  * @package EightyFourEM\LocalPages\Tests
@@ -12,12 +12,12 @@
 
 require_once __DIR__ . '/../TestCase.php';
 
-class Test_Keyword_Link_Updates extends TestCase {
+class Test_Location_Link_Updates extends TestCase {
 
 	/**
-	 * Test that update-keyword-links only processes local pages
+	 * Test that update-location-links only processes local pages
 	 */
-	public function test_update_keyword_links_filters_local_pages_only() {
+	public function test_update_location_links_filters_local_pages_only() {
 		// Create a regular (non-local) published page
 		$regular_page_id = wp_insert_post( [
 			'post_title'   => 'Test Regular Page',
@@ -44,7 +44,7 @@ class Test_Keyword_Link_Updates extends TestCase {
 		$regular_content_before = get_post_field( 'post_content', $regular_page_id );
 		$local_content_before   = get_post_field( 'post_content', $local_page_id );
 
-		// Note: We cannot actually run handleUpdateKeywordLinks here because it would
+		// Note: We cannot actually run handleUpdateLocationLinks here because it would
 		// process ALL local pages in the database (350 pages). Instead, we verify
 		// that the query correctly filters for local pages only.
 
@@ -95,7 +95,7 @@ class Test_Keyword_Link_Updates extends TestCase {
 	/**
 	 * Test that states-only flag correctly filters city pages
 	 */
-	public function test_update_keyword_links_states_only_flag() {
+	public function test_update_location_links_states_only_flag() {
 		// Create a state page
 		$state_page_id = wp_insert_post( [
 			'post_title'   => 'Test State Page',
@@ -173,7 +173,7 @@ class Test_Keyword_Link_Updates extends TestCase {
 	/**
 	 * Test that both state and city pages are included without states-only flag
 	 */
-	public function test_update_keyword_links_includes_all_local_pages() {
+	public function test_update_location_links_includes_all_local_pages() {
 		// Create a state page
 		$state_page_id = wp_insert_post( [
 			'post_title'   => 'Test State Page 2',

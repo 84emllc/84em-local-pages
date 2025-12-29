@@ -13,8 +13,6 @@ use EightyFourEM\LocalPages\Cli\Commands\TestCommand;
 use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
-use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use WP_CLI;
 
 /**
@@ -28,20 +26,6 @@ class CommandHandler {
      * @var ApiKeyManager
      */
     private ApiKeyManager $apiKeyManager;
-
-    /**
-     * States data provider
-     *
-     * @var StatesProvider
-     */
-    private StatesProvider $statesProvider;
-
-    /**
-     * Keywords data provider
-     *
-     * @var KeywordsProvider
-     */
-    private KeywordsProvider $keywordsProvider;
 
     /**
      * Test command handler
@@ -61,21 +45,15 @@ class CommandHandler {
      * Constructor
      *
      * @param  ApiKeyManager  $apiKeyManager
-     * @param  StatesProvider  $statesProvider
-     * @param  KeywordsProvider  $keywordsProvider
      * @param  TestCommand  $testCommand
      * @param  GenerateCommand  $generateCommand
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
-        StatesProvider $statesProvider,
-        KeywordsProvider $keywordsProvider,
         TestCommand $testCommand,
         GenerateCommand $generateCommand
     ) {
         $this->apiKeyManager    = $apiKeyManager;
-        $this->statesProvider   = $statesProvider;
-        $this->keywordsProvider = $keywordsProvider;
         $this->testCommand      = $testCommand;
         $this->generateCommand  = $generateCommand;
     }
@@ -147,8 +125,8 @@ class CommandHandler {
                 return;
             }
 
-            if ( isset( $assoc_args['update-keyword-links'] ) ) {
-                $this->generateCommand->handleUpdateKeywordLinks( $args, $assoc_args );
+            if ( isset( $assoc_args['update-location-links'] ) ) {
+                $this->generateCommand->handleUpdateLocationLinks( $args, $assoc_args );
                 return;
             }
 
@@ -701,7 +679,7 @@ class CommandHandler {
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
-            'update-keyword-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
+            'update-location-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
             'template', 'dry-run', 'resume',
         ];
 
@@ -767,7 +745,7 @@ class CommandHandler {
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
-            'update-keyword-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
+            'update-location-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
             'template', 'dry-run', 'resume',
         ];
 
@@ -841,7 +819,7 @@ class CommandHandler {
             [
                 'generate-all', 'update-all', 'state', 'city', 'update',
                 'generate-sitemap', 'generate-index', 'regenerate-schema',
-                'update-keyword-links', 'migrate-urls', 'delete'
+                'update-location-links', 'migrate-urls', 'delete'
             ],
             // API key commands are mutually exclusive with everything
             ['set-api-key', 'validate-api-key'],
@@ -951,7 +929,7 @@ class CommandHandler {
 
         // Check for states-only with inappropriate commands
         if ( isset( $assoc_args['states-only'] ) ) {
-            $valid_with_states_only = ['generate-all', 'update-all', 'regenerate-schema', 'update-keyword-links'];
+            $valid_with_states_only = ['generate-all', 'update-all', 'regenerate-schema', 'update-location-links'];
             $has_valid_command = false;
 
             foreach ( $valid_with_states_only as $valid_cmd ) {
@@ -963,11 +941,11 @@ class CommandHandler {
 
             if ( ! $has_valid_command ) {
                 throw new \Exception(
-                    "--states-only can only be used with --generate-all, --update-all, --regenerate-schema, or --update-keyword-links\n" .
+                    "--states-only can only be used with --generate-all, --update-all, --regenerate-schema, or --update-location-links\n" .
                     "Examples:\n" .
                     "  wp 84em local-pages --generate-all --states-only\n" .
                     "  wp 84em local-pages --update-all --states-only\n" .
-                    "  wp 84em local-pages --update-keyword-links --states-only\n"
+                    "  wp 84em local-pages --update-location-links --states-only\n"
                 );
             }
         }
@@ -1028,8 +1006,8 @@ class CommandHandler {
         WP_CLI::line( '  --delete --state="State" --city="City"  Delete specific city' );
         WP_CLI::line( '  --generate-sitemap         Generate XML sitemap for all local pages' );
         WP_CLI::line( '  --generate-index           Generate index page with all locations' );
-        WP_CLI::line( '  --update-keyword-links     Update keyword links in all existing pages' );
-        WP_CLI::line( '  --update-keyword-links --states-only  Update keyword links in state pages only' );
+        WP_CLI::line( '  --update-location-links    Update location links in all existing pages' );
+        WP_CLI::line( '  --update-location-links --states-only  Update location links in state pages only' );
         WP_CLI::line( '  --migrate-urls             Migrate all pages from old to new URL structure' );
         WP_CLI::line( '  --regenerate-schema        Regenerate schema markup for all pages' );
         WP_CLI::line( '' );

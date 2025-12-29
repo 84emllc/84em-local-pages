@@ -310,7 +310,7 @@ private function handleUrlMigration(): void {
     WP_CLI::success( "Migrated {$total_states} state pages. City page URLs updated automatically." );
     WP_CLI::log( '' );
     WP_CLI::log( 'Next steps:' );
-    WP_CLI::log( '1. wp 84em local-pages --update-keyword-links' );
+    WP_CLI::log( '1. wp 84em local-pages --update-location-links' );
     WP_CLI::log( '2. wp 84em local-pages --generate-sitemap' );
     WP_CLI::log( '3. wp rewrite flush' );
 }
@@ -368,9 +368,9 @@ $this->container->get( Redirects\LegacyUrlRedirector::class )->initialize();
 
 4. **Update All Internal Links**
    ```bash
-   wp 84em local-pages --update-keyword-links
+   wp 84em local-pages --update-location-links
    ```
-   This reprocesses all content to update city links and keyword links.
+   This reprocesses all content to update location links.
 
 5. **Regenerate Sitemap**
    ```bash
@@ -471,7 +471,7 @@ $this->container->get( Redirects\LegacyUrlRedirector::class )->initialize();
 
 After migration, update the following files:
 
-- [ ] `CLAUDE.md` - Update URL examples and patterns
+- [ ] `AGENTS.md` - Update URL examples and patterns
 - [ ] `README.md` - Update URL structure documentation
 - [ ] `CHANGELOG.md` - Document URL migration in version entry
 

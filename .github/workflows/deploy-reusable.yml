@@ -332,6 +332,7 @@ jobs:
           rm -f README.md
           rm -f TESTING.md
           rm -f CLAUDE.md
+          rm -f AGENTS.md
         fi
         
         # Create deployment manifest

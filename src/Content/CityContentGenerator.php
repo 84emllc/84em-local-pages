@@ -11,11 +11,10 @@ namespace EightyFourEM\LocalPages\Content;
 
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
+use EightyFourEM\LocalPages\Config\BlockIds;
 use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
-use EightyFourEM\LocalPages\Content\MetadataGenerator;
 use EightyFourEM\LocalPages\Contracts\ContentGeneratorInterface;
 use WP_CLI;
 use Exception;
@@ -24,6 +23,7 @@ use Exception;
  * Generates content for city-specific local pages
  */
 class CityContentGenerator implements ContentGeneratorInterface {
+
     /**
      * API key manager
      *
@@ -44,13 +44,6 @@ class CityContentGenerator implements ContentGeneratorInterface {
      * @var StatesProvider
      */
     private StatesProvider $statesProvider;
-
-    /**
-     * Keywords provider
-     *
-     * @var KeywordsProvider
-     */
-    private KeywordsProvider $keywordsProvider;
 
     /**
      * Schema generator
@@ -76,19 +69,17 @@ class CityContentGenerator implements ContentGeneratorInterface {
     /**
      * Constructor
      *
-     * @param  ApiKeyManager  $apiKeyManager  API key manager
-     * @param  ClaudeApiClient  $apiClient  Claude API client
-     * @param  StatesProvider  $statesProvider  States data provider
-     * @param  KeywordsProvider  $keywordsProvider  Keywords provider
-     * @param  SchemaGenerator  $schemaGenerator  Schema generator
-     * @param  ContentProcessor  $contentProcessor  Content processor
-     * @param  MetadataGenerator  $metadataGenerator  Metadata generator
+     * @param  ApiKeyManager  $apiKeyManager
+     * @param  ClaudeApiClient  $apiClient
+     * @param  StatesProvider  $statesProvider
+     * @param  SchemaGenerator  $schemaGenerator
+     * @param  ContentProcessor  $contentProcessor
+     * @param  MetadataGenerator  $metadataGenerator
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
         ClaudeApiClient $apiClient,
         StatesProvider $statesProvider,
-        KeywordsProvider $keywordsProvider,
         SchemaGenerator $schemaGenerator,
         ContentProcessor $contentProcessor,
         MetadataGenerator $metadataGenerator
@@ -96,7 +87,6 @@ class CityContentGenerator implements ContentGeneratorInterface {
         $this->apiKeyManager     = $apiKeyManager;
         $this->apiClient         = $apiClient;
         $this->statesProvider    = $statesProvider;
-        $this->keywordsProvider  = $keywordsProvider;
         $this->schemaGenerator   = $schemaGenerator;
         $this->contentProcessor  = $contentProcessor;
         $this->metadataGenerator = $metadataGenerator;
@@ -351,104 +341,45 @@ class CityContentGenerator implements ContentGeneratorInterface {
      * @return string
      */
     private function buildPrompt( string $state, string $city ): string {
+        $services_block  = BlockIds::SERVICES;
+        $cta_block       = BlockIds::CTA;
+        $separator_block = BlockIds::SEPARATOR;
 
-        $prompt = "Write a concise, SEO-optimized landing page for 84EM's WordPress services specifically for businesses in {$city}, {$state}.
+        $prompt = "Write a 200-300 word landing page for 84EM's WordPress services in {$city}, {$state}.
 
-IMPORTANT: Create unique, original content that is different from other city pages. Focus on local relevance through city-specific benefits and geographic context.
+VOICE:
+- Direct and matter-of-fact, no marketing fluff
+- Lead with what businesses need, not what we offer
+- Short sentences, one idea per paragraph
+- Use contractions naturally (you're, we'll, won't)
 
-84EM is a 100% FULLY REMOTE WordPress development company. Do NOT mention on-site visits, in-person consultations, local offices, or physical presence. All work is done remotely. DO mention that 84EM is headquartered in Cedar Rapids, Iowa.
+STRUCTURE:
+1. Opening (2-3 sentences, each its own paragraph): Problem-focused intro mentioning {$city}, {$state}
+2. <!-- wp:block {{\"ref\":{$separator_block}}} /-->
+   H2: \"WordPress Services in {$city}\" followed by exactly: <!-- wp:block {{\"ref\":{$services_block}}} /-->
+3. <!-- wp:block {{\"ref\":{$separator_block}}} /-->
+   H2: \"Why {$city} Businesses Choose 84EM\" with 4-5 bullet benefits
+4. <!-- wp:block {{\"ref\":{$separator_block}}} /-->
+   Closing (2 sentences, each its own paragraph): Mention headquartered in Cedar Rapids, Iowa. CTA linking to /contact/
+5. End with exactly: <!-- wp:block {{\"ref\":{$cta_block}}} /-->
 
-VOICE AND TONE (CRITICAL):
-- Direct and matter-of-fact, no marketing fluff or superlatives
-- Skip phrases like \"game-changing,\" \"cutting-edge,\" \"industry-leading,\" \"best-in-class,\" \"unlock,\" \"leverage,\" \"take your business to the next level\"
-- Avoid soft benefit language like \"feel confident\" or \"peace of mind\" - focus on concrete deliverables
-- No excessive enthusiasm or hype
-- Short sentences, one idea per line in opening/closing sections
-- Describe what actually happens, not aspirational outcomes
-- Professional but straightforward, like explaining technical work to another developer
-- Use contractions naturally: \"won\'t,\" \"you\'re,\" \"we\'ll\"
+BENEFITS (vary these, use this voice):
+- WordPress experts since 2012, building websites since 1995
+- Headquartered in Cedar Rapids, fully remote team serving clients nationwide
+- We've shipped plugins for fintech, healthcare, education, and nonprofits
+- You'll hear from us before deadlines, not after
 
-CONTENT STRUCTURE (REQUIRED):
+FORMATTING:
+- Paragraphs: <!-- wp:paragraph --><p>Text here.</p><!-- /wp:paragraph -->
+- Headings: <!-- wp:heading {{\"level\":2}} --><h2><strong>Heading</strong></h2><!-- /wp:heading -->
+- Lists: <!-- wp:list {{\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"}} --><ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\"><!-- wp:list-item --><li>Item</li><!-- /wp:list-item --></ul><!-- /wp:list -->
 
-**Opening Section (2-3 short sentences, each in their own paragraph using start tag of \"<!-- wp:paragraph --><p> and end tag of </p><!-- /wp:paragraph -->)\" -- NEVER USE <br> or <br/> tags.****Opening Section (2-3 short sentences, each in their own paragraph using start tag of \"<!-- wp:paragraph --><p> and end tag of </p><!-- /wp:paragraph -->)\" -- NEVER USE <br> or <br/> tags.**
-- Brief introduction mentioning {$city}, {$state} and local business context
-- Brief overview of 84EM's WordPress expertise
-- Include ONE contextual call-to-action link in the opening
-
-CRITICAL: Every paragraph must 1 sentence and formatted this exact way replacing {CONTENT} with the actual content:
-<!-- wp:paragraph --><p>{CONTENT}</p><!-- /wp:paragraph -->)
-
-CRITICAL: never use <br> or <br/> tags.
-
-**Core Services Section (H2: \"WordPress Services in {$city}\")**
-***IMPORTANT: Present services using THIS EXACT HTML. DO NOT MODIFY:
-<!-- wp:block {\"ref\":5031} /-->
-
-**Why Choose 84EM Section (H2: \"Why {$city} Businesses Choose 84EM\")**
-Present 4-5 key benefits as a list using this exact HTML structure but vary the content of each list item:
-<!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} -->
-<ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\">
-<!-- wp:list-item --><li>Understands WordPress architecture deeply enough to solve complex problems fast.</li><!-- /wp:list-item -->
-<!-- wp:list-item --><li>30 years building for the web. 12 years of WordPress expertise</li><!-- /wp:list-item -->
-<!-- wp:list-item --><li>Fully remote team serving clients nationwide with proven processes</li><!-- /wp:list-item -->
-<!-- wp:list-item --><li>Proven track record across diverse industries</li><!-- /wp:list-item -->
-<!-- wp:list-item --><li>Reliable delivery with consistent communication</li><!-- /wp:list-item -->
-<!-- wp:list-item --><li>Scalable solutions designed to grow with your business or agency</li><!-- /wp:list-item -->
-<!-- wp:list -->
-
-**Closing Paragraph**
-- 2 sentences, 1 sentence per paragraph
-- Emphasize that 84EM is headquartered in Cedar Rapids, Iowa and serves businesses across {$state}
-- Strong call-to-action with contact link
-- Keep it direct: describe the work, not the dream
-
-IMPORTANT GRAMMAR RULES:
-- Use proper prepositions (in, for, near) when mentioning locations
-- Never use city/state names as adjectives directly before service terms
-- Correct: \"businesses in {$city}\", \"services for {$city} companies\", \"development in {$city}\"
-- Incorrect: \"{$city} businesses seeking {$city} solutions\"
-- NEVER USE EMDASHES or HYPHENS
-
-TARGET METRICS:
-- Total word count: 200-300 words
-- Opening: 2 short sentences, 1 sentence per paragraph
-- Services: Use the PRECISE HTML as specified, replacing the content (not the html tags)
-- Benefits: 3-4 list items
-- Closing: 2 sentences, 1 sentence per paragrph
-- Call-to-action links: 2-3 total (contextual, not in lists)
-
-TONE EXAMPLES:
-- Not: \"Transform your digital presence\" → \"Build custom WordPress solutions\"
-- Not: \"Empower your team\" → \"Your developers can maintain it\"
-- Not: \"Scalable solutions designed to grow\" → \"WordPress sites that handle growth\"
-
-CRITICAL: Format the content using WordPress block editor syntax (Gutenberg blocks). Use the following format:
-- Paragraphs: <!-- wp:paragraph --><p>Your paragraph text here.</p><!-- /wp:paragraph -->
-- Headings: <!-- wp:block {\"ref\":5034} /--><!-- wp:heading {\"level\":2} --><h2><strong>Your Heading</strong></h2><!-- /wp:heading -->
-- Lists: <!-- wp:list --><ul><li>Item text here</li><li>Item text here</li></ul><!-- /wp:list -->
-- Call-to-action links: <a href=\"/contact/\">contact us</a> or <a href=\"/contact/\">get started</a>
-
-IMPORTANT:
-- All headings (h2, h3) must be wrapped in <strong> tags
-- Include 2-3 call-to-action links throughout the content linking to /contact/ using phrases like \"contact us\", \"get started\", \"discuss your project\"
-- Make call-to-action links natural and contextual within PARAGRAPH content only (never in list items)
-- Insert this exact CTA block at the very end:
-
-<!-- wp:block {\"ref\":1219} /-->
-
-
-Do NOT use markdown syntax or plain HTML. Use proper WordPress block markup for all content.
-
-CRITICAL: do not add a link to a substring within a word.  for example AI is a service we offer but retail should not have the AI linked.
-
-CRITICAL: our main focus is on the following services, write text relevant to them and do not link any service related phrase or keyword to anything BUT our 84em.com/services page
-AI-Enhanced Development
-Agency Services
-Custom Plugin Development
-Code Cleanup and Refactoring
-Consulting & Strategy
-Maintenance & Support
-";
+AVOID:
+- Superlatives (game-changing, cutting-edge, best-in-class, proven track record)
+- Emdashes or hyphens
+- Location as adjective (not \"{$city} solutions\", use \"solutions for {$city} businesses\")
+- <br> or <br/> tags
+- Linking inside list items";
 
         return $prompt;
     }

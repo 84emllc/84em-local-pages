@@ -301,13 +301,13 @@ wp 84em local-pages --generate-index
 wp 84em local-pages --generate-sitemap
 ```
 
-**Update Keyword Links (Refresh service keyword links without API calls):**
+**Update Location Links (Refresh location links without API calls):**
 ```bash
-# Update keyword links in all pages
-wp 84em local-pages --update-keyword-links
+# Update location links in all pages
+wp 84em local-pages --update-location-links
 
-# Update keyword links in state pages only
-wp 84em local-pages --update-keyword-links --states-only
+# Update location links in state pages only
+wp 84em local-pages --update-location-links --states-only
 ```
 
 **Regenerate LD-JSON Schemas (Fix schema issues without regenerating content):**
@@ -954,7 +954,7 @@ wp plugin list --status=active
 
 ## Testing
 
-The plugin includes a comprehensive WP-CLI-based integration testing framework with 82 integration tests across 10 test suites. All tests use real WordPress functions and real API calls with complete test data isolation.
+The plugin includes a comprehensive WP-CLI-based integration testing framework with 78 integration tests across 10 test suites. All tests use real WordPress functions and real API calls with complete test data isolation.
 
 For complete testing documentation, including test suite details, configuration, and writing new integration tests, see **[TESTING.md](TESTING.md)**.
 

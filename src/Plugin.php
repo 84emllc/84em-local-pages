@@ -17,7 +17,6 @@ use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Api\HealthCheckEndpoint;
 use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Content\MetadataGenerator;
@@ -133,10 +132,6 @@ class Plugin {
             return new StatesProvider();
         } );
 
-        $this->container->register( KeywordsProvider::class, function () {
-            return new KeywordsProvider();
-        } );
-
         // API Services
         $this->container->register( Encryption::class, function () {
             return new Encryption();
@@ -171,10 +166,8 @@ class Plugin {
         } );
 
         // Content Services
-        $this->container->register( ContentProcessor::class, function ( $container ) {
-            return new ContentProcessor(
-                $container->get( KeywordsProvider::class )
-            );
+        $this->container->register( ContentProcessor::class, function () {
+            return new ContentProcessor();
         } );
 
         $this->container->register( MetadataGenerator::class, function ( $container ) {
@@ -190,7 +183,6 @@ class Plugin {
                 $container->get( ApiKeyManager::class ),
                 $container->get( ClaudeApiClient::class ),
                 $container->get( StatesProvider::class ),
-                $container->get( KeywordsProvider::class ),
                 $container->get( SchemaGenerator::class ),
                 $container->get( ContentProcessor::class ),
                 $container->get( MetadataGenerator::class )
@@ -202,7 +194,6 @@ class Plugin {
                 $container->get( ApiKeyManager::class ),
                 $container->get( ClaudeApiClient::class ),
                 $container->get( StatesProvider::class ),
-                $container->get( KeywordsProvider::class ),
                 $container->get( SchemaGenerator::class ),
                 $container->get( ContentProcessor::class ),
                 $container->get( MetadataGenerator::class )
@@ -210,10 +201,8 @@ class Plugin {
         } );
 
         // Schema Services
-        $this->container->register( SchemaGenerator::class, function ( $container ) {
-            return new SchemaGenerator(
-                $container->get( StatesProvider::class )
-            );
+        $this->container->register( SchemaGenerator::class, function () {
+            return new SchemaGenerator();
         } );
 
         // CLI Commands
@@ -223,9 +212,7 @@ class Plugin {
 
         $this->container->register( GenerateCommand::class, function ( $container ) {
             return new GenerateCommand(
-                $container->get( ApiKeyManager::class ),
                 $container->get( StatesProvider::class ),
-                $container->get( KeywordsProvider::class ),
                 $container->get( StateContentGenerator::class ),
                 $container->get( CityContentGenerator::class ),
                 $container->get( ContentProcessor::class ),
@@ -237,8 +224,6 @@ class Plugin {
         $this->container->register( CommandHandler::class, function ( $container ) {
             return new CommandHandler(
                 $container->get( ApiKeyManager::class ),
-                $container->get( StatesProvider::class ),
-                $container->get( KeywordsProvider::class ),
                 $container->get( TestCommand::class ),
                 $container->get( GenerateCommand::class )
             );

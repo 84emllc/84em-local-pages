@@ -10,27 +10,11 @@
 namespace EightyFourEM\LocalPages\Schema;
 
 use EightyFourEM\LocalPages\Contracts\SchemaGeneratorInterface;
-use EightyFourEM\LocalPages\Data\StatesProvider;
 
 /**
  * Generates Schema.org structured data for local pages
  */
 class SchemaGenerator implements SchemaGeneratorInterface {
-    /**
-     * States data provider
-     *
-     * @var StatesProvider
-     */
-    private StatesProvider $statesProvider;
-
-    /**
-     * Constructor
-     *
-     * @param  StatesProvider  $statesProvider
-     */
-    public function __construct( StatesProvider $statesProvider ) {
-        $this->statesProvider = $statesProvider;
-    }
 
     /**
      * Generate Schema.org JSON-LD structured data
