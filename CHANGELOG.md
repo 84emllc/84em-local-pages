@@ -5,6 +5,19 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.17.1] - 2025-12-29
+
+### Fixed
+- **Prompt Template Syntax**: Fixed double curly braces `{{` in prompt templates causing invalid WordPress block JSON
+  - Changed `{{"ref":5031}}` to `{"ref":5031}` in block references
+  - PHP does not treat `{{` as an escape sequence; it outputs literally
+- **Large Font Size**: Added `has-large-font-size` class to all paragraphs and headings in generated content
+  - Paragraphs now use `{"fontSize":"large"}` attribute
+  - Headings now include `{"fontSize":"large"}` in addition to level
+- **ApiKeyManager False Positive**: Fixed `setKey()` and `setModel()` methods incorrectly reporting failure
+  - WordPress `update_option()` returns `false` both on failure AND when value is unchanged
+  - Now verifies success by reading back the option value instead of trusting return value
+
 ## [3.17.0] - 2025-12-29
 
 ### Added

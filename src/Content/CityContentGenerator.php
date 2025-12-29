@@ -355,13 +355,13 @@ VOICE:
 
 STRUCTURE:
 1. Opening (2-3 sentences, each its own paragraph): Problem-focused intro mentioning {$city}, {$state}
-2. <!-- wp:block {{\"ref\":{$separator_block}}} /-->
-   H2: \"WordPress Services in {$city}\" followed by exactly: <!-- wp:block {{\"ref\":{$services_block}}} /-->
-3. <!-- wp:block {{\"ref\":{$separator_block}}} /-->
+2. <!-- wp:block {\"ref\":{$separator_block}} /-->
+   H2: \"WordPress Services in {$city}\" followed by exactly: <!-- wp:block {\"ref\":{$services_block}} /-->
+3. <!-- wp:block {\"ref\":{$separator_block}} /-->
    H2: \"Why {$city} Businesses Choose 84EM\" with 4-5 bullet benefits
-4. <!-- wp:block {{\"ref\":{$separator_block}}} /-->
+4. <!-- wp:block {\"ref\":{$separator_block}} /-->
    Closing (2 sentences, each its own paragraph): Mention headquartered in Cedar Rapids, Iowa. CTA linking to /contact/
-5. End with exactly: <!-- wp:block {{\"ref\":{$cta_block}}} /-->
+5. End with exactly: <!-- wp:block {\"ref\":{$cta_block}} /-->
 
 BENEFITS (vary these, use this voice):
 - WordPress experts since 2012, building websites since 1995
@@ -370,9 +370,9 @@ BENEFITS (vary these, use this voice):
 - You'll hear from us before deadlines, not after
 
 FORMATTING:
-- Paragraphs: <!-- wp:paragraph --><p>Text here.</p><!-- /wp:paragraph -->
-- Headings: <!-- wp:heading {{\"level\":2}} --><h2><strong>Heading</strong></h2><!-- /wp:heading -->
-- Lists: <!-- wp:list {{\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"}} --><ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\"><!-- wp:list-item --><li>Item</li><!-- /wp:list-item --></ul><!-- /wp:list -->
+- Paragraphs: <!-- wp:paragraph {\"fontSize\":\"large\"} --><p class=\"has-large-font-size\">Text here.</p><!-- /wp:paragraph -->
+- Headings: <!-- wp:heading {\"level\":2,\"fontSize\":\"large\"} --><h2 class=\"has-large-font-size\"><strong>Heading</strong></h2><!-- /wp:heading -->
+- Lists: <!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} --><ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\"><!-- wp:list-item --><li>Item</li><!-- /wp:list-item --></ul><!-- /wp:list -->
 
 AVOID:
 - Superlatives (game-changing, cutting-edge, best-in-class, proven track record)
