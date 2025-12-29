@@ -62,17 +62,17 @@ wp 84em local-pages --test --suite=simple
 ### Available Test Suites (v3.2.5)
 
 1. **encryption** - Tests for API key encryption and decryption (4 tests)
-2. **data-structures** - Tests for service keywords and US states data (2 tests)
-3. **content-processing** - Tests for ContentProcessor class methods (13 tests)
+2. **data-structures** - Tests for US states data structure (1 test)
+3. **content-processing** - Tests for ContentProcessor class methods (12 tests)
 4. **cli-args** - Tests for WP-CLI argument parsing (6 tests)
 5. **ld-json** - Tests for LD-JSON schema generation (14 tests)
 6. **api-client** - Tests for Claude API client (8 tests) - **No mocks, uses real instances**
-7. **content-generators** - Tests for state and city content generators (12 tests) - **No mocks, uses real instances**
+7. **content-generators** - Tests for state and city content generators (10 tests) - **No mocks, uses real instances**
 8. **error-handling** - Tests for error handling and logging (5 tests)
 9. **security** - Tests for security features (5 tests)
 10. **model-management** - Tests for model configuration and validation (13 tests)
 
-**Total: 82 tests across 10 test suites**
+**Total: 78 tests across 10 test suites**
 
 **All tests use real WordPress functions and real class instances - no mocks!**
 
@@ -109,7 +109,7 @@ Complete removal of all mocks in favor of real WordPress and API integration wit
 - **Automatic Cleanup**: All `test_` prefixed options removed in tearDown() via ApiKeyManager methods
 - **All 82 Tests Pass**: 100% success rate with valid API key configured
 
-This follows the WordPress best practice and global CLAUDE.md guideline: "don't use mocks, always use real wordpress functions, api calls, etc." while maintaining proper encapsulation through the ApiKeyManager interface.
+This follows the WordPress best practice and global AGENTS.md guideline: "don't use mocks, always use real wordpress functions, api calls, etc." while maintaining proper encapsulation through the ApiKeyManager interface.
 
 ## Test Framework
 
@@ -245,12 +245,12 @@ Some tests that instantiate the plugin class directly may cause critical errors 
 - WordPress hooks being registered multiple times
 
 Currently working integration test suites (v3.2.5):
-- All 10 test suites are passing with 82 of 82 tests passing
+- All 10 test suites are passing with 78 of 78 tests passing
 - Tests focus on actual plugin functionality using real WordPress integration
 - No mocks, no anonymous classes, just real instances and real database operations
 - Complete test data isolation using `test_` prefixed options
 
-**Total: 82 integration tests, 82 passing** (with valid Claude API key configured)
+**Total: 78 integration tests, 78 passing** (with valid Claude API key configured)
 
 Note: All integration tests follow these principles:
 - Use real WordPress functions (get_option, update_option, delete_option)

@@ -10,47 +10,16 @@
 require_once dirname( __DIR__ ) . '/TestCase.php';
 
 use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 
 class Test_Data_Structures extends TestCase {
 
     private StatesProvider $statesProvider;
-    private KeywordsProvider $keywordsProvider;
 
     /**
      * Set up test environment
      */
     public function setUp(): void {
-        $this->statesProvider   = new StatesProvider();
-        $this->keywordsProvider = new KeywordsProvider();
-    }
-
-    /**
-     * Test service keywords structure
-     */
-    public function test_service_keywords_structure() {
-        $keywords = $this->keywordsProvider->getAll();
-
-        // Test it's an associative array
-        $this->assertIsArray( $keywords );
-        $this->assertNotEmpty( $keywords );
-
-        // Test each keyword has a URL
-        foreach ( $keywords as $keyword => $url ) {
-            $this->assertIsString( $keyword );
-            $this->assertIsString( $url );
-            $this->assertNotEmpty( $keyword );
-            $this->assertNotEmpty( $url );
-
-            // URLs should be valid
-            $this->assertMatchesRegularExpression( '/^https?:\/\//', $url );
-        }
-
-        // Test specific keywords exist
-        $this->assertArrayHasKey( 'WordPress development', $keywords );
-        $this->assertArrayHasKey( 'custom plugin development', $keywords );
-        $this->assertArrayHasKey( 'API integrations', $keywords );
-        $this->assertArrayHasKey( 'WordPress maintenance', $keywords );
+        $this->statesProvider = new StatesProvider();
     }
 
     /**

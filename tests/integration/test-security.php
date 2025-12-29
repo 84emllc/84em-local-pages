@@ -14,7 +14,6 @@ require_once dirname( __DIR__ ) . '/TestCase.php';
 use EightyFourEM\LocalPages\Api\Encryption;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 
 class Test_Security extends TestCase {
     
@@ -97,18 +96,17 @@ class Test_Security extends TestCase {
      * Test content processor doesn't introduce XSS
      */
     public function test_content_processor_xss_prevention() {
-        $keywordsProvider = new KeywordsProvider();
-        $processor = new ContentProcessor( $keywordsProvider );
-        
+        $processor = new ContentProcessor();
+
         // Test that malicious content in input doesn't create XSS
         $maliciousContent = '<!-- wp:paragraph --><p>Click here for <script>alert("xss")</script> WordPress development</p><!-- /wp:paragraph -->';
-        
+
         $processed = $processor->processContent( $maliciousContent, ['type' => 'state'] );
-        
+
         // Script tags should remain as-is in content (not executed)
         // The processor should not strip them but also not enhance them
         $this->assertStringContainsString( 'script', $processed );
-        
+
         // But links added by processor should be properly formed
         if ( strpos( $processed, '<a href=' ) !== false ) {
             // Any links should be properly quoted

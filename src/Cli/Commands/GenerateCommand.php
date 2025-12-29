@@ -9,10 +9,7 @@
 
 namespace EightyFourEM\LocalPages\Cli\Commands;
 
-use EightyFourEM\LocalPages\Api\ApiKeyManager;
-use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
@@ -27,25 +24,11 @@ use Exception;
 class GenerateCommand {
 
     /**
-     * API key manager
-     *
-     * @var ApiKeyManager
-     */
-    private ApiKeyManager $apiKeyManager;
-
-    /**
      * States data provider
      *
      * @var StatesProvider
      */
     private StatesProvider $statesProvider;
-
-    /**
-     * Keywords data provider
-     *
-     * @var KeywordsProvider
-     */
-    private KeywordsProvider $keywordsProvider;
 
     /**
      * State content generator
@@ -85,9 +68,7 @@ class GenerateCommand {
     /**
      * Constructor
      *
-     * @param  ApiKeyManager  $apiKeyManager
      * @param  StatesProvider  $statesProvider
-     * @param  KeywordsProvider  $keywordsProvider
      * @param  StateContentGenerator  $stateContentGenerator
      * @param  CityContentGenerator  $cityContentGenerator
      * @param  ContentProcessor  $contentProcessor
@@ -95,18 +76,14 @@ class GenerateCommand {
      * @param  CheckpointManager  $checkpointManager
      */
     public function __construct(
-        ApiKeyManager $apiKeyManager,
         StatesProvider $statesProvider,
-        KeywordsProvider $keywordsProvider,
         StateContentGenerator $stateContentGenerator,
         CityContentGenerator $cityContentGenerator,
         ContentProcessor $contentProcessor,
         SchemaGenerator $schemaGenerator,
         CheckpointManager $checkpointManager
     ) {
-        $this->apiKeyManager         = $apiKeyManager;
         $this->statesProvider        = $statesProvider;
-        $this->keywordsProvider      = $keywordsProvider;
         $this->stateContentGenerator = $stateContentGenerator;
         $this->cityContentGenerator  = $cityContentGenerator;
         $this->contentProcessor      = $contentProcessor;
@@ -259,7 +236,7 @@ class GenerateCommand {
                     if ( $existing_city_post ) {
                         if ( $this->cityContentGenerator->updateCityPage( $existing_city_post->ID, $state, $city ) ) {
                             $city_updated_count ++;
-                            WP_CLI::log( "    ✅ Updated city page: {$city}, {$state} (ID: {$existing_city_post->ID})" );;
+                            WP_CLI::log( "    ✅ Updated city page: {$city}, {$state} (ID: {$existing_city_post->ID})" );
                         }
                         else {
                             WP_CLI::warning( "    ❌ Failed to update city page: {$city}, {$state} (ID: {$existing_city_post->ID})" );
@@ -546,7 +523,7 @@ class GenerateCommand {
             if ( $existing_post ) {
                 if ( $this->stateContentGenerator->updateStatePage( $existing_post->ID, $state_name ) ) {
                     $updated_count ++;
-                    WP_CLI::success( "Updated state page: {$state_name} (ID: {$existing_post->ID})" );;
+                    WP_CLI::success( "Updated state page: {$state_name} (ID: {$existing_post->ID})" );
                 }
                 else {
                     WP_CLI::error( "Failed to update state page: {$state_name} (ID: {$existing_post->ID})" );
@@ -1110,10 +1087,10 @@ class GenerateCommand {
 
             if ( $existing_state_post ) {
                 if ( $this->stateContentGenerator->updateStatePage( $existing_state_post->ID, $state ) ) {
-                    WP_CLI::success( "Updated state page: {$state} (ID: {$existing_state_post->ID})" );;
+                    WP_CLI::success( "Updated state page: {$state} (ID: {$existing_state_post->ID})" );
                 }
                 else {
-                    WP_CLI::error( "Failed to update state page: {$state} (ID: {$existing_state_post->ID})" );;
+                    WP_CLI::error( "Failed to update state page: {$state} (ID: {$existing_state_post->ID})" );
                 }
             }
             else {
@@ -1283,16 +1260,16 @@ class GenerateCommand {
     }
 
     /**
-     * Handle updating keyword links in existing pages
+     * Handle updating location links in existing pages
      *
      * @param  array  $args  Positional arguments
      * @param  array  $assoc_args  Associative arguments
      *
      * @return void
      */
-    public function handleUpdateKeywordLinks( array $args, array $assoc_args ): void {
-        WP_CLI::line( '🔗 Updating Keyword Links in Existing Pages' );
-        WP_CLI::line( '============================================' );
+    public function handleUpdateLocationLinks( array $args, array $assoc_args ): void {
+        WP_CLI::line( '🔗 Updating Location Links in Existing Pages' );
+        WP_CLI::line( '=============================================' );
         WP_CLI::line( '' );
 
         // Check if we should update only states or all
@@ -1415,7 +1392,7 @@ class GenerateCommand {
         }
 
         WP_CLI::line( '' );
-        WP_CLI::success( 'Keyword link update complete!' );
+        WP_CLI::success( 'Location link update complete!' );
     }
 
     /**
@@ -1540,7 +1517,7 @@ class GenerateCommand {
         WP_CLI::success( "Migrated {$migrated_count} state pages. City page URLs updated automatically based on parent." );
         WP_CLI::line( '' );
         WP_CLI::line( '📝 Next Steps:' );
-        WP_CLI::line( '   1. wp 84em local-pages --update-keyword-links' );
+        WP_CLI::line( '   1. wp 84em local-pages --update-location-links' );
         WP_CLI::line( '   2. wp 84em local-pages --generate-sitemap' );
         WP_CLI::line( '   3. wp rewrite flush' );
         WP_CLI::line( '' );
@@ -1548,7 +1525,10 @@ class GenerateCommand {
     }
 
     /**
-     * Strip existing keyword and location links from content
+     * Strip existing location links from content
+     *
+     * Removes auto-generated location links so ContentProcessor can re-add them
+     * with fresh URLs. Also removes links to known service paths.
      *
      * @param  string  $content  Content to strip links from
      *
@@ -1563,24 +1543,8 @@ class GenerateCommand {
             $content = preg_replace( $nested_pattern, '$1', $content );
         }
 
-        // Get all keywords
-        $keywords = $this->keywordsProvider->getAll();
-
-        // Strip ANY links containing our keywords, regardless of URL
-        // This ensures we remove links with old URLs too
-        foreach ( $keywords as $keyword => $url ) {
-            // Escape special regex characters in the keyword
-            $escaped_keyword = preg_quote( $keyword, '/' );
-
-            // Pattern to match: <a href="[any url]">[keyword]</a>
-            // This removes any link where the link text exactly matches our keyword
-            // Case-insensitive to catch variations
-            $pattern = '/<a\s+href=["\'][^"\']*["\']>(' . $escaped_keyword . ')<\/a>/i';
-            $content = preg_replace( $pattern, '$1', $content );
-        }
-
-        // Also strip links to known service/work pages that might have old URLs
-        // This catches links to /services/, /work/, /contact/ etc with keyword text
+        // Strip links to known service/work pages
+        // This catches links to /services/, /work/, /contact/ etc
         $known_paths = [
             '/work/',
             '/services/',

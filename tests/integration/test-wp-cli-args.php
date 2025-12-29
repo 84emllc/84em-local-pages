@@ -13,12 +13,12 @@ require_once dirname( __DIR__ ) . '/test-config.php';
 
 use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
 use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Api\Encryption;
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
+use EightyFourEM\LocalPages\Content\MetadataGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
 use EightyFourEM\LocalPages\Utils\CheckpointManager;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
@@ -27,7 +27,6 @@ class Test_WP_CLI_Args extends TestCase {
 
     private GenerateCommand $generateCommand;
     private StatesProvider $statesProvider;
-    private KeywordsProvider $keywordsProvider;
     private ApiKeyManager $apiKeyManager;
     private ClaudeApiClient $apiClient;
     private Encryption $encryption;
@@ -40,7 +39,6 @@ class Test_WP_CLI_Args extends TestCase {
 
         // Initialize data providers
         $this->statesProvider = new StatesProvider();
-        $this->keywordsProvider = new KeywordsProvider();
 
         // Create real API key manager and API client
         // These will automatically use test_ prefixed options due to RUNNING_TESTS
@@ -54,34 +52,33 @@ class Test_WP_CLI_Args extends TestCase {
         $this->apiClient = new ClaudeApiClient( $this->apiKeyManager );
 
         // Create dependencies for GenerateCommand
-        $contentProcessor = new ContentProcessor( $this->keywordsProvider );
-        $schemaGenerator = new SchemaGenerator( $this->statesProvider );
+        $contentProcessor = new ContentProcessor();
+        $schemaGenerator = new SchemaGenerator();
+        $metadataGenerator = new MetadataGenerator( $this->apiKeyManager, $this->apiClient, $this->statesProvider );
 
         $stateContentGenerator = new StateContentGenerator(
             $this->apiKeyManager,
             $this->apiClient,
             $this->statesProvider,
-            $this->keywordsProvider,
             $schemaGenerator,
-            $contentProcessor
+            $contentProcessor,
+            $metadataGenerator
         );
 
         $cityContentGenerator = new CityContentGenerator(
             $this->apiKeyManager,
             $this->apiClient,
             $this->statesProvider,
-            $this->keywordsProvider,
             $schemaGenerator,
-            $contentProcessor
+            $contentProcessor,
+            $metadataGenerator
         );
 
         // Initialize GenerateCommand with all dependencies
         $checkpointManager = new CheckpointManager();
 
         $this->generateCommand = new GenerateCommand(
-            $this->apiKeyManager,
             $this->statesProvider,
-            $this->keywordsProvider,
             $stateContentGenerator,
             $cityContentGenerator,
             $contentProcessor,

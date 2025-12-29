@@ -34,7 +34,6 @@ class TestCommand {
             'error-handling'       => 'test-error-handling.php',
             'security'             => 'test-security.php',
             'model-management'     => 'test-model-management.php',
-            'keyword-link-updates' => 'test-keyword-link-updates.php',
         ];
 
     /**

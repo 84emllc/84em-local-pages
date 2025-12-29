@@ -14,11 +14,11 @@ require_once dirname( __DIR__ ) . '/test-config.php';
 
 use EightyFourEM\LocalPages\Content\StateContentGenerator;
 use EightyFourEM\LocalPages\Content\CityContentGenerator;
+use EightyFourEM\LocalPages\Content\MetadataGenerator;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Api\Encryption;
 use EightyFourEM\LocalPages\Data\StatesProvider;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
 
@@ -30,9 +30,9 @@ class Test_Content_Generators extends TestCase {
     private ClaudeApiClient $apiClient;
     private Encryption $encryption;
     private StatesProvider $statesProvider;
-    private KeywordsProvider $keywordsProvider;
     private SchemaGenerator $schemaGenerator;
     private ContentProcessor $contentProcessor;
+    private MetadataGenerator $metadataGenerator;
 
     /**
      * Set up test environment
@@ -42,9 +42,8 @@ class Test_Content_Generators extends TestCase {
 
         // Initialize real providers
         $this->statesProvider = new StatesProvider();
-        $this->keywordsProvider = new KeywordsProvider();
-        $this->schemaGenerator = new SchemaGenerator( $this->statesProvider );
-        $this->contentProcessor = new ContentProcessor( $this->keywordsProvider );
+        $this->schemaGenerator = new SchemaGenerator();
+        $this->contentProcessor = new ContentProcessor();
 
         // Create real API key manager and API client
         // These will automatically use test_ prefixed options due to RUNNING_TESTS
@@ -56,24 +55,25 @@ class Test_Content_Generators extends TestCase {
         $this->apiKeyManager->setModel( TestConfig::getTestModel() );
 
         $this->apiClient = new ClaudeApiClient( $this->apiKeyManager );
+        $this->metadataGenerator = new MetadataGenerator( $this->apiKeyManager, $this->apiClient, $this->statesProvider );
 
         // Initialize generators with all dependencies
         $this->stateGenerator = new StateContentGenerator(
             $this->apiKeyManager,
             $this->apiClient,
             $this->statesProvider,
-            $this->keywordsProvider,
             $this->schemaGenerator,
-            $this->contentProcessor
+            $this->contentProcessor,
+            $this->metadataGenerator
         );
 
         $this->cityGenerator = new CityContentGenerator(
             $this->apiKeyManager,
             $this->apiClient,
             $this->statesProvider,
-            $this->keywordsProvider,
             $this->schemaGenerator,
-            $this->contentProcessor
+            $this->contentProcessor,
+            $this->metadataGenerator
         );
     }
 
@@ -116,20 +116,6 @@ class Test_Content_Generators extends TestCase {
     }
     
     /**
-     * Test keywords provider integration
-     */
-    public function test_keywords_provider_integration() {
-        $keywords = $this->keywordsProvider->getAll();
-        $this->assertIsArray( $keywords );
-        $this->assertNotEmpty( $keywords );
-        
-        // Check for specific keywords
-        $keywordKeys = $this->keywordsProvider->getKeys();
-        $this->assertContains( 'WordPress development', $keywordKeys );
-        $this->assertContains( 'custom plugin development', $keywordKeys );
-    }
-    
-    /**
      * Test schema generator for state
      */
     public function test_schema_generator_state() {
@@ -163,11 +149,11 @@ class Test_Content_Generators extends TestCase {
     public function test_content_processor() {
         $content = 'We offer WordPress development and custom plugin development services.';
         $context = ['type' => 'state', 'state' => 'California'];
-        
+
         $processed = $this->contentProcessor->processContent( $content, $context );
-        
-        // Should add links to keywords
-        $this->assertStringContainsString( '<a href=', $processed );
+
+        // Should wrap content in WordPress blocks
+        $this->assertStringContainsString( '<!-- wp:paragraph -->', $processed );
         $this->assertStringContainsString( 'WordPress development', $processed );
     }
     
@@ -217,22 +203,6 @@ class Test_Content_Generators extends TestCase {
         
         // Invalid content should not have blocks
         $this->assertStringNotContainsString( '<!-- wp:', $invalidContent );
-    }
-    
-    /**
-     * Test service keyword list generation
-     */
-    public function test_service_keyword_list() {
-        $keywords = $this->keywordsProvider->getKeys();
-        $keywordsList = implode( ', ', $keywords );
-        
-        // Should contain multiple keywords
-        $keywordCount = count( $keywords );
-        $this->assertGreaterThan( 10, $keywordCount );
-        
-        // Should be properly formatted
-        $this->assertStringNotContainsString( ',,', $keywordsList );
-        $this->assertStringNotContainsString( ', ,', $keywordsList );
     }
     
     /**

@@ -5,6 +5,74 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.17.0] - 2025-12-29
+
+### Added
+- **Shared BlockIds Config Class**: New `src/Config/BlockIds.php` centralizes reusable block IDs
+  - `BlockIds::SERVICES` (5031): Services section reusable block
+  - `BlockIds::CTA` (1219): CTA button reusable block
+  - `BlockIds::SEPARATOR` (5034): Separator reusable block
+
+### Changed
+- **Prompt Template Redesign**: Complete rewrite of AI prompt templates for better output quality
+  - Reduced prompt length from ~450 words to ~150 words
+  - Aligned prompts with actual 84EM writing style (problem-first framing, direct tone)
+  - Removed redundant block syntax instructions (ContentProcessor handles formatting)
+  - Removed location linking instructions (ContentProcessor handles linking)
+  - Changed from calculated years to "since 2012" / "since 1995" for future-proofing
+- **ContentProcessor Cleanup**: Removed dead code and modernized PHP
+  - Removed unused KeywordsProvider dependency (service linking was disabled)
+  - Removed ~180 lines of dead service linking code
+  - Extracted duplicated linking logic into `linkFirstOccurrence()` helper method
+  - Replaced `strpos()` with `str_contains()` (PHP 8.0+)
+- **CLI Command Rename**: Renamed `--update-keyword-links` to `--update-location-links`
+  - Better reflects actual functionality (updates location links only, not service keywords)
+  - Service keyword linking was removed as part of ContentProcessor cleanup
+- **KeywordsProvider Removal**: Completely removed KeywordsProvider class and all references
+  - Removed from StateContentGenerator, CityContentGenerator, GenerateCommand, CommandHandler
+  - Simplified `stripExistingKeywordLinks()` method (no longer needs keyword data)
+  - Deleted `src/Data/KeywordsProvider.php` file
+  - Updated all test files to remove KeywordsProvider usage
+- **Dead Code Removal**: Removed unused properties and methods across multiple classes
+  - `SchemaGenerator`: Removed unused `$statesProvider` property and constructor parameter
+  - `StateContentGenerator`: Removed unused `generateStateUrl()` private method and unnecessary import
+  - `CityContentGenerator`: Removed unnecessary import
+  - `CommandHandler`: Removed unused `$statesProvider` property and constructor parameter
+  - `GenerateCommand`: Removed unused `$apiKeyManager` property and constructor parameter
+  - Updated `Plugin.php` DI registrations to match simplified constructors
+- **Test Suite Cleanup**: Removed obsolete tests and fixed test file issues
+  - Removed `test_service_keyword_list` test that referenced removed KeywordsProvider
+  - Removed non-existent `keyword-link-updates` test suite from TestCommand
+  - Fixed `test-wp-cli-args.php` GenerateCommand constructor call (6 params, not 7)
+  - Test count reduced from 82 to 78 tests across 10 suites
+- **Documentation Rename**: Renamed `CLAUDE.md` to `AGENTS.md`
+  - Updated all references in TESTING.md, deploy-reusable.yml, and planning docs
+  - Added `CLAUDE.md` redirect file pointing to `AGENTS.md`
+
+### Fixed
+- **CityContentGenerator**: Fixed duplicate "Opening Section" text in prompt template
+- **CityContentGenerator**: Fixed typo "paragrph" in prompt template
+- **Both Generators**: Fixed missing forward slash in `<!-- wp:list -->` closing tag (was causing invalid block syntax)
+
+### Technical Details
+**Modified Files**:
+- `src/Config/BlockIds.php`: New shared block ID constants class
+- `src/Content/StateContentGenerator.php`: Rewrote buildPrompt(), uses BlockIds, removed KeywordsProvider dependency, removed unused generateStateUrl() method
+- `src/Content/CityContentGenerator.php`: Rewrote buildPrompt(), uses BlockIds, removed KeywordsProvider dependency
+- `src/Schema/SchemaGenerator.php`: Removed unused statesProvider property and constructor parameter
+- `src/Utils/ContentProcessor.php`: Removed dead code, modernized PHP, extracted helper
+- `src/Plugin.php`: Updated dependency injection (removed KeywordsProvider, simplified SchemaGenerator/CommandHandler/GenerateCommand registrations)
+- `src/Cli/Commands/GenerateCommand.php`: Renamed handleUpdateKeywordLinks(), removed KeywordsProvider and apiKeyManager dependencies, simplified stripExistingKeywordLinks()
+- `src/Cli/Commands/TestCommand.php`: Removed non-existent keyword-link-updates test suite
+- `src/Cli/CommandHandler.php`: Updated command routing, removed KeywordsProvider and statesProvider dependencies
+- `CLAUDE.md`: Updated prompt template documentation and command references
+- `tests/integration/test-wp-cli-args.php`: Fixed GenerateCommand constructor call
+- `tests/integration/test-content-generators.php`: Removed obsolete test_service_keyword_list test
+- `tests/integration/*`: Updated all test files to remove KeywordsProvider usage
+
+**Deleted Files**:
+- `src/Data/KeywordsProvider.php`: Service keyword provider class (no longer needed)
+
 ## [3.16.0] - 2025-12-15
 
 ### Added

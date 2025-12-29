@@ -11,34 +11,25 @@ require_once dirname( __DIR__ ) . '/TestCase.php';
 require_once dirname( __DIR__, 2 ) . '/vendor/autoload.php';
 
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
-use EightyFourEM\LocalPages\Data\KeywordsProvider;
 
 class Test_Content_Processing extends TestCase {
 
     private ContentProcessor $contentProcessor;
-    private KeywordsProvider $keywordsProvider;
 
     /**
      * Set up test environment
      */
     public function setUp(): void {
-        $this->keywordsProvider = new KeywordsProvider();
-        $this->contentProcessor = new ContentProcessor( $this->keywordsProvider );
+        $this->contentProcessor = new ContentProcessor();
     }
 
     /**
-     * Test the main processContent method with service keyword linking
+     * Test the main processContent method wraps in WordPress blocks
      */
-    public function test_process_content_adds_service_links() {
-        // Test that service keywords get linked
+    public function test_process_content_adds_block_structure() {
         $content = 'We offer WordPress development and API integrations for your business.';
         $result = $this->contentProcessor->processContent( $content, [] );
-        
-        // Should contain links to service pages
-        $this->assertStringContainsString( '<a href="', $result );
-        $this->assertStringContainsString( 'WordPress development</a>', $result );
-        $this->assertStringContainsString( 'API integrations</a>', $result );
-        
+
         // Should be wrapped in WordPress blocks
         $this->assertStringContainsString( '<!-- wp:paragraph -->', $result );
         $this->assertStringContainsString( '<!-- /wp:paragraph -->', $result );
@@ -147,20 +138,21 @@ class Test_Content_Processing extends TestCase {
     }
 
     /**
-     * Test that only first occurrence of keywords are linked
+     * Test that only first occurrence of location names are linked
      */
-    public function test_process_content_links_only_first_occurrence() {
-        $content = 'We offer WordPress development services. Our WordPress development team is experienced. WordPress development is our specialty.';
-        
-        $result = $this->contentProcessor->processContent( $content, [] );
-        
-        // Count how many times the link appears (should be only once)
-        $link_count = substr_count( $result, '">WordPress development</a>' );
-        $this->assertEquals( 1, $link_count, 'Should only link first occurrence of keyword' );
-        
-        // The second and third occurrences should not be linked
-        $parts = explode( 'WordPress development', $result );
-        $this->assertGreaterThanOrEqual( 3, count( $parts ), 'Should have multiple occurrences of the phrase' );
+    public function test_process_content_links_only_first_occurrence_of_locations() {
+        $content = 'We serve California businesses. California has great opportunities. California is our focus.';
+
+        $context = [
+            'city' => 'Los Angeles',
+            'state' => 'California',
+        ];
+
+        $result = $this->contentProcessor->processContent( $content, $context );
+
+        // Count how many times the state link appears (should be only once)
+        $link_count = substr_count( $result, '>California</a>' );
+        $this->assertEquals( 1, $link_count, 'Should only link first occurrence of state name' );
     }
 
     /**
@@ -261,16 +253,4 @@ class Test_Content_Processing extends TestCase {
         $this->assertStringNotContainsString( '</a></a>', $result );
     }
 
-    /**
-     * Test that keyword case is preserved from content
-     */
-    public function test_process_content_preserves_keyword_case() {
-        $content = 'We offer WORDPRESS DEVELOPMENT and wordpress maintenance services.';
-        
-        $result = $this->contentProcessor->processContent( $content, [] );
-        
-        // Should preserve the original case from content
-        $this->assertStringContainsString( '>WORDPRESS DEVELOPMENT</a>', $result );
-        $this->assertStringContainsString( '>wordpress maintenance</a>', $result );
-    }
 }
