@@ -378,7 +378,7 @@ Present 4-5 key benefits as a list using this exact HTML structure but vary the 
 <!-- wp:list-item --><li>Proven track record across diverse industries</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>Reliable delivery with consistent communication</li><!-- /wp:list-item -->
 <!-- wp:list-item --><li>Scalable solutions designed to grow with your business or agency</li><!-- /wp:list-item -->
-<!-- wp:list -->
+<!-- /wp:list -->
 
 **Closing Paragraph**
 - 2 sentences, 1 sentence per paragraph
