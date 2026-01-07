@@ -11,6 +11,7 @@ namespace EightyFourEM\LocalPages\Cli;
 
 use EightyFourEM\LocalPages\Cli\Commands\TestCommand;
 use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
+use EightyFourEM\LocalPages\Cli\TestimonialIdFinder;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use WP_CLI;
@@ -100,6 +101,13 @@ class CommandHandler {
 
             if ( isset( $assoc_args['reset-api-model'] ) ) {
                 $this->handleApiModelReset();
+                return;
+            }
+
+            // Handle testimonial ID finder (utility command)
+            if ( isset( $assoc_args['find-testimonial-ids'] ) ) {
+                $finder = new TestimonialIdFinder();
+                $finder();
                 return;
             }
 
@@ -680,7 +688,7 @@ class CommandHandler {
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
             'update-location-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
-            'template', 'dry-run', 'resume',
+            'template', 'dry-run', 'resume', 'find-testimonial-ids',
         ];
 
         return in_array( strtolower( $name ), $valid_args, true );
@@ -746,7 +754,7 @@ class CommandHandler {
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
             'update-location-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
-            'template', 'dry-run', 'resume',
+            'template', 'dry-run', 'resume', 'find-testimonial-ids',
         ];
 
         $unrecognized = [];
@@ -1010,6 +1018,9 @@ class CommandHandler {
         WP_CLI::line( '  --update-location-links --states-only  Update location links in state pages only' );
         WP_CLI::line( '  --migrate-urls             Migrate all pages from old to new URL structure' );
         WP_CLI::line( '  --regenerate-schema        Regenerate schema markup for all pages' );
+        WP_CLI::line( '' );
+        WP_CLI::line( 'UTILITIES:' );
+        WP_CLI::line( '  --find-testimonial-ids     Find testimonial pattern block IDs for configuration' );
         WP_CLI::line( '' );
         WP_CLI::line( 'EXAMPLES:' );
         WP_CLI::line( '  wp 84em local-pages --set-api-key' );

@@ -1,10 +1,14 @@
 <?php
 /**
- * City Content Generator
+ * City Content Generator (Updated)
+ *
+ * Enhanced version with:
+ * - Location context for industry-aware content
+ * - Randomized testimonial blocks
+ * - Improved prompts for better content variation
  *
  * @package EightyFourEM\LocalPages\Content
  * @license MIT License
- * @link https://opensource.org/licenses/MIT
  */
 
 namespace EightyFourEM\LocalPages\Content;
@@ -12,7 +16,10 @@ namespace EightyFourEM\LocalPages\Content;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Config\BlockIds;
+use EightyFourEM\LocalPages\Config\TestimonialBlockIds;
 use EightyFourEM\LocalPages\Data\StatesProvider;
+use EightyFourEM\LocalPages\Data\LocationContextProvider;
+use EightyFourEM\LocalPages\Data\TestimonialProvider;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
 use EightyFourEM\LocalPages\Contracts\ContentGeneratorInterface;
@@ -67,14 +74,51 @@ class CityContentGenerator implements ContentGeneratorInterface {
     private MetadataGenerator $metadataGenerator;
 
     /**
+     * Location context provider
+     *
+     * @var LocationContextProvider
+     */
+    private LocationContextProvider $locationContext;
+
+    /**
+     * Testimonial provider
+     *
+     * @var TestimonialProvider
+     */
+    private TestimonialProvider $testimonialProvider;
+
+    /**
+     * Banned phrases to avoid repetitive content
+     *
+     * @var array<string>
+     */
+    private const BANNED_PHRASES = [
+        'Your WordPress site needs to work',
+        "can't afford downtime",
+        'straightforward support',
+        'actually fixes things',
+        'handle WordPress',
+        'stop worrying about',
+        'doing the heavy lifting',
+        'game-changing',
+        'cutting-edge',
+        'best-in-class',
+        'second to none',
+        'unparalleled',
+        'world-class',
+    ];
+
+    /**
      * Constructor
      *
-     * @param  ApiKeyManager  $apiKeyManager
-     * @param  ClaudeApiClient  $apiClient
-     * @param  StatesProvider  $statesProvider
-     * @param  SchemaGenerator  $schemaGenerator
-     * @param  ContentProcessor  $contentProcessor
-     * @param  MetadataGenerator  $metadataGenerator
+     * @param ApiKeyManager           $apiKeyManager
+     * @param ClaudeApiClient         $apiClient
+     * @param StatesProvider          $statesProvider
+     * @param SchemaGenerator         $schemaGenerator
+     * @param ContentProcessor        $contentProcessor
+     * @param MetadataGenerator       $metadataGenerator
+     * @param LocationContextProvider $locationContext
+     * @param TestimonialProvider     $testimonialProvider
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
@@ -82,20 +126,24 @@ class CityContentGenerator implements ContentGeneratorInterface {
         StatesProvider $statesProvider,
         SchemaGenerator $schemaGenerator,
         ContentProcessor $contentProcessor,
-        MetadataGenerator $metadataGenerator
+        MetadataGenerator $metadataGenerator,
+        ?LocationContextProvider $locationContext = null,
+        ?TestimonialProvider $testimonialProvider = null
     ) {
-        $this->apiKeyManager     = $apiKeyManager;
-        $this->apiClient         = $apiClient;
-        $this->statesProvider    = $statesProvider;
-        $this->schemaGenerator   = $schemaGenerator;
-        $this->contentProcessor  = $contentProcessor;
-        $this->metadataGenerator = $metadataGenerator;
+        $this->apiKeyManager       = $apiKeyManager;
+        $this->apiClient           = $apiClient;
+        $this->statesProvider      = $statesProvider;
+        $this->schemaGenerator     = $schemaGenerator;
+        $this->contentProcessor    = $contentProcessor;
+        $this->metadataGenerator   = $metadataGenerator;
+        $this->locationContext     = $locationContext ?? new LocationContextProvider();
+        $this->testimonialProvider = $testimonialProvider ?? new TestimonialProvider( TestimonialBlockIds::getAll() );
     }
 
     /**
      * Generate content for a city page
      *
-     * @param  array  $data  Data for content generation
+     * @param array $data Data for content generation
      *
      * @return string Generated content
      * @throws Exception If generation fails
@@ -127,13 +175,16 @@ class CityContentGenerator implements ContentGeneratorInterface {
             [ 'state' => $state, 'city' => $city ]
         );
 
+        // Validate for banned phrases
+        $this->validateBannedPhrases( $processed_content, $city, $state );
+
         return $processed_content;
     }
 
     /**
      * Validate that required data is present
      *
-     * @param  array  $data  Data to validate
+     * @param array $data Data to validate
      *
      * @return bool
      */
@@ -160,8 +211,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
     /**
      * Generate a complete city page
      *
-     * @param  string  $state  State name
-     * @param  string  $city  City name
+     * @param string $state State name
+     * @param string $city  City name
      *
      * @return int|false Post ID on success, false on failure
      */
@@ -178,7 +229,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
             try {
                 WP_CLI::log( "Generating AI metadata for {$city}, {$state}..." );
                 $metadata = $this->metadataGenerator->generateCityMetadata( $state, $city );
-            } catch ( Exception $e ) {
+            }
+            catch ( Exception $e ) {
                 WP_CLI::warning( "Metadata generation failed: {$e->getMessage()}. Using fallback." );
                 $metadata = $this->metadataGenerator->getFallbackCityMetadata( $state, $city );
             }
@@ -191,12 +243,12 @@ class CityContentGenerator implements ContentGeneratorInterface {
                     [
                         'key'     => '_local_page_state',
                         'value'   => $state,
-                        'compare' => '='
+                        'compare' => '=',
                     ],
                     [
                         'key'     => '_local_page_city',
-                        'compare' => 'NOT EXISTS'
-                    ]
+                        'compare' => 'NOT EXISTS',
+                    ],
                 ],
                 'numberposts' => 1,
                 'post_status' => 'any',
@@ -240,8 +292,10 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
             return $post_id;
 
-        } catch ( Exception $e ) {
+        }
+        catch ( Exception $e ) {
             WP_CLI::error( "Failed to generate city page for {$city}, {$state}: " . $e->getMessage() );
+
             return false;
         }
     }
@@ -249,9 +303,9 @@ class CityContentGenerator implements ContentGeneratorInterface {
     /**
      * Update an existing city page
      *
-     * @param  int  $post_id  Post ID to update
-     * @param  string  $state  State name
-     * @param  string  $city  City name
+     * @param int    $post_id Post ID to update
+     * @param string $state   State name
+     * @param string $city    City name
      *
      * @return bool Success status
      */
@@ -268,7 +322,8 @@ class CityContentGenerator implements ContentGeneratorInterface {
             try {
                 WP_CLI::log( "Generating AI metadata for {$city}, {$state}..." );
                 $metadata = $this->metadataGenerator->generateCityMetadata( $state, $city );
-            } catch ( Exception $e ) {
+            }
+            catch ( Exception $e ) {
                 WP_CLI::warning( "Metadata generation failed: {$e->getMessage()}. Using fallback." );
                 $metadata = $this->metadataGenerator->getFallbackCityMetadata( $state, $city );
             }
@@ -299,8 +354,10 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
             return true;
 
-        } catch ( Exception $e ) {
+        }
+        catch ( Exception $e ) {
             WP_CLI::error( "Failed to update city page for {$city}, {$state}  (ID: {$post_id}): " . $e->getMessage() );
+
             return false;
         }
     }
@@ -309,34 +366,31 @@ class CityContentGenerator implements ContentGeneratorInterface {
     /**
      * Generate the post title based on the provided data.
      *
-     * @param  mixed  $data  Input data used to construct the post title.
+     * @param mixed $data Input data used to construct the post title.
      *
      * @return string Generated post title.
      */
     public function getPostTitle( $data ): string {
-
         return "WordPress Development, Plugins, Consulting, Agency Services in {$data} | 84EM";
     }
 
     /**
      * Generate the meta description based on the provided data.
      *
-     * @param  string  $data
-     *
-     * @param  string|null  $cities
+     * @param string      $data
+     * @param string|null $cities
      *
      * @return string
      */
     public function getMetaDescription( string $data, string $cities = null ): string {
-
         return "WordPress Development, Plugins, Consulting, Agency Services in {$data}, {$data}";
     }
 
     /**
      * Build the prompt for Claude API
      *
-     * @param  string  $state  State name
-     * @param  string  $city  City name
+     * @param string $state State name
+     * @param string $city  City name
      *
      * @return string
      */
@@ -344,28 +398,103 @@ class CityContentGenerator implements ContentGeneratorInterface {
         $services_block = BlockIds::SERVICES;
         $cta_block      = BlockIds::CTA;
 
-        $prompt = "Write a short landing page for 84EM's WordPress services in {$city}, {$state}.
+        // Get location context
+        $city_context  = $this->locationContext->getCityContext( $city, $state );
+        $state_context = $this->locationContext->getStateContext( $state );
+
+        $industries     = $city_context ? implode( ', ', $city_context['industries'] ) : '';
+        $city_desc      = $city_context['context'] ?? '';
+        $is_home_state  = $state_context['is_home_state'] ?? false;
+        $has_city_data  = $this->locationContext->hasCityContext( $city, $state );
+
+        // Get testimonial block reference (deterministic per city)
+        $testimonial_block = $this->testimonialProvider->getCityBlockReference( $state, $city );
+
+        // Build banned phrases string
+        $banned_list = implode( "\n- ", self::BANNED_PHRASES );
+
+        // Special notes for home state cities
+        $home_note = '';
+        if ( $is_home_state ) {
+            if ( $city === 'Cedar Rapids' ) {
+                $home_note = "\nNOTE: 84EM is headquartered in Cedar Rapids. This is our home city—mention this local presence prominently.";
+            }
+            else {
+                $home_note = "\nNOTE: 84EM is based in Cedar Rapids, Iowa—right here in the state. Mention this nearby presence.";
+            }
+        }
+
+        // City context instruction
+        $city_context_note = $has_city_data
+            ? "Use this context about {$city}: {$city_desc}. Key industries: {$industries}."
+            : "Research or infer what {$city} might be known for (industry, character, size) and reference it naturally.";
+
+        $prompt = "Write a landing page for 84EM's WordPress services in {$city}, {$state}.
+
+ABOUT 84EM:
+- WordPress development agency, fully remote, based in Cedar Rapids, Iowa
+- Programming since 1995, WordPress specialist since 2012
+- Partners with digital agencies (white-label or client-facing) and works directly with businesses
+- Works with businesses in fintech, healthcare, education, non-profits{$home_note}
+
+CITY CONTEXT:
+{$city_context_note}
 
 VOICE:
-- Direct and matter-of-fact, no marketing fluff
+- Direct, matter-of-fact, no marketing fluff
 - Short sentences, one idea per paragraph
-- Use contractions naturally
+- Contractions are fine
+- Helpful tone—explain how we can help, not why others fail
 
 STRUCTURE:
-1. Intro (2-3 sentences, each its own paragraph): Why businesses in {$city} need reliable WordPress help
-2. H2: \"WordPress Services in {$city}\" followed by exactly: <!-- wp:block {\"ref\":{$services_block}} /-->
-3. End with exactly: <!-- wp:block {\"ref\":{$cta_block}} /-->
+1. Opening hook (2-3 sentences, each its own paragraph): Something specific about doing business in {$city} and WordPress needs. Don't be generic. Reference what makes {$city} distinctive.
+
+2. Why remote works (1-2 sentences): Briefly explain why location doesn't limit service quality. Mention experience since 1995.
+
+3. What we bring (1-2 sentences): Reference specific expertise relevant to likely industries in {$city}.
+
+4. H2: \"WordPress Services in {$city}\" followed by exactly:
+<!-- wp:block {\"ref\":{$services_block}} /-->
+
+5. Testimonial: Insert exactly:
+{$testimonial_block}
+
+6. End with exactly:
+<!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
 - Paragraphs: <!-- wp:paragraph {\"fontSize\":\"large\"} --><p class=\"has-large-font-size\">Text here.</p><!-- /wp:paragraph -->
 - Headings: <!-- wp:heading {\"level\":2,\"fontSize\":\"large\"} --><h2 class=\"has-large-font-size\"><strong>Heading</strong></h2><!-- /wp:heading -->
 
-AVOID:
-- Superlatives (game-changing, cutting-edge, best-in-class)
-- Emdashes
-- Bullet lists
-- Links in the intro";
+REQUIREMENTS:
+- Total: 100-150 words of unique content (excluding blocks)
+- DO NOT include any links to the state page (breadcrumbs already provide this navigation)
+- DO NOT start with 'Your WordPress site needs to work'
+- DO NOT use these phrases:
+- {$banned_list}
+- Each city page should feel distinct—vary the angle based on what makes {$city} unique
+
+OUTPUT: Return only the WordPress block content, no preamble.";
 
         return $prompt;
+    }
+
+    /**
+     * Validate content doesn't contain banned phrases
+     *
+     * @param string $content Generated content
+     * @param string $city    City name
+     * @param string $state   State name
+     *
+     * @return void
+     */
+    private function validateBannedPhrases( string $content, string $city, string $state ): void {
+        $lower_content = strtolower( $content );
+
+        foreach ( self::BANNED_PHRASES as $phrase ) {
+            if ( str_contains( $lower_content, strtolower( $phrase ) ) ) {
+                WP_CLI::warning( "Content for {$city}, {$state} contains banned phrase: \"{$phrase}\"" );
+            }
+        }
     }
 }

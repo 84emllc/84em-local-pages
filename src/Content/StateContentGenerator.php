@@ -1,10 +1,14 @@
 <?php
 /**
- * State Content Generator
+ * State Content Generator (Updated)
+ *
+ * Enhanced version with:
+ * - Location context for industry-aware content
+ * - Randomized testimonial blocks
+ * - Improved prompts for better content variation
  *
  * @package EightyFourEM\LocalPages\Content
  * @license MIT License
- * @link https://opensource.org/licenses/MIT
  */
 
 namespace EightyFourEM\LocalPages\Content;
@@ -13,7 +17,10 @@ use EightyFourEM\LocalPages\Contracts\ContentGeneratorInterface;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
 use EightyFourEM\LocalPages\Config\BlockIds;
+use EightyFourEM\LocalPages\Config\TestimonialBlockIds;
 use EightyFourEM\LocalPages\Data\StatesProvider;
+use EightyFourEM\LocalPages\Data\LocationContextProvider;
+use EightyFourEM\LocalPages\Data\TestimonialProvider;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
 use WP_CLI;
@@ -67,14 +74,50 @@ class StateContentGenerator implements ContentGeneratorInterface {
     private MetadataGenerator $metadataGenerator;
 
     /**
+     * Location context provider
+     *
+     * @var LocationContextProvider
+     */
+    private LocationContextProvider $locationContext;
+
+    /**
+     * Testimonial provider
+     *
+     * @var TestimonialProvider
+     */
+    private TestimonialProvider $testimonialProvider;
+
+    /**
+     * Banned phrases to avoid repetitive content
+     *
+     * @var array<string>
+     */
+    private const BANNED_PHRASES = [
+        'Your WordPress site needs to work',
+        "can't afford downtime",
+        'straightforward support',
+        'actually fixes things',
+        'handle WordPress',
+        'stop worrying about',
+        'game-changing',
+        'cutting-edge',
+        'best-in-class',
+        'second to none',
+        'unparalleled',
+        'world-class',
+    ];
+
+    /**
      * Constructor
      *
-     * @param  ApiKeyManager  $apiKeyManager
-     * @param  ClaudeApiClient  $apiClient
-     * @param  StatesProvider  $statesProvider
-     * @param  SchemaGenerator  $schemaGenerator
-     * @param  ContentProcessor  $contentProcessor
-     * @param  MetadataGenerator  $metadataGenerator
+     * @param ApiKeyManager           $apiKeyManager
+     * @param ClaudeApiClient         $apiClient
+     * @param StatesProvider          $statesProvider
+     * @param SchemaGenerator         $schemaGenerator
+     * @param ContentProcessor        $contentProcessor
+     * @param MetadataGenerator       $metadataGenerator
+     * @param LocationContextProvider $locationContext
+     * @param TestimonialProvider     $testimonialProvider
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
@@ -82,20 +125,24 @@ class StateContentGenerator implements ContentGeneratorInterface {
         StatesProvider $statesProvider,
         SchemaGenerator $schemaGenerator,
         ContentProcessor $contentProcessor,
-        MetadataGenerator $metadataGenerator
+        MetadataGenerator $metadataGenerator,
+        ?LocationContextProvider $locationContext = null,
+        ?TestimonialProvider $testimonialProvider = null
     ) {
-        $this->apiKeyManager     = $apiKeyManager;
-        $this->apiClient         = $apiClient;
-        $this->statesProvider    = $statesProvider;
-        $this->schemaGenerator   = $schemaGenerator;
-        $this->contentProcessor  = $contentProcessor;
-        $this->metadataGenerator = $metadataGenerator;
+        $this->apiKeyManager       = $apiKeyManager;
+        $this->apiClient           = $apiClient;
+        $this->statesProvider      = $statesProvider;
+        $this->schemaGenerator     = $schemaGenerator;
+        $this->contentProcessor    = $contentProcessor;
+        $this->metadataGenerator   = $metadataGenerator;
+        $this->locationContext     = $locationContext ?? new LocationContextProvider();
+        $this->testimonialProvider = $testimonialProvider ?? new TestimonialProvider( TestimonialBlockIds::getAll() );
     }
 
     /**
      * Generate content based on provided data
      *
-     * @param  array  $data  Data for content generation
+     * @param array $data Data for content generation
      *
      * @return string Generated content
      * @throws Exception
@@ -122,13 +169,16 @@ class StateContentGenerator implements ContentGeneratorInterface {
 
         // Get cities for this state to enable city interlinking
         $state_data = $this->statesProvider->get( $state );
-        $cities = $state_data['cities'] ?? [];
+        $cities     = $state_data['cities'] ?? [];
 
         // Process the raw content with city context for interlinking
         $processed_content = $this->contentProcessor->processContent( $raw_content, [
-            'state' => $state,
-            'cities' => $cities
+            'state'  => $state,
+            'cities' => $cities,
         ] );
+
+        // Validate for banned phrases
+        $this->validateBannedPhrases( $processed_content, $state );
 
         return $processed_content;
     }
@@ -136,7 +186,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
     /**
      * Validate that required data is present
      *
-     * @param  array  $data  Data to validate
+     * @param array $data Data to validate
      *
      * @return bool
      */
@@ -146,13 +196,14 @@ class StateContentGenerator implements ContentGeneratorInterface {
         }
 
         $state = $data['state'];
+
         return $this->statesProvider->has( $state );
     }
 
     /**
      * Generate a complete state page
      *
-     * @param  string  $state  State name
+     * @param string $state State name
      *
      * @return int|false Post ID on success, false on failure
      */
@@ -180,7 +231,8 @@ class StateContentGenerator implements ContentGeneratorInterface {
             try {
                 WP_CLI::log( "Generating AI metadata for {$state}..." );
                 $metadata = $this->metadataGenerator->generateStateMetadata( $state );
-            } catch ( Exception $e ) {
+            }
+            catch ( Exception $e ) {
                 WP_CLI::warning( "Metadata generation failed: {$e->getMessage()}. Using fallback." );
                 $metadata = $this->metadataGenerator->getFallbackStateMetadata( $state, $city_list );
             }
@@ -217,8 +269,10 @@ class StateContentGenerator implements ContentGeneratorInterface {
 
             return $post_id;
 
-        } catch ( Exception $e ) {
+        }
+        catch ( Exception $e ) {
             WP_CLI::error( "Failed to generate state page for {$state}: " . $e->getMessage() );
+
             return false;
         }
     }
@@ -226,8 +280,8 @@ class StateContentGenerator implements ContentGeneratorInterface {
     /**
      * Update an existing state page
      *
-     * @param  int  $post_id  Post ID to update
-     * @param  string  $state  State name
+     * @param int    $post_id Post ID to update
+     * @param string $state   State name
      *
      * @return bool Success status
      */
@@ -249,7 +303,8 @@ class StateContentGenerator implements ContentGeneratorInterface {
             try {
                 WP_CLI::log( "Generating AI metadata for {$state}..." );
                 $metadata = $this->metadataGenerator->generateStateMetadata( $state );
-            } catch ( Exception $e ) {
+            }
+            catch ( Exception $e ) {
                 WP_CLI::warning( "Metadata generation failed: {$e->getMessage()}. Using fallback." );
                 $metadata = $this->metadataGenerator->getFallbackStateMetadata( $state, $city_list );
             }
@@ -281,8 +336,10 @@ class StateContentGenerator implements ContentGeneratorInterface {
 
             return true;
 
-        } catch ( Exception $e ) {
+        }
+        catch ( Exception $e ) {
             WP_CLI::error( "Failed to update state page for {$state}  (ID: {$post_id}): " . $e->getMessage() );
+
             return false;
         }
     }
@@ -290,32 +347,30 @@ class StateContentGenerator implements ContentGeneratorInterface {
     /**
      * Generate the post title based on the provided data.
      *
-     * @param  mixed  $data  Input data used to construct the post title.
+     * @param mixed $data Input data used to construct the post title.
      *
      * @return string Generated post title.
      */
     public function getPostTitle( $data ): string {
-
         return "WordPress Development, Plugins, Consulting, Agency Services in {$data} | 84EM";
     }
 
     /**
      * Generate the meta description based on the provided data.
      *
-     * @param string $data
+     * @param string      $data
      * @param string|null $cities
      *
      * @return string
      */
     public function getMetaDescription( string $data, string $cities = null ): string {
-
         return "WordPress Development, Plugins, Consulting, Agency Services in {$data}, including {$cities}";
     }
 
     /**
      * Build the prompt for Claude API
      *
-     * @param  string  $state  State name
+     * @param string $state State name
      *
      * @return string The prompt for API
      */
@@ -325,39 +380,106 @@ class StateContentGenerator implements ContentGeneratorInterface {
         $cities     = $state_data['cities'] ?? [];
         $city_list  = implode( ', ', array_slice( $cities, 0, 10 ) );
 
+        // Get location context
+        $context        = $this->locationContext->getStateContext( $state );
+        $industries     = $context ? implode( ', ', $context['industries'] ) : '';
+        $business_angle = $context['business_angle'] ?? 'businesses';
+        $state_context  = $context['context'] ?? '';
+        $is_home_state  = $context['is_home_state'] ?? false;
+
+        // Get testimonial block reference
+        $testimonial_block = $this->testimonialProvider->getStateBlockReference( $state );
+
+        // Block IDs
         $services_block = BlockIds::SERVICES;
         $cta_block      = BlockIds::CTA;
 
-        $prompt = "Write a short landing page for 84EM's WordPress services in {$state}.
+        // Build banned phrases string
+        $banned_list = implode( "\n- ", self::BANNED_PHRASES );
+
+        // Home state gets special treatment
+        $home_state_note = $is_home_state
+            ? "\nNOTE: 84EM is headquartered in Cedar Rapids, Iowa. Mention this local presence naturally."
+            : '';
+
+        $prompt = "Write a landing page for 84EM's WordPress services targeting {$state} businesses.
+
+ABOUT 84EM:
+- WordPress development agency, fully remote, based in Cedar Rapids, Iowa
+- Programming since 1995, WordPress specialist since 2012
+- Partners with digital agencies (white-label or client-facing) and works directly with businesses
+- Industries served: fintech, healthcare, education, non-profits
+- Not the cheapest option; positioned on expertise and reliability{$home_state_note}
+
+STATE CONTEXT:
+- Key industries in {$state}: {$industries}
+- Business landscape: {$state_context}
+- Target audience: {$business_angle}
+- Major cities: {$city_list}
 
 VOICE:
-- Direct and matter-of-fact, no marketing fluff
+- Direct, matter-of-fact, no marketing fluff
 - Short sentences, one idea per paragraph
-- Use contractions naturally
+- Contractions are fine
+- Helpful, not fear-based (don't imply other developers are bad)
 
 STRUCTURE:
-1. Intro (2-3 sentences, each its own paragraph): Why businesses in {$state} need reliable WordPress help. Mention these cities: {$city_list}
-2. H2: \"WordPress Services in {$state}\" followed by exactly: <!-- wp:block {\"ref\":{$services_block}} /-->
-3. End with exactly: <!-- wp:block {\"ref\":{$cta_block}} /-->
+1. Opening hook (1 paragraph, 2-3 sentences): A specific observation about {$state} businesses and WordPress needs. Reference something real about the state's business landscape or industries. DO NOT start with 'Your WordPress site needs to work.'
+
+2. Value proposition (1 paragraph, 2-3 sentences): Why a remote WordPress specialist makes sense. Mention experience since 1995. Be specific about what that means for the client.
+
+3. Who we work with (1 paragraph, 2-3 sentences): Briefly mention the types of businesses or industries served. Make it relevant to {$state}'s economy.
+
+4. City mention: Naturally mention we serve businesses across {$state}, including these cities: {$city_list}. Integrate into prose with links—not a bullet list.
+
+5. H2: \"WordPress Services in {$state}\" followed by exactly:
+<!-- wp:block {\"ref\":{$services_block}} /-->
+
+6. Testimonial: Insert exactly:
+{$testimonial_block}
+
+7. End with exactly:
+<!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
 - Paragraphs: <!-- wp:paragraph {\"fontSize\":\"large\"} --><p class=\"has-large-font-size\">Text here.</p><!-- /wp:paragraph -->
 - Headings: <!-- wp:heading {\"level\":2,\"fontSize\":\"large\"} --><h2 class=\"has-large-font-size\"><strong>Heading</strong></h2><!-- /wp:heading -->
 
-AVOID:
-- Superlatives (game-changing, cutting-edge, best-in-class)
-- Emdashes
-- Bullet lists
-- Links in the intro";
+REQUIREMENTS:
+- Total length: 150-200 words of unique content (excluding blocks)
+- DO NOT start with 'Your WordPress site needs to work'
+- DO NOT use these phrases:
+- {$banned_list}
+- Vary the opening approach based on the state's character
+
+OUTPUT: Return only the WordPress block content, no preamble or explanation.";
 
         return $prompt;
     }
 
     /**
+     * Validate content doesn't contain banned phrases
+     *
+     * @param string $content Generated content
+     * @param string $state   State name for logging
+     *
+     * @return void
+     */
+    private function validateBannedPhrases( string $content, string $state ): void {
+        $lower_content = strtolower( $content );
+
+        foreach ( self::BANNED_PHRASES as $phrase ) {
+            if ( str_contains( $lower_content, strtolower( $phrase ) ) ) {
+                WP_CLI::warning( "Content for {$state} contains banned phrase: \"{$phrase}\"" );
+            }
+        }
+    }
+
+    /**
      * Set up URL structure for state page
      *
-     * @param  int  $post_id  Post ID
-     * @param  string  $state  State name
+     * @param int    $post_id Post ID
+     * @param string $state   State name
      *
      * @return void
      */
