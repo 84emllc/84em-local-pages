@@ -254,12 +254,13 @@ class ContentProcessor {
 
         // Find all placeholder links and replace with real URLs
         foreach ( $cities as $city_name ) {
-            // Match <a href="#">City Name</a> or <a href="#" ...>City Name</a>
-            $pattern = '/<a\s+href=["\']#["\']([^>]*)>' . preg_quote( $city_name, '/' ) . '<\/a>/i';
+            // Match any anchor tag with href="#" containing the city name
+            // Handles: <a href="#">City</a>, <a class="x" href="#">City</a>, etc.
+            $pattern = '/<a\s+[^>]*href=["\']#["\'][^>]*>' . preg_quote( $city_name, '/' ) . '<\/a>/i';
 
             if ( preg_match( $pattern, $content ) ) {
                 $city_url    = $this->generateCityUrl( $state, $city_name );
-                $replacement = '<a href="' . esc_url( $city_url ) . '"$1>' . $city_name . '</a>';
+                $replacement = '<a href="' . esc_url( $city_url ) . '">' . $city_name . '</a>';
                 $content     = preg_replace( $pattern, $replacement, $content );
             }
         }
