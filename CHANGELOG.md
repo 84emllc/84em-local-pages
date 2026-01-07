@@ -5,6 +5,28 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.18.0] - 2026-01-07
+
+### Added
+- **Randomized Testimonials**: Different testimonial blocks appear on different location pages
+  - Deterministic selection based on location name (consistent on regeneration)
+  - 5 testimonials for state pages, 9 for city pages
+  - New `TestimonialProvider` class with `getStateBlockReference()` and `getCityBlockReference()` methods
+  - New `TestimonialBlockIds` config class mapping testimonial keys to WordPress block IDs
+- **Location Context Provider**: Industry and business context for all 50 states and major cities
+  - State-specific industries, business landscape, and target audience data
+  - City-specific context for Iowa cities and major metros
+  - Falls back to state context for cities without specific data
+- **WP-CLI Testimonial Finder**: `--find-testimonial-ids` command to discover testimonial pattern block IDs
+
+### Changed
+- **Prompt Improvements**: Enhanced content generation prompts
+  - Added location context (industries, business landscape) for more relevant content
+  - Updated experience language to use years (1995, 2012) instead of calculated durations
+  - Clarified agency/business relationships: "Partners with digital agencies (white-label or client-facing) and works directly with businesses"
+  - Added banned phrase detection with WP-CLI warnings
+  - City pages no longer link to state pages (breadcrumbs provide navigation)
+
 ## [3.17.3] - 2025-12-29
 
 ### Changed
