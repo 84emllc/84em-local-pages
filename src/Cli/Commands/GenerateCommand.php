@@ -1334,6 +1334,10 @@ class GenerateCommand {
 
                 if ( ! empty( $city ) ) {
                     $context['city'] = $city;
+                } else {
+                    // For state pages, include cities array for linking
+                    $state_data = $this->statesProvider->get( $state );
+                    $context['cities'] = $state_data['cities'] ?? [];
                 }
 
                 // First, strip all existing links to keywords and locations

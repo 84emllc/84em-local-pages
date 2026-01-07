@@ -5,6 +5,14 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.18.3] - 2026-01-07
+
+### Fixed
+- **Placeholder Link Fix (Complete)**: Fixed two issues preventing placeholder link replacement
+  - `handleUpdateLocationLinks` now passes cities array in context for state pages
+  - Updated regex pattern to match `href="#"` regardless of attribute order
+  - Fixes `<a class="x" href="#">City</a>` and other variations
+
 ## [3.18.2] - 2026-01-07
 
 ### Fixed
