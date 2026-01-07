@@ -378,15 +378,21 @@ class GenerateCommand {
             $processed_ids = [];
         }
 
-        $query_args = [];
-
-        // If states-only flag is set, exclude city pages from the query
-        if ( $states_only ) {
-            $query_args['meta_query'] = [
+        // Always filter by _local_page_state to only get actual local pages
+        $query_args = [
+            'meta_query' => [
                 [
-                    'key'     => '_local_page_city',
-                    'compare' => 'NOT EXISTS',
+                    'key'     => '_local_page_state',
+                    'compare' => 'EXISTS',
                 ],
+            ],
+        ];
+
+        // If states-only flag is set, also exclude city pages from the query
+        if ( $states_only ) {
+            $query_args['meta_query'][] = [
+                'key'     => '_local_page_city',
+                'compare' => 'NOT EXISTS',
             ];
         }
 
