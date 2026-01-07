@@ -81,6 +81,9 @@ class ContentProcessor {
         $city  = $context['city'] ?? null;
         $cities = $context['cities'] ?? null;
 
+        // First, fix any placeholder links (href="#") that Claude may have generated
+        $content = $this->fixPlaceholderLinks( $content, $context );
+
         if ( $state ) {
             // For state pages: Link city names to their respective city pages
             if ( ! $city && $cities ) {
@@ -92,9 +95,9 @@ class ContentProcessor {
                         continue;
                     }
 
-                    // Check if city name is already inside ANY link (not just this specific URL)
-                    $already_linked_pattern = '/<a\s+href=["\'][^"\']*["\'][^>]*>\s*' . preg_quote( $city_name, '/' ) . '\s*<\/a>/i';
-                    if ( preg_match( $already_linked_pattern, $content ) ) {
+                    // Check if city name is already inside a REAL link (not placeholder #)
+                    $real_link_pattern = '/<a\s+href=["\'][^"#][^"\']*["\'][^>]*>\s*' . preg_quote( $city_name, '/' ) . '\s*<\/a>/i';
+                    if ( preg_match( $real_link_pattern, $content ) ) {
                         continue;
                     }
 
@@ -228,6 +231,40 @@ class ContentProcessor {
         }
 
         return implode( "\n", $blocks );
+    }
+
+    /**
+     * Fix placeholder links (href="#") with real URLs
+     *
+     * Claude sometimes generates placeholder links like [City](#) which become
+     * <a href="#">City</a>. This method replaces those with real city/state URLs.
+     *
+     * @param  string  $content  Content to process
+     * @param  array  $context  Context with state, city info
+     *
+     * @return string Content with placeholder links fixed
+     */
+    private function fixPlaceholderLinks( string $content, array $context = [] ): string {
+        $state  = $context['state'] ?? null;
+        $cities = $context['cities'] ?? [];
+
+        if ( ! $state || empty( $cities ) ) {
+            return $content;
+        }
+
+        // Find all placeholder links and replace with real URLs
+        foreach ( $cities as $city_name ) {
+            // Match <a href="#">City Name</a> or <a href="#" ...>City Name</a>
+            $pattern = '/<a\s+href=["\']#["\']([^>]*)>' . preg_quote( $city_name, '/' ) . '<\/a>/i';
+
+            if ( preg_match( $pattern, $content ) ) {
+                $city_url    = $this->generateCityUrl( $state, $city_name );
+                $replacement = '<a href="' . esc_url( $city_url ) . '"$1>' . $city_name . '</a>';
+                $content     = preg_replace( $pattern, $replacement, $content );
+            }
+        }
+
+        return $content;
     }
 
     /**
