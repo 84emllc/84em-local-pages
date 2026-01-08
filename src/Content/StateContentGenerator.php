@@ -406,7 +406,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
 
 ABOUT 84EM:
 - WordPress development agency, fully remote, based in Cedar Rapids, Iowa
-- Founded in 1995, specializing in WordPress since 2012. When mentioning years of experience in the content, output [dev_years] for total programming years and [wp_years] for WordPress years (these are WordPress shortcodes)
+- Programming since 1995, WordPress specialist since 2012. IMPORTANT: When mentioning experience duration, you MUST use these exact shortcodes with 'years' after them: '[dev_years] years' or '[wp_years] years'. Correct: 'over [wp_years] years of WordPress' or '[dev_years] years of programming'. Wrong: 'since [wp_years]' or just '[wp_years]'
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
 - Industries served: fintech, healthcare, education, non-profits
 - Not the cheapest option; positioned on expertise and reliability{$home_state_note}
