@@ -433,9 +433,15 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
 ABOUT 84EM:
 - WordPress development agency, fully remote, based in Cedar Rapids, Iowa
-- Programming since 1995, WordPress specialist since 2012. IMPORTANT: When mentioning experience duration, you MUST use these exact shortcodes with 'years' after them: '[dev_years] years' or '[wp_years] years'. Correct: 'over [wp_years] years of WordPress' or '[dev_years] years of programming'. Wrong: 'since [wp_years]' or just '[wp_years]'
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
 - Works with businesses in fintech, healthcare, education, non-profits{$home_note}
+
+EXPERIENCE SHORTCODES (CRITICAL):
+When mentioning years of experience, you MUST use these shortcodes exactly as shown:
+- '[dev_years] years' for programming experience (e.g., 'over [dev_years] years of programming')
+- '[wp_years] years' for WordPress experience (e.g., '[wp_years] years of WordPress expertise')
+NEVER write 'since [dev_years]' or 'since [wp_years]' - that produces nonsense like 'since 31'.
+NEVER combine shortcodes with year dates like 'since 1995' - use ONLY the shortcode pattern above.
 
 CITY CONTEXT:
 {$city_context_note}
@@ -449,7 +455,7 @@ VOICE:
 STRUCTURE:
 1. Opening hook (2-3 sentences, each its own paragraph): Something specific about doing business in {$city} and WordPress needs. Don't be generic. Reference what makes {$city} distinctive.
 
-2. Why remote works (1-2 sentences): Briefly explain why location doesn't limit service quality. Mention experience since 1995.
+2. Why remote works (1-2 sentences): Briefly explain why location doesn't limit service quality. Mention experience using the shortcodes above.
 
 3. What we bring (1-2 sentences): Reference specific expertise relevant to likely industries in {$city}.
 
