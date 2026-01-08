@@ -406,10 +406,16 @@ class StateContentGenerator implements ContentGeneratorInterface {
 
 ABOUT 84EM:
 - WordPress development agency, fully remote, based in Cedar Rapids, Iowa
-- Programming since 1995, WordPress specialist since 2012. IMPORTANT: When mentioning experience duration, you MUST use these exact shortcodes with 'years' after them: '[dev_years] years' or '[wp_years] years'. Correct: 'over [wp_years] years of WordPress' or '[dev_years] years of programming'. Wrong: 'since [wp_years]' or just '[wp_years]'
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
 - Industries served: fintech, healthcare, education, non-profits
 - Not the cheapest option; positioned on expertise and reliability{$home_state_note}
+
+EXPERIENCE SHORTCODES (CRITICAL):
+When mentioning years of experience, you MUST use these shortcodes exactly as shown:
+- '[dev_years] years' for programming experience (e.g., 'over [dev_years] years of programming')
+- '[wp_years] years' for WordPress experience (e.g., '[wp_years] years of WordPress expertise')
+NEVER write 'since [dev_years]' or 'since [wp_years]' - that produces nonsense like 'since 31'.
+NEVER combine shortcodes with year dates like 'since 1995' - use ONLY the shortcode pattern above.
 
 STATE CONTEXT:
 - Key industries in {$state}: {$industries}
@@ -426,7 +432,7 @@ VOICE:
 STRUCTURE:
 1. Opening hook (1 paragraph, 2-3 sentences): A specific observation about {$state} businesses and WordPress needs. Reference something real about the state's business landscape or industries. DO NOT start with 'Your WordPress site needs to work.'
 
-2. Value proposition (1 paragraph, 2-3 sentences): Why a remote WordPress specialist makes sense. Mention experience since 1995. Be specific about what that means for the client.
+2. Value proposition (1 paragraph, 2-3 sentences): Why a remote WordPress specialist makes sense. Mention experience using the shortcodes above. Be specific about what that means for the client.
 
 3. Who we work with (1 paragraph, 2-3 sentences): Briefly mention the types of businesses or industries served. Make it relevant to {$state}'s economy.
 

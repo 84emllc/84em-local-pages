@@ -5,6 +5,17 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.2] - 2026-01-08
+
+### Fixed
+- **Dynamic Years Shortcode Misuse (Complete Fix)**: Removed all conflicting date references from prompts
+  - v3.19.1 fix was insufficient - AI was still combining "since 1995" with shortcodes
+  - Removed "Programming since 1995, WordPress specialist since 2012" text that confused AI
+  - Removed "Mention experience since 1995" instruction from structure section
+  - Created dedicated "EXPERIENCE SHORTCODES (CRITICAL)" section with clear rules
+  - Added explicit NEVER rules: no "since [shortcode]", no combining with year dates
+  - Affects both `CityContentGenerator.php` and `StateContentGenerator.php`
+
 ## [3.19.1] - 2026-01-08
 
 ### Fixed
