@@ -433,7 +433,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
 
 ABOUT 84EM:
 - WordPress development agency, fully remote, based in Cedar Rapids, Iowa
-- Programming since 1995, WordPress specialist since 2012
+- Founded in 1995, specializing in WordPress since 2012. When mentioning years of experience in the content, output [dev_years] for total programming years and [wp_years] for WordPress years (these are WordPress shortcodes)
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
 - Works with businesses in fintech, healthcare, education, non-profits{$home_note}
 
