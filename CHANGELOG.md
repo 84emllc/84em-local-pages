@@ -5,6 +5,14 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.5] - 2026-01-10
+
+### Added
+- **PHP Syntax Check Workflow**: Multi-version PHP syntax validation
+  - Tests against PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4
+  - Matrix strategy for parallel testing
+  - Shields.io status badges for each PHP version in README
+
 ## [3.19.4] - 2026-01-10
 
 ### Added
