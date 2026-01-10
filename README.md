@@ -18,6 +18,14 @@ If you chose to use & install it, you do so at your own risk.
 [![Deploy Staging](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-staging.yml)
 [![Deploy Dev](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-dev.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-dev.yml)
 
+![tested on](https://img.shields.io/badge/tested%20on-grey)
+[![PHP 7.4](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%207.4)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+[![PHP 8.0](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.0)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+[![PHP 8.1](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.1)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+[![PHP 8.2](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.2)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+[![PHP 8.3](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.3)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+[![PHP 8.4](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.4)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+
 A WordPress plugin that automatically generates SEO-optimized Local Pages for each US state and city using Claude AI and WP-CLI, designed specifically for 84em.com.
 
 ## Overview
