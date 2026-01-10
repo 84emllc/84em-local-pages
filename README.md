@@ -12,6 +12,8 @@ If you chose to use & install it, you do so at your own risk.
 
 [![Tests](https://github.com/84emllc/84em-local-pages/actions/workflows/tests.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/tests.yml)
 [![Security Review](https://github.com/84emllc/84em-local-pages/actions/workflows/security-review.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/security-review.yml)
+[![Check Links](https://github.com/84emllc/84em-local-pages/actions/workflows/check-links.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/check-links.yml)
+[![External Link Check](https://github.com/84emllc/84em-local-pages/actions/workflows/check-external-links.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/check-external-links.yml)
 [![Deploy Production](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-prod.yml)
 [![Deploy Staging](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-staging.yml)
 [![Deploy Dev](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-dev.yml/badge.svg)](https://github.com/84emllc/84em-local-pages/actions/workflows/deploy-dev.yml)
