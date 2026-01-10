@@ -25,6 +25,7 @@ If you chose to use & install it, you do so at your own risk.
 [![PHP 8.2](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.2)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
 [![PHP 8.3](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.3)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
 [![PHP 8.4](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.4)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
+[![PHP 8.5](https://img.shields.io/github/actions/workflow/status/84emllc/84em-local-pages/php-syntax.yml?label=PHP%208.5)](https://github.com/84emllc/84em-local-pages/actions/workflows/php-syntax.yml)
 
 A WordPress plugin that automatically generates SEO-optimized Local Pages for each US state and city using Claude AI and WP-CLI, designed specifically for 84em.com.
 
