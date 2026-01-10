@@ -5,6 +5,12 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.7] - 2026-01-10
+
+### Changed
+- **PHP Syntax Workflow**: Removed PHP 7.4, 8.0, 8.1 (plugin requires PHP 8.2+)
+- **README Badges**: Added shields.io Security badge to tested-on section
+
 ## [3.19.6] - 2026-01-10
 
 ### Added
