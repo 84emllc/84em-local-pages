@@ -5,6 +5,14 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.4] - 2026-01-10
+
+### Added
+- **GitHub Actions Link Checking Workflows**: Added automated link validation
+  - `check-links.yml`: Internal link validation on push/PR to markdown files
+  - `check-external-links.yml`: Weekly external link check with issue creation
+  - Status badges added to README for both workflows
+
 ## [3.19.3] - 2026-01-10
 
 ### Added
