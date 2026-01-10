@@ -5,6 +5,13 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.3] - 2026-01-10
+
+### Added
+- **GitHub Actions Status Badges**: Added workflow status badges to README
+  - Tests, Security Review, Deploy Production, Deploy Staging, Deploy Dev
+  - Badges link to respective GitHub Actions workflow pages
+
 ## [3.19.2] - 2026-01-08
 
 ### Fixed
