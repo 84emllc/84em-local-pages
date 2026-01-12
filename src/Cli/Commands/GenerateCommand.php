@@ -539,7 +539,8 @@ class GenerateCommand {
      * @return void
      */
     public function handleState( array $args, array $assoc_args ): void {
-        $state_arg = $assoc_args['state'];
+        $start_time = time();
+        $state_arg  = $assoc_args['state'];
 
         // Handle 'all' states
         if ( $state_arg === 'all' ) {
@@ -587,6 +588,15 @@ class GenerateCommand {
 
         WP_CLI::line( '' );
         WP_CLI::line( "📊 Summary: Created {$created_count}, Updated {$updated_count}" );
+
+        // Send Slack notification
+        $this->slackNotifier->notifyOperationComplete( [
+            'operation' => 'State Generation',
+            'location'  => $state_arg,
+            'created'   => $created_count,
+            'updated'   => $updated_count,
+            'duration'  => $this->formatDuration( $start_time ),
+        ] );
     }
 
     /**
@@ -598,8 +608,9 @@ class GenerateCommand {
      * @return void
      */
     public function handleCity( array $args, array $assoc_args ): void {
-        $state_arg = $assoc_args['state'] ?? null;
-        $city_arg  = $assoc_args['city'] ?? null;
+        $start_time = time();
+        $state_arg  = $assoc_args['state'] ?? null;
+        $city_arg   = $assoc_args['city'] ?? null;
 
         if ( empty( $state_arg ) ) {
             WP_CLI::error( 'State is required when working with cities. Use --state="State Name"' );
@@ -669,6 +680,15 @@ class GenerateCommand {
 
         WP_CLI::line( '' );
         WP_CLI::line( "📊 Summary: Created {$created_count}, Updated {$updated_count}" );
+
+        // Send Slack notification
+        $this->slackNotifier->notifyOperationComplete( [
+            'operation' => 'City Generation',
+            'location'  => $city_arg . ', ' . $state_arg,
+            'created'   => $created_count,
+            'updated'   => $updated_count,
+            'duration'  => $this->formatDuration( $start_time ),
+        ] );
     }
 
     /**
@@ -1068,6 +1088,7 @@ class GenerateCommand {
      * @return void
      */
     private function generateAllCitiesForState( string $state, bool $update_state_page = false ): void {
+        $start_time = time();
         $state_data = $this->statesProvider->get( $state );
         if ( ! $state_data ) {
             WP_CLI::error( "Invalid state: {$state}" );
@@ -1082,8 +1103,10 @@ class GenerateCommand {
 
         WP_CLI::line( "🏙️ Generating all cities for {$state}..." );
 
-        $created_count = 0;
-        $updated_count = 0;
+        $created_count       = 0;
+        $updated_count       = 0;
+        $state_created_count = 0;
+        $state_updated_count = 0;
 
         $progress = \WP_CLI\Utils\make_progress_bar( "Processing {$state} cities", count( $cities ) );
 
@@ -1128,6 +1151,7 @@ class GenerateCommand {
 
             if ( $existing_state_post ) {
                 if ( $this->stateContentGenerator->updateStatePage( $existing_state_post->ID, $state ) ) {
+                    $state_updated_count ++;
                     WP_CLI::success( "Updated state page: {$state} (ID: {$existing_state_post->ID})" );
                 }
                 else {
@@ -1137,6 +1161,7 @@ class GenerateCommand {
             else {
                 $post_id = $this->stateContentGenerator->generateStatePage( $state );
                 if ( $post_id ) {
+                    $state_created_count ++;
                     WP_CLI::success( "Created state page: {$state} (ID: {$post_id})" );
                 }
                 else {
@@ -1146,6 +1171,16 @@ class GenerateCommand {
 
             sleep( 2 );
         }
+
+        // Send Slack notification
+        $operation = $update_state_page ? 'State + Cities Generation' : 'All Cities Generation';
+        $this->slackNotifier->notifyOperationComplete( [
+            'operation' => $operation,
+            'location'  => $state,
+            'created'   => $created_count + $state_created_count,
+            'updated'   => $updated_count + $state_updated_count,
+            'duration'  => $this->formatDuration( $start_time ),
+        ] );
     }
 
     /**
