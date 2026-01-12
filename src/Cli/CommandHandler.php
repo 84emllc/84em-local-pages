@@ -14,6 +14,7 @@ use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
 use EightyFourEM\LocalPages\Cli\TestimonialIdFinder;
 use EightyFourEM\LocalPages\Api\ApiKeyManager;
 use EightyFourEM\LocalPages\Api\ClaudeApiClient;
+use EightyFourEM\LocalPages\Notifications\SlackWebhookManager;
 use WP_CLI;
 
 /**
@@ -43,20 +44,30 @@ class CommandHandler {
     private GenerateCommand $generateCommand;
 
     /**
+     * Slack webhook manager instance
+     *
+     * @var SlackWebhookManager
+     */
+    private SlackWebhookManager $slackWebhookManager;
+
+    /**
      * Constructor
      *
      * @param  ApiKeyManager  $apiKeyManager
+     * @param  SlackWebhookManager  $slackWebhookManager
      * @param  TestCommand  $testCommand
      * @param  GenerateCommand  $generateCommand
      */
     public function __construct(
         ApiKeyManager $apiKeyManager,
+        SlackWebhookManager $slackWebhookManager,
         TestCommand $testCommand,
         GenerateCommand $generateCommand
     ) {
-        $this->apiKeyManager    = $apiKeyManager;
-        $this->testCommand      = $testCommand;
-        $this->generateCommand  = $generateCommand;
+        $this->apiKeyManager        = $apiKeyManager;
+        $this->slackWebhookManager  = $slackWebhookManager;
+        $this->testCommand          = $testCommand;
+        $this->generateCommand      = $generateCommand;
     }
 
     /**
@@ -101,6 +112,22 @@ class CommandHandler {
 
             if ( isset( $assoc_args['reset-api-model'] ) ) {
                 $this->handleApiModelReset();
+                return;
+            }
+
+            // Handle Slack webhook configuration
+            if ( isset( $assoc_args['set-slack-webhook'] ) ) {
+                $this->handleSlackWebhookSet();
+                return;
+            }
+
+            if ( isset( $assoc_args['test-slack-webhook'] ) ) {
+                $this->handleSlackWebhookTest();
+                return;
+            }
+
+            if ( isset( $assoc_args['remove-slack-webhook'] ) ) {
+                $this->handleSlackWebhookRemove();
                 return;
             }
 
@@ -686,6 +713,7 @@ class CommandHandler {
             'state', 'city', 'test', 'suite', 'generate-all', 'update-all',
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
+            'set-slack-webhook', 'test-slack-webhook', 'remove-slack-webhook',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
             'update-location-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
             'template', 'dry-run', 'resume', 'find-testimonial-ids',
@@ -752,6 +780,7 @@ class CommandHandler {
             'state', 'city', 'test', 'suite', 'generate-all', 'update-all',
             'states-only', 'complete', 'set-api-key', 'validate-api-key',
             'set-api-model', 'get-api-model', 'validate-api-model', 'reset-api-model',
+            'set-slack-webhook', 'test-slack-webhook', 'remove-slack-webhook',
             'generate-sitemap', 'generate-index', 'regenerate-schema',
             'update-location-links', 'update-page-templates', 'migrate-urls', 'delete', 'update', 'help', 'all',
             'template', 'dry-run', 'resume', 'find-testimonial-ids',
@@ -971,6 +1000,123 @@ class CommandHandler {
     }
 
     /**
+     * Handle Slack webhook URL setting
+     *
+     * @return void
+     */
+    private function handleSlackWebhookSet(): void {
+        WP_CLI::line( 'Setting Slack Webhook URL' );
+        WP_CLI::line( '=========================' );
+        WP_CLI::line( '' );
+        WP_CLI::line( 'For security reasons, please paste your Slack webhook URL when prompted.' );
+        WP_CLI::line( 'The URL will not be visible as you type and will not appear in your shell history.' );
+        WP_CLI::line( '' );
+
+        // Flush all output buffers before reading input
+        while ( ob_get_level() > 0 ) {
+            ob_end_flush();
+        }
+        flush();
+
+        // Disable echo for secure input
+        if ( function_exists( 'system' ) ) {
+            system( 'stty -echo' );
+        }
+
+        fwrite( STDOUT, 'Paste your Slack webhook URL: ' );
+        fflush( STDOUT );
+
+        $handle      = fopen( 'php://stdin', 'r' );
+        $webhook_url = trim( fgets( $handle ) );
+        fclose( $handle );
+
+        // Re-enable echo
+        if ( function_exists( 'system' ) ) {
+            system( 'stty echo' );
+        }
+
+        WP_CLI::line( '' );
+
+        if ( empty( $webhook_url ) ) {
+            WP_CLI::error( 'No webhook URL provided. Operation cancelled.' );
+            return;
+        }
+
+        // Validate URL format
+        if ( ! $this->slackWebhookManager->validateUrlFormat( $webhook_url ) ) {
+            WP_CLI::error( 'Invalid Slack webhook URL format. URL must start with https://hooks.slack.com/services/' );
+            return;
+        }
+
+        // Store the webhook URL
+        $result = $this->slackWebhookManager->setWebhookUrl( $webhook_url );
+        if ( ! $result ) {
+            WP_CLI::error( 'Failed to store the webhook URL.' );
+            return;
+        }
+
+        WP_CLI::success( 'Slack webhook URL securely encrypted and stored.' );
+
+        // Ask if user wants to send test notification
+        if ( WP_CLI::confirm( 'Would you like to send a test notification?' ) ) {
+            $this->handleSlackWebhookTest();
+        }
+    }
+
+    /**
+     * Handle Slack webhook test
+     *
+     * @return void
+     */
+    private function handleSlackWebhookTest(): void {
+        WP_CLI::line( 'Testing Slack Webhook' );
+        WP_CLI::line( '=====================' );
+        WP_CLI::line( '' );
+
+        if ( ! $this->slackWebhookManager->hasWebhookUrl() ) {
+            WP_CLI::error( 'No Slack webhook URL configured. Please set one first using --set-slack-webhook' );
+            return;
+        }
+
+        WP_CLI::log( 'Sending test notification...' );
+
+        $notifier = new \EightyFourEM\LocalPages\Notifications\SlackNotifier( $this->slackWebhookManager );
+
+        if ( $notifier->sendTestNotification() ) {
+            WP_CLI::success( 'Test notification sent successfully! Check your Slack channel.' );
+        } else {
+            WP_CLI::error( 'Failed to send test notification. Check webhook URL and network connectivity.' );
+        }
+    }
+
+    /**
+     * Handle Slack webhook removal
+     *
+     * @return void
+     */
+    private function handleSlackWebhookRemove(): void {
+        WP_CLI::line( 'Remove Slack Webhook' );
+        WP_CLI::line( '====================' );
+        WP_CLI::line( '' );
+
+        if ( ! $this->slackWebhookManager->hasWebhookUrl() ) {
+            WP_CLI::warning( 'No Slack webhook URL currently configured.' );
+            return;
+        }
+
+        if ( ! WP_CLI::confirm( 'Are you sure you want to remove the Slack webhook URL?' ) ) {
+            WP_CLI::line( 'Operation cancelled.' );
+            return;
+        }
+
+        if ( $this->slackWebhookManager->deleteWebhookUrl() ) {
+            WP_CLI::success( 'Slack webhook URL removed.' );
+        } else {
+            WP_CLI::error( 'Failed to remove Slack webhook URL.' );
+        }
+    }
+
+    /**
      * Show help information
      *
      * @return void
@@ -992,6 +1138,11 @@ class CommandHandler {
         WP_CLI::line( '  --get-api-model            Display current API model configuration' );
         WP_CLI::line( '  --validate-api-model       Test current model with Claude API' );
         WP_CLI::line( '  --reset-api-model          Clear current model configuration' );
+        WP_CLI::line( '' );
+        WP_CLI::line( 'SLACK NOTIFICATIONS:' );
+        WP_CLI::line( '  --set-slack-webhook        Set Slack webhook URL (interactive prompt)' );
+        WP_CLI::line( '  --test-slack-webhook       Send test notification to verify webhook' );
+        WP_CLI::line( '  --remove-slack-webhook     Remove stored Slack webhook URL' );
         WP_CLI::line( '' );
         WP_CLI::line( 'TESTING:' );
         WP_CLI::line( '  --test --all               Run all test suites' );
