@@ -386,11 +386,9 @@ class StateContentGenerator implements ContentGeneratorInterface {
         $city_list  = implode( ', ', array_slice( $cities, 0, 10 ) );
 
         // Get location context
-        $context        = $this->locationContext->getStateContext( $state );
-        $industries     = $context ? implode( ', ', $context['industries'] ) : '';
-        $business_angle = $context['business_angle'] ?? 'businesses';
-        $state_context  = $context['context'] ?? '';
-        $is_home_state  = $context['is_home_state'] ?? false;
+        $context       = $this->locationContext->getStateContext( $state );
+        $state_context = $context['context'] ?? '';
+        $is_home_state = $context['is_home_state'] ?? false;
 
         // Get testimonial block reference
         $testimonial_block = $this->testimonialProvider->getStateBlockReference( $state );
@@ -407,12 +405,17 @@ class StateContentGenerator implements ContentGeneratorInterface {
             ? "\nNOTE: 84EM is headquartered in Cedar Rapids, Iowa. Mention this naturally."
             : '';
 
+        // State context as background, not a list to parrot
+        $state_context_note = $state_context
+            ? "Background (for tone, not to list verbatim): {$state_context}"
+            : '';
+
         $prompt = "Write a landing page for 84EM's WordPress services targeting {$state} businesses.
 
 ABOUT 84EM:
 - WordPress development agency based in Cedar Rapids, Iowa
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
-- Industries served: fintech, healthcare, education, non-profits
+- Works across industries—no single vertical focus
 - Positioned on expertise and reliability, not price
 {$home_state_note}
 
@@ -424,9 +427,7 @@ NEVER write 'since [dev_years]' or 'since [wp_years]' - that produces nonsense l
 NEVER combine shortcodes with year dates like 'since 1995' - use ONLY the shortcode pattern above.
 
 STATE CONTEXT:
-- Key industries in {$state}: {$industries}
-- Business landscape: {$state_context}
-- Target audience: {$business_angle}
+{$state_context_note}
 - Major cities: {$city_list}
 
 VOICE:
@@ -436,11 +437,11 @@ VOICE:
 - Helpful, not fear-based (don't imply other developers are bad)
 
 STRUCTURE:
-1. Opening hook (1 paragraph, 2-3 sentences): A specific observation about {$state} businesses and WordPress needs. Reference something real about the state's business landscape or industries. DO NOT start with 'Your WordPress site needs to work.'
+1. Opening hook (1 paragraph, 2-3 sentences): A specific observation about {$state} businesses and WordPress needs. Reference something real about the state—don't list industries generically.
 
 2. Value proposition (1 paragraph, 2-3 sentences): Why working with a WordPress specialist makes sense. Mention experience using the shortcodes above. Be specific about what that means for the client.
 
-3. Who we work with (1 paragraph, 2-3 sentences): Briefly mention the types of businesses or industries served. Make it relevant to {$state}'s economy.
+3. Who we work with (1 paragraph, 2-3 sentences): We work with agencies and businesses across industries. If you mention a specific industry, make it genuinely relevant to {$state}—don't default to a generic list like 'fintech, healthcare, education, non-profits.'
 
 4. City mention: Naturally mention we serve businesses across {$state}, including these cities: {$city_list}. Integrate into prose with links—not a bullet list.
 
@@ -460,6 +461,7 @@ FORMATTING:
 REQUIREMENTS:
 - Total length: 150-200 words of unique content (excluding blocks)
 - DO NOT start with 'Your WordPress site needs to work'
+- DO NOT list industries generically (e.g., 'fintech, healthcare, education, and non-profits')
 - DO NOT use these phrases:
 - {$banned_list}
 - Vary the opening approach based on the state's character

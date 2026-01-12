@@ -406,10 +406,9 @@ class CityContentGenerator implements ContentGeneratorInterface {
         $city_context  = $this->locationContext->getCityContext( $city, $state );
         $state_context = $this->locationContext->getStateContext( $state );
 
-        $industries     = $city_context ? implode( ', ', $city_context['industries'] ) : '';
-        $city_desc      = $city_context['context'] ?? '';
-        $is_home_state  = $state_context['is_home_state'] ?? false;
-        $has_city_data  = $this->locationContext->hasCityContext( $city, $state );
+        $city_desc     = $city_context['context'] ?? '';
+        $is_home_state = $state_context['is_home_state'] ?? false;
+        $has_city_data = $this->locationContext->hasCityContext( $city, $state );
 
         // Get testimonial block reference (deterministic per city)
         $testimonial_block = $this->testimonialProvider->getCityBlockReference( $state, $city );
@@ -428,17 +427,17 @@ class CityContentGenerator implements ContentGeneratorInterface {
             }
         }
 
-        // City context instruction
+        // City context as background, not a list to parrot
         $city_context_note = $has_city_data
-            ? "Use this context about {$city}: {$city_desc}. Key industries: {$industries}."
-            : "Research or infer what {$city} might be known for (industry, character, size) and reference it naturally.";
+            ? "Background (for tone, not to list verbatim): {$city_desc}"
+            : "Infer what might make {$city} distinctive and reference it naturally.";
 
         $prompt = "Write a landing page for 84EM's WordPress services in {$city}, {$state}.
 
 ABOUT 84EM:
 - WordPress development agency based in Cedar Rapids, Iowa
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
-- Works with businesses in fintech, healthcare, education, non-profits
+- Works across industries—no single vertical focus
 {$home_note}
 
 EXPERIENCE SHORTCODES (CRITICAL):
@@ -458,19 +457,17 @@ VOICE:
 - Helpful tone—explain how we can help, not why others fail
 
 STRUCTURE:
-1. Opening hook (2-3 sentences, each its own paragraph): Something specific about doing business in {$city} and WordPress needs. Don't be generic. Reference what makes {$city} distinctive.
+1. Opening hook (2-3 sentences): Something specific about doing business in {$city} and WordPress needs. Reference what makes {$city} distinctive—don't list industries generically.
 
 2. Why 84EM (1-2 sentences): Briefly explain the value of working with a specialist. Mention experience using the shortcodes above.
 
-3. What we bring (1-2 sentences): Reference specific expertise relevant to likely industries in {$city}.
-
-4. H2: \"WordPress Services in {$city}\" followed by exactly:
+3. H2: \"WordPress Services in {$city}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
 
-5. Testimonial: Insert exactly:
+4. Testimonial: Insert exactly:
 {$testimonial_block}
 
-6. End with exactly:
+5. End with exactly:
 <!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
@@ -481,6 +478,7 @@ REQUIREMENTS:
 - Total: 100-150 words of unique content (excluding blocks)
 - DO NOT include any links to the state page (breadcrumbs already provide this navigation)
 - DO NOT start with 'Your WordPress site needs to work'
+- DO NOT list industries generically (e.g., 'fintech, healthcare, education, and non-profits')
 - DO NOT use these phrases:
 - {$banned_list}
 - Each city page should feel distinct—vary the angle based on what makes {$city} unique
