@@ -5,6 +5,14 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.8] - 2026-01-11
+
+### Changed
+- **Content Prompts**: Simplified "remote" messaging to focus on Cedar Rapids headquarters
+- **Banned Phrases**: Added AI-related terms (AI-powered, artificial intelligence, machine learning)
+- **City Content**: Changed "Why remote works" section to "Why 84EM" for clearer positioning
+- **State Content**: Added "doing the heavy lifting" to banned phrases
+
 ## [3.19.7] - 2026-01-10
 
 ### Changed

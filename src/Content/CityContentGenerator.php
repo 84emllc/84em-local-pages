@@ -91,6 +91,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
      * Banned phrases to avoid repetitive content
      *
      * @var array<string>
+     * @todo Move to config
      */
     private const BANNED_PHRASES = [
         'Your WordPress site needs to work',
@@ -106,6 +107,9 @@ class CityContentGenerator implements ContentGeneratorInterface {
         'second to none',
         'unparalleled',
         'world-class',
+        'AI-powered',
+        'artificial intelligence',
+        'machine learning',
     ];
 
     /**
@@ -417,10 +421,10 @@ class CityContentGenerator implements ContentGeneratorInterface {
         $home_note = '';
         if ( $is_home_state ) {
             if ( $city === 'Cedar Rapids' ) {
-                $home_note = "\nNOTE: 84EM is headquartered in Cedar Rapids. This is our home city—mention this local presence prominently.";
+                $home_note = "\nNOTE: 84EM is headquartered in Cedar Rapids. This is our home city—mention this.";
             }
             else {
-                $home_note = "\nNOTE: 84EM is based in Cedar Rapids, Iowa—right here in the state. Mention this nearby presence.";
+                $home_note = "\nNOTE: 84EM is headquartered in Cedar Rapids, Iowa. Mention this naturally.";
             }
         }
 
@@ -432,9 +436,10 @@ class CityContentGenerator implements ContentGeneratorInterface {
         $prompt = "Write a landing page for 84EM's WordPress services in {$city}, {$state}.
 
 ABOUT 84EM:
-- WordPress development agency, fully remote, based in Cedar Rapids, Iowa
+- WordPress development agency based in Cedar Rapids, Iowa
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
-- Works with businesses in fintech, healthcare, education, non-profits{$home_note}
+- Works with businesses in fintech, healthcare, education, non-profits
+{$home_note}
 
 EXPERIENCE SHORTCODES (CRITICAL):
 When mentioning years of experience, you MUST use these shortcodes exactly as shown:
@@ -455,7 +460,7 @@ VOICE:
 STRUCTURE:
 1. Opening hook (2-3 sentences, each its own paragraph): Something specific about doing business in {$city} and WordPress needs. Don't be generic. Reference what makes {$city} distinctive.
 
-2. Why remote works (1-2 sentences): Briefly explain why location doesn't limit service quality. Mention experience using the shortcodes above.
+2. Why 84EM (1-2 sentences): Briefly explain the value of working with a specialist. Mention experience using the shortcodes above.
 
 3. What we bring (1-2 sentences): Reference specific expertise relevant to likely industries in {$city}.
 

@@ -142,7 +142,7 @@ CONTEXT:
 - Company: 84EM (WordPress development agency)
 - Location focus: {$state} (major cities: {$city_list})
 - Services: WordPress development, custom plugins, consulting, agency services
-- Company is 100% remote, headquartered in Cedar Rapids, Iowa
+- Company headquartered in Cedar Rapids, Iowa, serving clients nationwide
 
 REQUIREMENTS:
 Generate exactly 3 pieces of metadata in the following JSON format:
@@ -201,7 +201,7 @@ CONTEXT:
 - Company: 84EM (WordPress development agency)
 - Location focus: {$city}, {$state}
 - Services: WordPress development, custom plugins, consulting, agency services
-- Company is 100% remote, headquartered in Cedar Rapids, Iowa
+- Company headquartered in Cedar Rapids, Iowa, serving clients nationwide
 
 REQUIREMENTS:
 Generate exactly 3 pieces of metadata in the following JSON format:
