@@ -243,7 +243,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             '@type'        => 'Organization',
             'name'         => '84EM',
             'url'          => 'https://84em.com',
-            'logo'         => 'https://84em.com/wp-content/uploads/84em-logo.png',
+            'logo'         => 'https://84em.com/wp-content/uploads/2016/08/cropped-84em-cropped-250.png',
             'sameAs'       => [
                 'https://github.com/84em',
                 'https://www.linkedin.com/company/84em',
