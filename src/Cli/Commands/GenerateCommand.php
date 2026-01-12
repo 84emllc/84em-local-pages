@@ -15,6 +15,7 @@ use EightyFourEM\LocalPages\Content\CityContentGenerator;
 use EightyFourEM\LocalPages\Utils\ContentProcessor;
 use EightyFourEM\LocalPages\Utils\CheckpointManager;
 use EightyFourEM\LocalPages\Schema\SchemaGenerator;
+use EightyFourEM\LocalPages\Notifications\SlackNotifier;
 use WP_CLI;
 use Exception;
 
@@ -66,6 +67,13 @@ class GenerateCommand {
     private CheckpointManager $checkpointManager;
 
     /**
+     * Slack notifier
+     *
+     * @var SlackNotifier
+     */
+    private SlackNotifier $slackNotifier;
+
+    /**
      * Constructor
      *
      * @param  StatesProvider  $statesProvider
@@ -74,6 +82,7 @@ class GenerateCommand {
      * @param  ContentProcessor  $contentProcessor
      * @param  SchemaGenerator  $schemaGenerator
      * @param  CheckpointManager  $checkpointManager
+     * @param  SlackNotifier  $slackNotifier
      */
     public function __construct(
         StatesProvider $statesProvider,
@@ -81,7 +90,8 @@ class GenerateCommand {
         CityContentGenerator $cityContentGenerator,
         ContentProcessor $contentProcessor,
         SchemaGenerator $schemaGenerator,
-        CheckpointManager $checkpointManager
+        CheckpointManager $checkpointManager,
+        SlackNotifier $slackNotifier
     ) {
         $this->statesProvider        = $statesProvider;
         $this->stateContentGenerator = $stateContentGenerator;
@@ -89,6 +99,7 @@ class GenerateCommand {
         $this->contentProcessor      = $contentProcessor;
         $this->schemaGenerator       = $schemaGenerator;
         $this->checkpointManager     = $checkpointManager;
+        $this->slackNotifier         = $slackNotifier;
     }
 
     /**
@@ -100,6 +111,8 @@ class GenerateCommand {
      * @return void
      */
     public function handleGenerateAll( array $args, array $assoc_args ): void {
+        $start_time = time();
+
         // Enable WordPress import mode to prevent plugin hooks during bulk operations.
         if ( ! defined( 'WP_IMPORTING' ) ) {
             define( 'WP_IMPORTING', true );
@@ -315,6 +328,17 @@ class GenerateCommand {
         }
 
         WP_CLI::success( 'All local pages have been generated/updated successfully!' );
+
+        // Send Slack notification
+        $this->slackNotifier->notifyGenerateAllComplete( [
+            'include_cities'  => $include_cities,
+            'states_created'  => $state_created_count,
+            'states_updated'  => $state_updated_count,
+            'cities_created'  => $city_created_count,
+            'cities_updated'  => $city_updated_count,
+            'total_pages'     => $state_created_count + $state_updated_count + $city_created_count + $city_updated_count,
+            'duration'        => $this->formatDuration( $start_time ),
+        ] );
     }
 
     /**
@@ -326,6 +350,8 @@ class GenerateCommand {
      * @return void
      */
     public function handleUpdateAll( array $args, array $assoc_args ): void {
+        $start_time = time();
+
         // Enable WordPress import mode to prevent plugin hooks during bulk operations.
         if ( ! defined( 'WP_IMPORTING' ) ) {
             define( 'WP_IMPORTING', true );
@@ -493,6 +519,15 @@ class GenerateCommand {
         else {
             WP_CLI::warning( "Update completed with {$failed_count} failures." );
         }
+
+        // Send Slack notification
+        $this->slackNotifier->notifyUpdateAllComplete( [
+            'states_only' => $states_only,
+            'updated'     => $updated_count,
+            'failed'      => $failed_count,
+            'total'       => count( $all_local_posts ),
+            'duration'    => $this->formatDuration( $start_time ),
+        ] );
     }
 
     /**
@@ -1569,5 +1604,23 @@ class GenerateCommand {
         $content = preg_replace( $pattern, '$2', $content );
 
         return $content;
+    }
+
+    /**
+     * Format duration from start time to human-readable string
+     *
+     * @param  int  $start_time  Unix timestamp when operation started
+     *
+     * @return string Human-readable duration
+     */
+    private function formatDuration( int $start_time ): string {
+        $seconds = time() - $start_time;
+        $minutes = floor( $seconds / 60 );
+        $remaining_seconds = $seconds % 60;
+
+        if ( $minutes > 0 ) {
+            return sprintf( '%d min %d sec', $minutes, $remaining_seconds );
+        }
+        return sprintf( '%d sec', $seconds );
     }
 }

@@ -5,6 +5,20 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.20.0] - 2026-01-11
+
+### Added
+- **Slack Notifications**: Get notified when bulk operations complete
+  - `--set-slack-webhook`: Configure Slack webhook URL (encrypted storage)
+  - `--test-slack-webhook`: Send test notification to verify configuration
+  - `--remove-slack-webhook`: Remove stored webhook URL
+  - Notifications sent on `--generate-all` and `--update-all` completion
+  - Includes operation type, duration, and page counts
+  - Graceful failure (never interrupts generation process)
+- **New Classes**:
+  - `SlackWebhookManager`: Encrypted webhook URL storage (AES-256-CBC)
+  - `SlackNotifier`: Slack Block Kit message delivery
+
 ## [3.19.8] - 2026-01-11
 
 ### Changed

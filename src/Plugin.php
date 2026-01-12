@@ -28,6 +28,8 @@ use EightyFourEM\LocalPages\Cli\Commands\TestCommand;
 use EightyFourEM\LocalPages\Cli\Commands\GenerateCommand;
 use EightyFourEM\LocalPages\Redirects\LegacyUrlRedirector;
 use EightyFourEM\LocalPages\Admin\PluginLinks;
+use EightyFourEM\LocalPages\Notifications\SlackWebhookManager;
+use EightyFourEM\LocalPages\Notifications\SlackNotifier;
 
 /**
  * Main plugin bootstrap class
@@ -165,6 +167,19 @@ class Plugin {
             return new CheckpointManager();
         } );
 
+        // Notifications Services
+        $this->container->register( SlackWebhookManager::class, function ( $container ) {
+            return new SlackWebhookManager(
+                $container->get( Encryption::class )
+            );
+        } );
+
+        $this->container->register( SlackNotifier::class, function ( $container ) {
+            return new SlackNotifier(
+                $container->get( SlackWebhookManager::class )
+            );
+        } );
+
         // Content Services
         $this->container->register( ContentProcessor::class, function () {
             return new ContentProcessor();
@@ -217,13 +232,15 @@ class Plugin {
                 $container->get( CityContentGenerator::class ),
                 $container->get( ContentProcessor::class ),
                 $container->get( SchemaGenerator::class ),
-                $container->get( CheckpointManager::class )
+                $container->get( CheckpointManager::class ),
+                $container->get( SlackNotifier::class )
             );
         } );
 
         $this->container->register( CommandHandler::class, function ( $container ) {
             return new CommandHandler(
                 $container->get( ApiKeyManager::class ),
+                $container->get( SlackWebhookManager::class ),
                 $container->get( TestCommand::class ),
                 $container->get( GenerateCommand::class )
             );

@@ -281,6 +281,47 @@ If validation fails, the model will NOT be saved and you'll see a clear error me
 - Models can be changed at any time via WP-CLI
 - Available models are fetched dynamically from Claude's Models API
 
+### Slack Notifications (v3.20.0+)
+
+The plugin can send Slack notifications when bulk operations complete. This is useful for long-running operations like `--generate-all` which can take hours.
+
+#### Slack Webhook Commands
+
+```bash
+# Set Slack webhook URL (interactive secure prompt)
+wp 84em local-pages --set-slack-webhook
+
+# Test webhook configuration
+wp 84em local-pages --test-slack-webhook
+
+# Remove stored webhook URL
+wp 84em local-pages --remove-slack-webhook
+```
+
+#### Webhook Storage
+- Webhook URLs are encrypted with AES-256-CBC (same as API keys)
+- Stored in WordPress option: `84em_local_pages_slack_webhook_encrypted`
+- Secure input prompt (URL not visible when typing)
+- URL validated to match Slack webhook format
+
+#### Notification Events
+Notifications are sent on completion of:
+- `--generate-all` (with or without `--states-only`)
+- `--update-all` (with or without `--states-only`)
+
+#### Notification Content
+Each notification includes:
+- Operation type (Generate All, Update All, etc.)
+- Duration of operation
+- Count of pages created/updated
+- Total pages processed
+- Site URL for identification
+
+#### Graceful Failure
+- If webhook is not configured, notifications are silently skipped
+- If webhook delivery fails, a warning is logged but operation continues
+- Notifications never interrupt the generation process
+
 ### Rate Limiting and Error Handling
 - **Delay Between Requests**: 1 second minimum
 - **Timeout**: 600 seconds (10 minutes) per request
@@ -579,6 +620,8 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 | `MetadataGenerator` | AI-generated SEO metadata | `src/Content/MetadataGenerator.php` |
 | `ContentProcessor` | Content enhancement | `src/Utils/ContentProcessor.php` |
 | `CheckpointManager` | Bulk operation checkpoints | `src/Utils/CheckpointManager.php` |
+| `SlackWebhookManager` | Encrypted webhook storage | `src/Notifications/SlackWebhookManager.php` |
+| `SlackNotifier` | Slack message delivery | `src/Notifications/SlackNotifier.php` |
 | `CommandHandler` | CLI command routing | `src/Cli/CommandHandler.php` |
 
 ### Namespace Structure
@@ -587,6 +630,7 @@ All classes use the `EightyFourEM\LocalPages` namespace:
 namespace EightyFourEM\LocalPages\Api;
 namespace EightyFourEM\LocalPages\Cli;
 namespace EightyFourEM\LocalPages\Content;
+namespace EightyFourEM\LocalPages\Notifications;
 // etc.
 ```
 
