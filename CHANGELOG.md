@@ -5,6 +5,15 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.20.1] - 2026-01-11
+
+### Added
+- **Individual Operation Notifications**: Slack alerts for single state/city operations
+  - `--state="California"`: Notifies on state page generation
+  - `--state="California" --city="Los Angeles"`: Notifies on city page generation
+  - `--state="California" --city=all`: Notifies on all-cities-for-state generation
+  - Includes operation type, location, created/updated counts, and duration
+
 ## [3.20.0] - 2026-01-11
 
 ### Added

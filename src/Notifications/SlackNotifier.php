@@ -205,6 +205,87 @@ class SlackNotifier {
 	}
 
 	/**
+	 * Send notification when a single state or city operation completes
+	 *
+	 * @param  array  $stats  Operation statistics
+	 *
+	 * @return bool True on success, false on failure
+	 */
+	public function notifyOperationComplete( array $stats ): bool {
+		if ( ! $this->isEnabled() ) {
+			return false;
+		}
+
+		$operation = $stats['operation'] ?? 'Unknown';
+		$location  = $stats['location'] ?? 'Unknown';
+		$created   = $stats['created'] ?? 0;
+		$updated   = $stats['updated'] ?? 0;
+		$duration  = $stats['duration'] ?? 'Unknown';
+
+		$fields = [
+			[
+				'type' => 'mrkdwn',
+				'text' => "*Operation:*\n" . $operation,
+			],
+			[
+				'type' => 'mrkdwn',
+				'text' => "*Location:*\n" . $location,
+			],
+			[
+				'type' => 'mrkdwn',
+				'text' => "*Created:*\n" . $created,
+			],
+			[
+				'type' => 'mrkdwn',
+				'text' => "*Updated:*\n" . $updated,
+			],
+		];
+
+		// Add duration if provided
+		if ( $duration !== 'Unknown' ) {
+			$fields[] = [
+				'type' => 'mrkdwn',
+				'text' => "*Duration:*\n" . $duration,
+			];
+		}
+
+		$payload = [
+			'blocks' => [
+				[
+					'type' => 'header',
+					'text' => [
+						'type'  => 'plain_text',
+						'text'  => '84EM Local Pages Operation Complete',
+						'emoji' => true,
+					],
+				],
+				[
+					'type'   => 'section',
+					'fields' => $fields,
+				],
+				[
+					'type' => 'section',
+					'text' => [
+						'type' => 'mrkdwn',
+						'text' => '*Total Pages:* ' . ( $created + $updated ),
+					],
+				],
+				[
+					'type'     => 'context',
+					'elements' => [
+						[
+							'type' => 'mrkdwn',
+							'text' => 'Sent from ' . get_site_url() . ' via WP-CLI',
+						],
+					],
+				],
+			],
+		];
+
+		return $this->send( $payload );
+	}
+
+	/**
 	 * Send a test notification to verify webhook works
 	 *
 	 * @return bool True on success, false on failure
