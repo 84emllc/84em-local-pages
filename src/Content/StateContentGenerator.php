@@ -413,7 +413,7 @@ class StateContentGenerator implements ContentGeneratorInterface {
         $prompt = "Write a landing page for 84EM's WordPress services targeting {$state} businesses.
 
 ABOUT 84EM:
-- WordPress development agency based in Cedar Rapids, Iowa
+- WordPress development agency based in Cedar Rapids, Iowa (founded 2012)
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
 - Works across industries—no single vertical focus
 - Positioned on expertise and reliability, not price
@@ -448,18 +448,26 @@ STRUCTURE:
 5. H2: \"WordPress Services in {$state}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
 
-6. Testimonial: Insert exactly:
+6. H2: \"Why {$state} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
+- **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
+- **Deep WordPress architecture expertise** – Custom plugins, theme development, complex integrations, and performance optimization
+- **White-label services for agencies** – Seamless collaboration that makes your agency look good
+- **Direct partnership with businesses** – From startups to established companies needing reliable WordPress support
+- **Remote-first, nationwide service** – Based in Cedar Rapids, Iowa, serving clients across all 50 states
+
+7. Testimonial: Insert exactly:
 {$testimonial_block}
 
-7. End with exactly:
+8. End with exactly:
 <!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
 - Paragraphs: <!-- wp:paragraph {\"fontSize\":\"large\"} --><p class=\"has-large-font-size\">Text here.</p><!-- /wp:paragraph -->
 - Headings: <!-- wp:heading {\"level\":2,\"fontSize\":\"large\"} --><h2 class=\"has-large-font-size\"><strong>Heading</strong></h2><!-- /wp:heading -->
+- Lists: <!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} --><ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\"><!-- wp:list-item --><li>Item</li><!-- /wp:list-item --></ul><!-- /wp:list -->
 
 REQUIREMENTS:
-- Total length: 150-200 words of unique content (excluding blocks)
+- Total length: 200-300 words of unique content (excluding blocks)
 - DO NOT start with 'Your WordPress site needs to work'
 - DO NOT list industries generically (e.g., 'fintech, healthcare, education, and non-profits')
 - DO NOT use these phrases:

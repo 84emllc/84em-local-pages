@@ -68,7 +68,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             '@context'    => 'https://schema.org',
             '@type'       => 'WebPage',
             'name'        => "WordPress Development Services in {$state}",
-            'description' => "Professional WordPress development, custom plugins, and agency services in {$state}. Expert developers serving " . implode( ', ', array_slice( $cities, 0, 3 ) ) . " and beyond.",
+            'description' => "Professional WordPress development, custom plugins, AI integration, and white-label agency services in {$state}. Cedar Rapids, Iowa-based agency with over 30 years of web development experience serving " . implode( ', ', array_slice( $cities, 0, 3 ) ) . " and businesses across {$state}.",
             'url'         => $url,
             'isPartOf'    => [
                 '@type' => 'WebSite',
@@ -78,6 +78,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             'about'       => [
                 '@type'       => 'Service',
                 'name'        => "WordPress Development in {$state}",
+                'description' => "Custom WordPress plugin development, AI integration, enterprise API solutions, and white-label development for agencies in {$state}. Founded 2012, serving clients nationwide.",
                 'provider'    => $this->getOrganizationSchema(),
                 'areaServed'  => [
                     '@type'         => 'State',
@@ -85,28 +86,46 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                     'containsPlace' => $this->getCitiesSchema( $cities ),
                 ],
                 'serviceType' => [
-                    'WordPress Development',
-                    'Custom Plugin Development',
-                    'WordPress Maintenance',
-                    'Agency Services',
-                    'WordPress Security',
+                    'Custom WordPress Plugin Development',
+                    'AI Integration & Development',
+                    'WordPress API Integration',
+                    'White-Label WordPress Development',
+                    'WooCommerce Development',
+                    'WordPress Security Hardening',
+                    'WordPress Maintenance & Support',
+                    'LearnDash LMS Development',
+                ],
+                'offers'      => [
+                    '@type'         => 'Offer',
+                    'priceSpecification' => [
+                        '@type'       => 'PriceSpecification',
+                        'price'       => '150',
+                        'priceCurrency' => 'USD',
+                        'unitText'    => 'per hour',
+                    ],
                 ],
             ],
             'mainEntity'  => [
                 '@type'       => 'LocalBusiness',
                 'name'        => '84EM WordPress Development',
-                'description' => "WordPress development agency serving businesses in {$state}",
+                'description' => "WordPress development agency founded in 2012, specializing in custom plugin development, AI integration, and agency partnerships. Over 30 years of web development experience since 1995. Serving {$state} businesses from Cedar Rapids, Iowa headquarters.",
                 'url'         => site_url( '/' ),
+                'priceRange'  => '$150-225/hour',
                 'areaServed'  => [
                     '@type' => 'State',
                     'name'  => $state,
                 ],
                 'knowsAbout'  => [
-                    'WordPress Development',
-                    'PHP Programming',
-                    'JavaScript Development',
-                    'API Integration',
-                    'eCommerce Development',
+                    'WordPress Plugin Development',
+                    'AI Integration',
+                    'OpenAI API Integration',
+                    'Anthropic Claude API',
+                    'WooCommerce Customization',
+                    'REST API Development',
+                    'WordPress Security',
+                    'LearnDash LMS',
+                    'Enterprise WordPress Solutions',
+                    'White-Label Development',
                 ],
             ],
         ];
@@ -146,7 +165,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             '@context'    => 'https://schema.org',
             '@type'       => 'WebPage',
             'name'        => "WordPress Development Services in {$city}, {$state}",
-            'description' => "Professional WordPress development and custom plugin services in {$city}, {$state}.",
+            'description' => "Professional WordPress development, custom plugins, AI integration, and white-label agency services in {$city}, {$state}. Cedar Rapids, Iowa-based agency with over 30 years of web development experience.",
             'url'         => $url,
             'isPartOf'    => [
                 '@type' => 'WebSite',
@@ -179,6 +198,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
             'about'       => [
                 '@type'       => 'Service',
                 'name'        => "WordPress Development in {$city}",
+                'description' => "Custom WordPress plugin development, AI integration, API solutions, and white-label agency services for businesses in {$city}, {$state}. Founded 2012, serving clients nationwide.",
                 'provider'    => $this->getOrganizationSchema(),
                 'areaServed'  => [
                     '@type'            => 'City',
@@ -189,10 +209,22 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                     ],
                 ],
                 'serviceType' => [
-                    'WordPress Development',
-                    'Custom Plugin Development',
-                    'WordPress Maintenance',
-                    'Agency Services',
+                    'Custom WordPress Plugin Development',
+                    'AI Integration & Development',
+                    'WordPress API Integration',
+                    'White-Label WordPress Development',
+                    'WooCommerce Development',
+                    'WordPress Security Hardening',
+                    'WordPress Maintenance & Support',
+                ],
+                'offers'      => [
+                    '@type'         => 'Offer',
+                    'priceSpecification' => [
+                        '@type'       => 'PriceSpecification',
+                        'price'       => '150',
+                        'priceCurrency' => 'USD',
+                        'unitText'    => 'per hour',
+                    ],
                 ],
             ],
         ];
@@ -240,19 +272,63 @@ class SchemaGenerator implements SchemaGeneratorInterface {
      */
     private function getOrganizationSchema(): array {
         return [
-            '@type'        => 'Organization',
-            'name'         => '84EM',
-            'url'          => 'https://84em.com',
-            'logo'         => 'https://84em.com/wp-content/uploads/2016/08/cropped-84em-cropped-250.png',
-            'sameAs'       => [
-                'https://github.com/84em',
-                'https://www.linkedin.com/company/84em',
+            '@type'            => 'Organization',
+            'name'             => '84EM',
+            'legalName'        => '84EM, LLC',
+            'url'              => 'https://84em.com',
+            'logo'             => 'https://84em.com/wp-content/uploads/2016/08/cropped-84em-cropped-250.png',
+            'foundingDate'     => '2012',
+            'foundingLocation' => [
+                '@type'           => 'Place',
+                'address'         => [
+                    '@type'           => 'PostalAddress',
+                    'addressLocality' => 'Cedar Rapids',
+                    'addressRegion'   => 'Iowa',
+                    'addressCountry'  => 'US',
+                ],
             ],
-            'contactPoint' => [
-                '@type'       => 'ContactPoint',
-                'contactType' => 'sales',
-                'email'       => 'hello@84em.com',
-                'url'         => 'https://84em.com/contact/',
+            'description'      => 'WordPress development agency specializing in custom plugin development, AI integration, and agency partnerships. Founded in 2012 with over 30 years of web development experience since 1995.',
+            'slogan'           => 'Senior-level WordPress development and AI integration',
+            'areaServed'       => [
+                '@type' => 'Country',
+                'name'  => 'United States',
+            ],
+            'knowsAbout'       => [
+                'WordPress Plugin Development',
+                'Custom WordPress Development',
+                'WordPress API Integration',
+                'AI Integration',
+                'WooCommerce Development',
+                'LearnDash LMS',
+                'White-Label WordPress Development',
+                'WordPress Security',
+                'WordPress Maintenance',
+                'Enterprise WordPress Solutions',
+            ],
+            'sameAs'           => [
+                'https://github.com/84emllc',
+                'https://www.linkedin.com/company/84em',
+                'https://www.linkedin.com/in/andrew84em/',
+                'https://facebook.com/84emllc',
+            ],
+            'contactPoint'     => [
+                '@type'             => 'ContactPoint',
+                'contactType'       => 'sales',
+                'email'             => 'hello@84em.com',
+                'url'               => 'https://84em.com/contact/',
+                'availableLanguage' => 'English',
+                'hoursAvailable'    => [
+                    '@type'     => 'OpeningHoursSpecification',
+                    'dayOfWeek' => [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
+                    'opens'     => '08:00',
+                    'closes'    => '17:00',
+                ],
+            ],
+            'founder'          => [
+                '@type'  => 'Person',
+                'name'   => 'Andrew Miller',
+                'url'    => 'https://www.linkedin.com/in/andrew84em/',
+                'sameAs' => 'https://www.linkedin.com/in/andrew84em/',
             ],
         ];
     }

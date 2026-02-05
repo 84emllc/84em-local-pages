@@ -2,9 +2,9 @@
 
 This document contains the Claude AI prompt templates and guidelines used by the 84EM Local Pages Generator plugin for creating unique, SEO-optimized content for each US state and city.
 
-## Current Prompt Templates (Updated December 2025 - v3.17.0)
+## Current Prompt Templates (Updated February 2026 - v3.21.0)
 
-The plugin uses two distinct prompt structures for generating location-specific content with improved readability using list-based formatting and concise sentence structures.
+The plugin uses two distinct prompt structures for generating location-specific content with improved readability using list-based formatting and concise sentence structures. **v3.21.0** restored the "Why Choose 84EM" content section to improve LLM discoverability and citation potential.
 
 ### Prompt Template Redesign (v3.17.0)
 
@@ -680,6 +680,33 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ## Recent Updates
 
+### Version 3.21.0 (2026-02-05)
+
+#### LLM Discoverability Enhancement
+- **Problem Solved**: Referral traffic from ChatGPT dropped after v3.17.0's prompt redesign removed substantive, citable content
+- **Root Cause**: v3.17.0 reduced prompts from ~450 to ~150 words, removing the "Why Choose 84EM" bullet point section that LLMs could extract and cite
+- **Solution**: Restored substantive content sections and enhanced Schema.org markup
+
+#### Content Changes
+- **State Pages**: Added "Why {State} Businesses Choose 84EM" H2 section with 5 bullet points:
+  - [dev_years] years of web development experience – Programming since 1995, WordPress since 2012
+  - Deep WordPress architecture expertise – Custom plugins, theme development, complex integrations
+  - White-label services for agencies – Seamless collaboration
+  - Direct partnership with businesses – From startups to established companies
+  - Remote-first, nationwide service – Based in Cedar Rapids, Iowa, serving all 50 states
+- **City Pages**: Added "Why {City} Businesses Choose 84EM" H2 section with 4 bullet points
+- **Word Count**: States increased to 200-300 words, Cities to 150-200 words
+
+#### Schema.org Enhancements
+- **Organization Schema**: Added foundingDate (2012), founder (Andrew Miller), description, slogan, legalName, extensive knowsAbout array, sameAs social links, contactPoint with business hours
+- **State Schema**: Enhanced descriptions, detailed serviceType array, pricing offers ($150/hour)
+- **City Schema**: Enhanced descriptions, detailed serviceType array, pricing offers
+
+#### Modified Files
+- `src/Content/StateContentGenerator.php` - Restored "Why Choose" section in buildPrompt()
+- `src/Content/CityContentGenerator.php` - Added "Why Choose" section in buildPrompt()
+- `src/Schema/SchemaGenerator.php` - Enhanced getOrganizationSchema(), generateStateSchemaInternal(), generateCitySchemaInternal()
+
 ### Version 3.17.0 (2025-12-29)
 
 #### Prompt Template Redesign
@@ -907,14 +934,14 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 
 ---
 
-**Last Updated**: December 29, 2025
+**Last Updated**: February 5, 2026
 **Claude Model**: claude-sonnet-4-20250514
 **Content Format**: WordPress Block Editor (Gutenberg) with concise sentence-per-line structure
 **API Version**: 2023-06-01
-**Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking
-**Word Count**: 200-300 words per page (both states and cities)
+**Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking, enhanced Schema.org for LLM discoverability
+**Word Count**: States 200-300 words, Cities 150-200 words
 **Total Pages**: 550 (50 states + 500 cities)
-**Plugin Version**: 3.17.0
+**Plugin Version**: 3.21.0
 **Post Type**: Standard WordPress pages (migrated from custom 'local' post type in v3.7.0)
 **Architecture**: Modular PSR-4 autoloaded classes with dependency injection
 **Model Selection**: Dynamic fetching from Claude Models API with interactive selection
