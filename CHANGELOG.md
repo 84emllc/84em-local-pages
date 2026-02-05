@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **State Pages**: Added "Why {State} Businesses Choose 84EM" H2 section with 5 bullet points:
     - [dev_years] years of web development experience
     - Deep WordPress architecture expertise
-    - White-label services for agencies
+    - Agency partnerships (white-label or client-facing)
     - Direct partnership with businesses
     - Remote-first, nationwide service
   - **City Pages**: Added "Why {City} Businesses Choose 84EM" H2 section with 4 bullet points
@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `areaServed` Country for United States
 - **State Page Schema**: Enhanced with detailed service descriptions, expanded `serviceType` array, and pricing `offers` specification
 - **City Page Schema**: Enhanced with detailed descriptions, service types, and pricing specification
+
+### Fixed
+- **Agency Services Wording**: Changed "White-label services for agencies" to "Agency partnerships (white-label or client-facing)" to accurately distinguish between the two service models
 
 ### Purpose
 These changes aim to restore LLM referral traffic that dropped after v3.17.0's prompt template redesign removed substantive, citable content. The enhanced schema and restored "Why Choose" sections provide specific, factual information that LLMs can extract and cite when recommending WordPress development services.
