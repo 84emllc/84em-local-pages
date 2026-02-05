@@ -467,7 +467,7 @@ STRUCTURE:
 4. H2: \"Why {$city} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
 - **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
 - **Deep WordPress expertise** – Custom plugins, API integrations, and enterprise solutions
-- **White-label services for agencies** – Client-facing or behind-the-scenes, your choice
+- **Agency partnerships** – White-label or client-facing, your choice
 - **Remote-first, nationwide service** – Based in Cedar Rapids, Iowa, serving {$city} and all 50 states
 
 5. Testimonial: Insert exactly:

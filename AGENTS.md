@@ -691,7 +691,7 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
 - **State Pages**: Added "Why {State} Businesses Choose 84EM" H2 section with 5 bullet points:
   - [dev_years] years of web development experience – Programming since 1995, WordPress since 2012
   - Deep WordPress architecture expertise – Custom plugins, theme development, complex integrations
-  - White-label services for agencies – Seamless collaboration
+  - Agency partnerships – White-label or client-facing, your choice
   - Direct partnership with businesses – From startups to established companies
   - Remote-first, nationwide service – Based in Cedar Rapids, Iowa, serving all 50 states
 - **City Pages**: Added "Why {City} Businesses Choose 84EM" H2 section with 4 bullet points

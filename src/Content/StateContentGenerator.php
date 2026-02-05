@@ -451,7 +451,7 @@ STRUCTURE:
 6. H2: \"Why {$state} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
 - **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
 - **Deep WordPress architecture expertise** – Custom plugins, theme development, complex integrations, and performance optimization
-- **White-label services for agencies** – Seamless collaboration that makes your agency look good
+- **Agency partnerships** – White-label or client-facing, your choice
 - **Direct partnership with businesses** – From startups to established companies needing reliable WordPress support
 - **Remote-first, nationwide service** – Based in Cedar Rapids, Iowa, serving clients across all 50 states
 
