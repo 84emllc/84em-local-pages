@@ -6,42 +6,44 @@ This document contains the Claude AI prompt templates and guidelines used by the
 
 The plugin uses two distinct prompt structures for generating location-specific content with improved readability using list-based formatting and concise sentence structures. **v3.21.0** restored the "Why Choose 84EM" content section to improve LLM discoverability and citation potential.
 
-### Prompt Template Redesign (v3.17.0)
+### Prompt Template History
 
-The prompt templates were completely rewritten in v3.17.0 to be:
-- **Shorter**: Reduced from ~450 words to ~150 words
-- **Clearer**: Removed redundant and contradictory instructions
-- **Voice-matched**: Aligned with actual 84EM writing style
+The prompt templates were rewritten in v3.17.0 and further enhanced in v3.21.0:
 
-**Key Changes:**
-- Removed block syntax instructions (ContentProcessor handles formatting)
+**v3.17.0 Changes:**
+- Reduced prompt size and removed redundant instructions
 - Removed location linking instructions (ContentProcessor handles linking)
-- Added problem-first framing to match 84EM's voice
-- Uses "since 2012" / "since 1995" instead of calculated years
-- Block IDs moved to class constants for configurability
+- Added opening hook framing to match 84EM's voice
+- Block IDs moved from content generators to `src/Config/BlockIds.php`
 
-**Block ID Constants:**
+**v3.21.0 Changes:**
+- Restored "Why Choose 84EM" content section for LLM discoverability
+- Added experience shortcodes (`[dev_years]`, `[wp_years]`) for dynamic year calculations
+- Restored block syntax formatting instructions in prompts
+- Prompts now include banned phrases validation
+
+**Block ID Constants** (in `src/Config/BlockIds.php`):
 ```php
-private const SERVICES_BLOCK_ID = 5031;  // Services reusable block
-private const CTA_BLOCK_ID = 1219;       // CTA button reusable block
-private const SEPARATOR_BLOCK_ID = 5034; // Separator reusable block
+public const SERVICES = 5031;   // Services reusable block
+public const CTA = 1219;        // CTA button reusable block
+public const SEPARATOR = 5034;  // Separator reusable block
 ```
 
 ## Hierarchical Content Structure
 
-### State Pages (Parent Pages)
+### State Pages (Child of Index Page)
 - **Content Length**: 200-300 words
 - **Geographic Focus**: State and 10 largest cities
 - **Automatic Interlinking**: City names link to child city pages
-- **Service Keywords**: Link to relevant service pages using fuzzy matching
-- **URL Format**: `/wordpress-development-services-california/`
+- **Service Sections**: Reusable blocks with service links
+- **URL Format**: `/wordpress-development-services-usa/california/`
 
-### City Pages (Child Pages)
-- **Content Length**: 200-300 words
+### City Pages (Child of State Page)
+- **Content Length**: 150-200 words
 - **Geographic Focus**: Specific city and state context
 - **Parent Relationship**: Child of respective state page
-- **Service Keywords**: Link to relevant service pages using fuzzy matching
-- **URL Format**: `/wordpress-development-services-california/los-angeles/`
+- **Service Sections**: Reusable blocks with service links
+- **URL Format**: `/wordpress-development-services-usa/california/los-angeles/`
 
 ## Automatic Interlinking System
 
@@ -49,88 +51,61 @@ private const SEPARATOR_BLOCK_ID = 5034; // Separator reusable block
 The plugin automatically processes state page content after generation:
 
 1. **City Name Detection**: Identifies city names from the state's city list
-2. **Link Generation**: Creates URLs in format `/wordpress-development-services-{state}/{city}/`
+2. **Link Generation**: Creates URLs in format `/wordpress-development-services-usa/{state}/{city}/`
 3. **Content Replacement**: Replaces first occurrence of each city name with link
-4. **Service Keyword Linking**: Links service keywords using intelligent fuzzy matching
+4. **Service Sections**: Handled via reusable blocks referenced in prompts
 
 ### City Page Interlinking
-City pages receive automatic service keyword linking only:
+City pages receive automatic state name linking:
 
-1. **Service Keyword Detection**: Identifies WordPress development service terms using fuzzy matching
-2. **Smart Link Generation**: Links keywords to appropriate pages based on context:
-   - Custom plugin development → /services/custom-wordpress-plugin-development/
-   - White-label development → /services/white-label-wordpress-development-for-agencies/
-   - General services → /services/
-   - Development work → /work/
-3. **Fuzzy Matching**: Intelligently matches service text to keywords even with variation
+1. **State Name Linking**: Links the state name to the parent state page
+2. **Service Sections**: Handled via reusable blocks referenced in prompts
 
-### Fuzzy Keyword Matching (v3.4.0+)
-
-The plugin uses intelligent fuzzy matching to ensure every service list item gets linked:
-
-**How It Works:**
-1. **List Item Scanning**: Extracts all list items from generated content
-2. **Keyword Searching**: For each list item, searches for ALL matching keywords (case-insensitive substring match)
-3. **Best Match Selection**: Selects the longest/most specific matching keyword
-4. **Link Insertion**: Links the matched keyword within the list item, preserving original case
-
-**Benefits:**
-- Works with any API-generated text that contains keyword substrings
-- Ensures maximum link coverage in service lists
-- Handles variations in capitalization and phrasing
-- Prioritizes more specific keywords when multiple matches found
-
-**Example:**
-- List item: "Custom WordPress Development – Tailored solutions..."
-- Matches: "WordPress development", "Custom WordPress development"
-- Selected: "Custom WordPress development" (longer/more specific)
-- Result: `<a href="...">Custom WordPress development</a> – Tailored solutions...`
-
-**Safeguards (v3.6.1+):**
-1. **Protected Service Lists**: List items containing `<strong>` tags are completely protected from automatic keyword linking using placeholder replacement
-2. **Tag-Aware Linking**: Content is split by HTML tags before keyword matching to prevent linking text inside href attributes or other tag attributes
-3. **Prevent Double-Linking**: List items that already contain `<a href=` tags are skipped by the list-item-specific linking logic
-4. **Preserve Hardcoded Structure**: Both state and city page prompts include hardcoded service lists with "Learn More →" links that are protected from modification
-
-### Interlinking Implementation (v3.4.0+)
+### Interlinking Implementation
 Content processing is handled by the `ContentProcessor` class:
 ```php
-// ContentProcessor handles all content enhancements including fuzzy matching
-$contentProcessor = new ContentProcessor( $keywordsProvider );
+// ContentProcessor handles location linking (city names, state names)
+$contentProcessor = new ContentProcessor();
 $processed = $contentProcessor->processContent( $raw_content, $context );
 ```
 
-## Dynamic Content Variables
+## Prompt Variables
 
-The plugin replaces the following variables in prompts:
+The prompts use direct PHP variable interpolation:
 
 ### Location Information
-- `{STATE}`: Full state name (e.g., "California")
-- `{CITY}`: City name (e.g., "Los Angeles") - city pages only
-- `{CITY_LIST}`: Comma-separated list of 10 largest cities - state pages only
+- `$state`: Full state name (e.g., "California")
+- `$city`: City name (e.g., "Los Angeles") - city pages only
+- `$city_list`: Comma-separated list of 10 largest cities - state pages only
 
-### Service Keywords
-- `{SERVICE_KEYWORDS_LIST}`: WordPress development, custom plugin development, Custom WordPress development, Data migration and platform transfers, WordPress security audits and hardening, WordPress Maintenance and Support, API integrations, WordPress security audits, security audits, white-label development, White Label Development, WordPress maintenance, WordPress support, data migration, platform transfers, Platform Migrations, WordPress maintenance and ongoing support, WordPress troubleshooting, custom WordPress themes, WordPress security, web development, WordPress migrations, digital agency services, WordPress plugin development, Custom WordPress plugin development, White label WordPress development, White label web development, White-label development services for agencies, WordPress plugin development services
+### Experience Shortcodes
+The prompts use shortcodes that are replaced with calculated values:
+- `[dev_years]`: Years of programming experience (calculated from 1995)
+- `[wp_years]`: Years of WordPress experience (calculated from 2012)
 
-**Note**: The expanded keyword list (v3.4.0+) includes multiple variations and capitalizations to improve fuzzy matching coverage. The interlinking system will automatically select the most specific/relevant match for each service list item.
+### Block References
+- `$services_block`: Services reusable block ID (from `BlockIds::SERVICES`)
+- `$cta_block`: CTA button reusable block ID (from `BlockIds::CTA`)
 
 ## Content Structure Guidelines
 
 ### WordPress Block Editor Format
-All content is generated using proper Gutenberg block syntax:
+All content is generated using proper Gutenberg block syntax with large font size:
 
 ```html
-<!-- wp:paragraph -->
-<p>Paragraph content here.</p>
+<!-- wp:paragraph {"fontSize":"large"} -->
+<p class="has-large-font-size">Paragraph content here.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":2} -->
-<h2><strong>Bold Heading</strong></h2>
+<!-- wp:heading {"level":2,"fontSize":"large"} -->
+<h2 class="has-large-font-size"><strong>Bold Heading</strong></h2>
 <!-- /wp:heading -->
 
-<!-- wp:heading {"level":3} -->
-<h3><strong>Bold Sub-heading</strong></h3>
-<!-- /wp:heading -->
+<!-- wp:list {"className":"is-style-checkmark-list","fontSize":"large"} -->
+<ul class="wp-block-list is-style-checkmark-list has-large-font-size">
+<!-- wp:list-item --><li>Item</li><!-- /wp:list-item -->
+</ul>
+<!-- /wp:list -->
 ```
 
 ### Call-to-Action Integration
@@ -141,10 +116,9 @@ All content is generated using proper Gutenberg block syntax:
 - **Natural Phrases**: "contact us today", "get started", "reach out", "discuss your project"
 - **Link Target**: `/contact/` page
 
-#### Prominent CTA Blocks
-- **Placement**: Before every H2 heading (automated)
-- **Button Text**: "Start Your WordPress Project"
-- **Styling**: Custom border radius and shadow effects
+#### CTA Reusable Block
+- **Placement**: End of content (single reusable block reference)
+- **Block Reference**: `<!-- wp:block {"ref":1219} /-->`
 - **Layout**: Centered with proper spacing
 - **Target**: `/contact/` page
 
@@ -203,28 +177,33 @@ Starting with v3.15.0, all metadata (page title, SEO title, meta description) is
 - City SEO Title: "WordPress Development, Plugins, Consulting, Agency Services in {CITY}, {STATE} | 84EM"
 
 ### URL Structure
-Clean hierarchical URLs without post type slug:
+Clean hierarchical URLs with index page as parent:
+
+**Index Page:**
+- Format: `/wordpress-development-services-usa/`
+- Example: `/wordpress-development-services-usa/`
 
 **State Pages:**
-- Format: `/wordpress-development-services-{state}/`
-- Example: `/wordpress-development-services-california/`
+- Format: `/wordpress-development-services-usa/{state}/`
+- Example: `/wordpress-development-services-usa/california/`
 
 **City Pages:**
-- Format: `/wordpress-development-services-{state}/{city}/`
-- Example: `/wordpress-development-services-california/los-angeles/`
+- Format: `/wordpress-development-services-usa/{state}/{city}/`
+- Example: `/wordpress-development-services-usa/california/los-angeles/`
 
 ### LD-JSON Schema
 
 **State Pages:**
-- Type: LocalBusiness
+- Top-level Type: WebPage
+- Main Entity: LocalBusiness
 - Service Area: State with city containment
 - Contains Place: Array of major cities
 
 **City Pages:**
-- Type: LocalBusiness
-- Service Area: Specific city
+- Top-level Type: WebPage
+- Main Entity: Service
+- Area Served: Specific city
 - Contained In Place: Parent state
-- Address Locality: City name
 
 ## API Configuration
 
@@ -323,7 +302,7 @@ Each notification includes:
 - Notifications never interrupt the generation process
 
 ### Rate Limiting and Error Handling
-- **Delay Between Requests**: 1 second minimum
+- **Delay Between Requests**: 2 seconds between API calls
 - **Timeout**: 600 seconds (10 minutes) per request
 - **Retry Logic**: Up to 5 attempts with exponential backoff for transient errors
 - **Retryable Errors**: Network issues, rate limits, server errors (500-503, 529)
@@ -438,6 +417,29 @@ wp 84em local-pages --regenerate-schema --state="California" --state-only  # Sta
 wp 84em local-pages --regenerate-schema --state="California" --city="Los Angeles"  # Specific city
 ```
 
+### Delete Operations
+```bash
+# Delete state pages
+wp 84em local-pages --delete --state=all
+wp 84em local-pages --delete --state="California,New York"
+
+# Delete city pages
+wp 84em local-pages --delete --state="California" --city=all
+wp 84em local-pages --delete --state="California" --city="Los Angeles,San Diego"
+```
+
+### URL Migration
+```bash
+# Migrate pages from old URL structure to new
+wp 84em local-pages --migrate-urls
+```
+
+### Testimonial Management
+```bash
+# Find testimonial block IDs
+wp 84em local-pages --find-testimonial-ids
+```
+
 ## Content Quality Assurance
 
 ### Automated Checks
@@ -456,7 +458,7 @@ wp 84em local-pages --regenerate-schema --state="California" --city="Los Angeles
 6. **Professional Tone**: Factual without exaggeration
 7. **Clear CTAs**: Multiple conversion opportunities
 8. **Block Structure**: Proper Gutenberg formatting
-9. **Interlinking**: City names link to city pages, keywords to contact
+9. **Interlinking**: City names link to city pages, state names link to state pages
 
 ## Performance Monitoring
 
@@ -484,8 +486,8 @@ wp 84em local-pages --regenerate-schema --state="California" --city="Los Angeles
 **Solution**: Verify exact block markup in prompt templates
 
 #### Missing CTAs
-**Problem**: CTA blocks not appearing before H2s
-**Solution**: Check H2 detection and CTA insertion logic
+**Problem**: CTA reusable block not appearing in content
+**Solution**: Check CTA block reference in prompt template and verify block ID matches BlockIds::CTA
 
 #### Generic Content
 **Problem**: Similar content across locations
@@ -509,11 +511,11 @@ wp 84em local-pages --regenerate-schema --state="California" --city="Los Angeles
 
 #### Timeout Errors
 **Problem**: Requests exceeding 600-second (10 minute) limit
-**Solution**: Check network connectivity and API status. The plugin will automatically retry up to 3 times with exponential backoff for transient errors
+**Solution**: Check network connectivity and API status. The plugin will automatically retry up to 5 times with exponential backoff for transient errors
 
 #### Rate Limiting
 **Problem**: Too many requests too quickly
-**Solution**: Verify 1-second delay between requests
+**Solution**: Verify 2-second delay between requests
 
 #### Model Errors
 **Problem**: Unexpected Claude model responses
@@ -580,7 +582,6 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 #### Core Components
 - **`Plugin`**: Main plugin class handling initialization and service registration
 - **`Container`**: Dependency injection container for managing class instances
-- **`PostTypes/LocalPostType`**: Manages the custom post type registration and rewrite rules
 
 #### API Layer (`src/Api/`)
 - **`ApiKeyManager`**: Handles API key storage and retrieval
@@ -600,6 +601,8 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 
 #### Data Layer (`src/Data/`)
 - **`StatesProvider`**: Provides US states and cities data
+- **`LocationContextProvider`**: Provides state/city-specific context for content generation
+- **`TestimonialProvider`**: Provides deterministic testimonial block references per location
 
 #### Schema Layer (`src/Schema/`)
 - **`SchemaGenerator`**: Creates LD-JSON structured data
@@ -607,6 +610,27 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 #### Utils Layer (`src/Utils/`)
 - **`ContentProcessor`**: Handles content processing, linking, and formatting
 - **`CheckpointManager`**: Manages progress checkpoints for bulk operations (v3.12.0+)
+
+#### Config Layer (`src/Config/`)
+- **`BlockIds`**: Centralized reusable block ID constants (services, CTA, separator)
+- **`TestimonialBlockIds`**: Testimonial block ID mappings per location
+
+#### Core Layer (`src/Core/`)
+- **`Activator`**: Plugin activation logic
+- **`Deactivator`**: Plugin deactivation logic
+- **`Requirements`**: Plugin requirements checking (PHP version, WordPress version)
+
+#### Admin Layer (`src/Admin/`)
+- **`PluginLinks`**: Admin plugin action links
+
+#### Redirects Layer (`src/Redirects/`)
+- **`LegacyUrlRedirector`**: 301 redirects from old URL format to new hierarchical structure
+
+#### Contracts Layer (`src/Contracts/`)
+- **`ApiClientInterface`**: API client contract
+- **`ContentGeneratorInterface`**: Content generator contract
+- **`SchemaGeneratorInterface`**: Schema generator contract
+- **`DataProviderInterface`**: Data provider contract
 
 ### Key Classes and Responsibilities
 
@@ -623,15 +647,30 @@ The plugin has been refactored from a monolithic class to a modern modular archi
 | `SlackWebhookManager` | Encrypted webhook storage | `src/Notifications/SlackWebhookManager.php` |
 | `SlackNotifier` | Slack message delivery | `src/Notifications/SlackNotifier.php` |
 | `CommandHandler` | CLI command routing | `src/Cli/CommandHandler.php` |
+| `BlockIds` | Reusable block ID constants | `src/Config/BlockIds.php` |
+| `TestimonialBlockIds` | Testimonial block IDs | `src/Config/TestimonialBlockIds.php` |
+| `LocationContextProvider` | Location-specific prompt context | `src/Data/LocationContextProvider.php` |
+| `TestimonialProvider` | Testimonial block references | `src/Data/TestimonialProvider.php` |
+| `LegacyUrlRedirector` | Old-to-new URL 301 redirects | `src/Redirects/LegacyUrlRedirector.php` |
+| `PluginLinks` | Admin plugin action links | `src/Admin/PluginLinks.php` |
+| `Activator` | Plugin activation logic | `src/Core/Activator.php` |
+| `Requirements` | PHP/WP version checking | `src/Core/Requirements.php` |
 
 ### Namespace Structure
 All classes use the `EightyFourEM\LocalPages` namespace:
 ```php
+namespace EightyFourEM\LocalPages\Admin;
 namespace EightyFourEM\LocalPages\Api;
 namespace EightyFourEM\LocalPages\Cli;
+namespace EightyFourEM\LocalPages\Config;
 namespace EightyFourEM\LocalPages\Content;
+namespace EightyFourEM\LocalPages\Contracts;
+namespace EightyFourEM\LocalPages\Core;
+namespace EightyFourEM\LocalPages\Data;
 namespace EightyFourEM\LocalPages\Notifications;
-// etc.
+namespace EightyFourEM\LocalPages\Redirects;
+namespace EightyFourEM\LocalPages\Schema;
+namespace EightyFourEM\LocalPages\Utils;
 ```
 
 ## Testing Framework
@@ -660,7 +699,7 @@ export EIGHTYFOUREM_TEST_API_KEY="your-test-api-key-here"
 
 If not set, tests will use the production API key configured in the plugin (stored encrypted in `84em_local_pages_claude_api_key_encrypted`).
 
-### Available Test Suites (v3.2.5)
+### Available Test Suites
 - **encryption** - API key encryption and security
 - **data-structures** - Service keywords and states data
 - **content-processing** - Content processing and linking
@@ -938,14 +977,14 @@ For a complete list of changes, bug fixes, and new features, see [CHANGELOG.md](
 **Claude Model**: claude-sonnet-4-20250514
 **Content Format**: WordPress Block Editor (Gutenberg) with concise sentence-per-line structure
 **API Version**: 2023-06-01
-**Content Strategy**: Hierarchical location pages with fuzzy-matched keyword linking, enhanced Schema.org for LLM discoverability
+**Content Strategy**: Hierarchical location pages with automatic city/state interlinking, enhanced Schema.org for LLM discoverability
 **Word Count**: States 200-300 words, Cities 150-200 words
 **Total Pages**: 550 (50 states + 500 cities)
 **Plugin Version**: 3.21.0
 **Post Type**: Standard WordPress pages (migrated from custom 'local' post type in v3.7.0)
 **Architecture**: Modular PSR-4 autoloaded classes with dependency injection
 **Model Selection**: Dynamic fetching from Claude Models API with interactive selection
-**Keyword Matching**: Intelligent fuzzy matching with safeguards to prevent linking bolded titles and double-linking
+**Interlinking**: Automatic city name and state name linking via ContentProcessor
 **Metadata Generation**: AI-generated page titles, SEO titles, and meta descriptions (v3.15.0+)
 **Testing**: Real WordPress integration, no mocks, 78 integration tests (100% passing with valid API key)
 
