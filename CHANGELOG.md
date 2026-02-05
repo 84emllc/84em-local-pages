@@ -5,6 +5,37 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.21.0] - 2026-02-05
+
+### Added
+- **LLM Discoverability Enhancement**: Restored substantive content for improved LLM citation potential
+  - **State Pages**: Added "Why {State} Businesses Choose 84EM" H2 section with 5 bullet points:
+    - [dev_years] years of web development experience
+    - Deep WordPress architecture expertise
+    - Agency partnerships (white-label or client-facing)
+    - Direct partnership with businesses
+    - Remote-first, nationwide service
+  - **City Pages**: Added "Why {City} Businesses Choose 84EM" H2 section with 4 bullet points
+  - Increased word count targets: States 200-300 words, Cities 150-200 words
+
+### Changed
+- **Schema.org Organization Markup**: Significantly enhanced for better structured data
+  - Added `foundingDate`, `foundingLocation`, `legalName`
+  - Added `description` and `slogan` fields
+  - Added extensive `knowsAbout` array with 10 specializations
+  - Added `sameAs` array with social/professional links (GitHub, LinkedIn, Facebook)
+  - Added `contactPoint` with email, hours, and availability
+  - Added `founder` Person schema with LinkedIn URL
+  - Added `areaServed` Country for United States
+- **State Page Schema**: Enhanced with detailed service descriptions, expanded `serviceType` array, and pricing `offers` specification
+- **City Page Schema**: Enhanced with detailed descriptions, service types, and pricing specification
+
+### Fixed
+- **Agency Services Wording**: Changed "White-label services for agencies" to "Agency partnerships (white-label or client-facing)" to accurately distinguish between the two service models
+
+### Purpose
+These changes aim to restore LLM referral traffic that dropped after v3.17.0's prompt template redesign removed substantive, citable content. The enhanced schema and restored "Why Choose" sections provide specific, factual information that LLMs can extract and cite when recommending WordPress development services.
+
 ## [3.20.2] - 2026-01-12
 
 ### Changed

@@ -435,7 +435,7 @@ class CityContentGenerator implements ContentGeneratorInterface {
         $prompt = "Write a landing page for 84EM's WordPress services in {$city}, {$state}.
 
 ABOUT 84EM:
-- WordPress development agency based in Cedar Rapids, Iowa
+- WordPress development agency based in Cedar Rapids, Iowa (founded 2012)
 - Partners with digital agencies (white-label or client-facing) and works directly with businesses
 - Works across industries—no single vertical focus
 {$home_note}
@@ -464,18 +464,25 @@ STRUCTURE:
 3. H2: \"WordPress Services in {$city}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
 
-4. Testimonial: Insert exactly:
+4. H2: \"Why {$city} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
+- **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
+- **Deep WordPress expertise** – Custom plugins, API integrations, and enterprise solutions
+- **Agency partnerships** – White-label or client-facing, your choice
+- **Remote-first, nationwide service** – Based in Cedar Rapids, Iowa, serving {$city} and all 50 states
+
+5. Testimonial: Insert exactly:
 {$testimonial_block}
 
-5. End with exactly:
+6. End with exactly:
 <!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
 - Paragraphs: <!-- wp:paragraph {\"fontSize\":\"large\"} --><p class=\"has-large-font-size\">Text here.</p><!-- /wp:paragraph -->
 - Headings: <!-- wp:heading {\"level\":2,\"fontSize\":\"large\"} --><h2 class=\"has-large-font-size\"><strong>Heading</strong></h2><!-- /wp:heading -->
+- Lists: <!-- wp:list {\"className\":\"is-style-checkmark-list\",\"fontSize\":\"large\"} --><ul class=\"wp-block-list is-style-checkmark-list has-large-font-size\"><!-- wp:list-item --><li>Item</li><!-- /wp:list-item --></ul><!-- /wp:list -->
 
 REQUIREMENTS:
-- Total: 100-150 words of unique content (excluding blocks)
+- Total: 150-200 words of unique content (excluding blocks)
 - DO NOT include any links to the state page (breadcrumbs already provide this navigation)
 - DO NOT start with 'Your WordPress site needs to work'
 - DO NOT list industries generically (e.g., 'fintech, healthcare, education, and non-profits')
