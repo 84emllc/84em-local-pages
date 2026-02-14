@@ -443,7 +443,7 @@ STRUCTURE:
 
 3. Who we work with (1 paragraph, 2-3 sentences): We work with agencies and businesses across industries. If you mention a specific industry, make it genuinely relevant to {$state}—don't default to a generic list like 'fintech, healthcare, education, non-profits.'
 
-4. City mention: Naturally mention we serve businesses across {$state}, including these cities: {$city_list}. Integrate into prose with links—not a bullet list.
+4. City mention: Naturally mention we serve businesses across {$state}, including these cities: {$city_list}. Integrate into prose—not a bullet list. Do NOT add hyperlinks to city names; links will be added automatically after generation.
 
 5. H2: \"Web Development & WordPress Services in {$state}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
