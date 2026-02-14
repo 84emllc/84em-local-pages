@@ -1412,7 +1412,7 @@ class GenerateCommand {
 
                 // First, strip all existing links to keywords and locations
                 // This ensures we're starting fresh with the latest keyword URLs
-                $stripped_content = $this->stripExistingKeywordLinks( $content );
+                $stripped_content = $this->stripExistingKeywordLinks( $content, $context['cities'] ?? [] );
 
                 // Reprocess the content with current keywords
                 $processed_content = $this->contentProcessor->processContent( $stripped_content, $context );
@@ -1602,10 +1602,11 @@ class GenerateCommand {
      * with fresh URLs. Also removes links to known service paths.
      *
      * @param  string  $content  Content to strip links from
+     * @param  array   $cities   Optional list of city names to strip links from
      *
      * @return string Content with links removed
      */
-    private function stripExistingKeywordLinks( string $content ): string {
+    private function stripExistingKeywordLinks( string $content, array $cities = [] ): string {
         // First, fix any nested anchor tags by collapsing them
         // Pattern matches: <a href="..."><a href="...">text</a></a>
         // Replace with just: text (we'll re-link it properly later)
@@ -1637,6 +1638,14 @@ class GenerateCommand {
         // New: /wordpress-development-services-usa/[state]/
         $pattern = '/<a\s+href=["\']\/?(wordpress-development-services-usa\/)?wordpress-development-services-[^"\']+["\']>([^<]+)<\/a>/i';
         $content = preg_replace( $pattern, '$2', $content );
+
+        // Strip any link wrapping a city name, regardless of href URL format
+        // This catches AI-generated links with invented URLs (e.g., /anchorage-wordpress-developer/)
+        foreach ( $cities as $city_name ) {
+            $escaped_city = preg_quote( $city_name, '/' );
+            $pattern = '/<a\s+href=["\'][^"\']*["\'][^>]*>\s*' . $escaped_city . '\s*<\/a>/i';
+            $content = preg_replace( $pattern, $city_name, $content );
+        }
 
         return $content;
     }
