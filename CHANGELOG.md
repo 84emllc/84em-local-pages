@@ -8,13 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.22.0] - 2026-02-14
 
 ### Changed
-- **Broader Service Positioning**: Updated local page titles, metadata prompts, and schema from "WordPress Development Services" to "Web Development & WordPress Services" across all 350 location pages
-- **AI Prompt Updates**: Revised state and city content generator prompts to reference broader service offerings including web development, AI integrations, and consulting
+- **Broader Service Positioning**: Updated local page titles from "WordPress Development Services in [Location]" to "Web Development & WordPress Services in [Location]" across all 350 location pages
+- **AI Prompt Templates**: Revised state and city content generator prompts to reference broader service offerings including web development, AI integrations, and consulting
 - **Metadata Generator**: Updated SEO title templates, meta descriptions, and fallback metadata to reflect expanded service positioning
 - **Schema.org Markup**: Updated WebPage schema `name` fields for both state and city pages
+- **Index Page**: Updated index page title and CLI output messaging
 
 ### Fixed
-- **Content Layout**: Added spacer blocks after bullet lists in both state and city content templates for improved visual spacing
+- **Content Layout**: Moved spacer block from before "Why Businesses Choose" heading to after the bullet list for correct spacing before testimonial section
 
 ## [3.21.0] - 2026-02-05
 
