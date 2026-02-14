@@ -443,23 +443,21 @@ STRUCTURE:
 
 3. Who we work with (1 paragraph, 2-3 sentences): We work with agencies and businesses across industries. If you mention a specific industry, make it genuinely relevant to {$state}—don't default to a generic list like 'fintech, healthcare, education, non-profits.'
 
-4. City mention: Naturally mention we serve businesses across {$state}, including these cities: {$city_list}. Integrate into prose with links—not a bullet list.
-
-5. H2: \"Web Development & WordPress Services in {$state}\" followed by exactly:
+4. H2: \"Web Development & WordPress Services in {$state}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
 
-6. H2: \"Why {$state} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
+5. H2: \"Why {$state} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
 - **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
 - **Deep WordPress architecture expertise** – Custom plugins, theme development, complex integrations, and performance optimization
 - **Agency partnerships** – White-label or client-facing, your choice
 - **Direct partnership with businesses** – From startups to established companies needing reliable WordPress support
 - **Remote-first, nationwide service** – Based in Cedar Rapids, Iowa, serving clients across all 50 states
 
-7. Insert a spacer after the bullet list: <!-- wp:spacer {\"height\":\"40px\"} --><div style=\"height:40px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div><!-- /wp:spacer -->
+6. Insert a spacer after the bullet list: <!-- wp:spacer {\"height\":\"40px\"} --><div style=\"height:40px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div><!-- /wp:spacer -->
 Then testimonial: Insert exactly:
 {$testimonial_block}
 
-8. End with exactly:
+7. End with exactly:
 <!-- wp:block {\"ref\":{$cta_block}} /-->
 
 FORMATTING:
