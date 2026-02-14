@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) or die;
 
 // Define plugin constants
-const EIGHTYFOUREM_LOCAL_PAGES_VERSION = '3.21.0';
+const EIGHTYFOUREM_LOCAL_PAGES_VERSION = '3.22.0';
 
 // Load Composer autoloader
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
