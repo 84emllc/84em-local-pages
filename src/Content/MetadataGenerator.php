@@ -161,7 +161,7 @@ SPECIFICATIONS:
    - Include \"WordPress\" and \"{$state}\"
    - Professional, direct tone
    - NO pipe character, NO \"84EM\"
-   - Example format: \"WordPress Development Services in {$state}\"
+   - Example format: \"Web Development & WordPress Services in {$state}\"
 
 2. SEO TITLE (appears in browser tab and search results):
    - Must end with \" | 84EM\"
@@ -221,7 +221,7 @@ SPECIFICATIONS:
    - May optionally include \"{$state}\" if space allows
    - Professional, direct tone
    - NO pipe character, NO \"84EM\"
-   - Example format: \"WordPress Development Services in {$city}\"
+   - Example format: \"Web Development & WordPress Services in {$city}\"
 
 2. SEO TITLE (appears in browser tab and search results):
    - Must end with \" | 84EM\"
@@ -292,7 +292,7 @@ OUTPUT: Return ONLY the JSON object, no other text or markdown formatting.";
      */
     public function getFallbackStateMetadata( string $state, string $city_list = '' ): array {
         return [
-            'page_title'       => "WordPress Development Services in {$state}",
+            'page_title'       => "Web Development & WordPress Services in {$state}",
             'seo_title'        => "WordPress Development, Plugins, Consulting, Agency Services in {$state} | 84EM",
             'meta_description' => "WordPress Development, Plugins, Consulting, Agency Services in {$state}" .
                                   ( $city_list ? ", including {$city_list}" : '' ),
@@ -309,7 +309,7 @@ OUTPUT: Return ONLY the JSON object, no other text or markdown formatting.";
      */
     public function getFallbackCityMetadata( string $state, string $city ): array {
         return [
-            'page_title'       => "WordPress Development Services in {$city}, {$state}",
+            'page_title'       => "Web Development & WordPress Services in {$city}, {$state}",
             'seo_title'        => "WordPress Development, Plugins, Consulting, Agency Services in {$city}, {$state} | 84EM",
             'meta_description' => "WordPress Development, Plugins, Consulting, Agency Services in {$city}, {$state}",
         ];
