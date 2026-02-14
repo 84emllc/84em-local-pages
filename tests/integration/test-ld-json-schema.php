@@ -50,7 +50,7 @@ class Test_LD_JSON_Schema extends TestCase {
         $this->assertEquals( 'https://schema.org', $decoded['@context'] );
 
         // Test page name
-        $this->assertEquals( 'WordPress Development Services in California', $decoded['name'] );
+        $this->assertEquals( 'Web Development & WordPress Services in California', $decoded['name'] );
 
         // Test description
         $this->assertStringContainsString( 'California', $decoded['description'] );
@@ -86,7 +86,7 @@ class Test_LD_JSON_Schema extends TestCase {
 
         // Validate JSON structure
         $this->assertNotNull( $decoded );
-        $this->assertEquals( 'WordPress Development Services in Texas', $decoded['name'] );
+        $this->assertEquals( 'Web Development & WordPress Services in Texas', $decoded['name'] );
         $this->assertEquals( 'Texas', $decoded['about']['areaServed']['name'] );
     }
 
@@ -105,7 +105,7 @@ class Test_LD_JSON_Schema extends TestCase {
         $decoded = json_decode( $schema, true );
 
         // Test service name includes city
-        $this->assertEquals( 'WordPress Development Services in Los Angeles, California', $decoded['name'] );
+        $this->assertEquals( 'Web Development & WordPress Services in Los Angeles, California', $decoded['name'] );
 
         // Test city-specific area served
         $this->assertEquals( 'City', $decoded['about']['areaServed']['@type'] );
@@ -126,7 +126,7 @@ class Test_LD_JSON_Schema extends TestCase {
 
         // Validate JSON structure
         $this->assertNotNull( $decoded );
-        $this->assertEquals( 'WordPress Development Services in New York City, New York', $decoded['name'] );
+        $this->assertEquals( 'Web Development & WordPress Services in New York City, New York', $decoded['name'] );
         $this->assertEquals( 'New York City', $decoded['about']['areaServed']['name'] );
         $this->assertEquals( 'New York', $decoded['about']['areaServed']['containedInPlace']['name'] );
     }
@@ -147,7 +147,7 @@ class Test_LD_JSON_Schema extends TestCase {
 
         // Ensure special characters are properly encoded
         $this->assertNotNull( $decoded );
-        $this->assertEquals( "WordPress Development Services in O'Fallon, Illinois", $decoded['name'] );
+        $this->assertEquals( "Web Development & WordPress Services in O'Fallon, Illinois", $decoded['name'] );
         $this->assertEquals( "O'Fallon", $decoded['about']['areaServed']['name'] );
     }
 
@@ -272,7 +272,7 @@ class Test_LD_JSON_Schema extends TestCase {
         $schema = $this->schemaGenerator->generate( $data );
         $decoded = json_decode( $schema, true );
 
-        $this->assertEquals( 'WordPress Development Services in North Carolina', $decoded['name'] );
+        $this->assertEquals( 'Web Development & WordPress Services in North Carolina', $decoded['name'] );
         $this->assertEquals( 'North Carolina', $decoded['about']['areaServed']['name'] );
     }
 

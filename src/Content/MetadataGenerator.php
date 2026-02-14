@@ -136,12 +136,12 @@ class MetadataGenerator {
      * @return string
      */
     private function buildStateMetadataPrompt( string $state, string $city_list ): string {
-        return "Generate SEO metadata for a WordPress development services page targeting businesses in {$state}.
+        return "Generate SEO metadata for a web development and WordPress services page targeting businesses in {$state}.
 
 CONTEXT:
-- Company: 84EM (WordPress development agency)
+- Company: 84EM (web engineering and WordPress consultancy)
 - Location focus: {$state} (major cities: {$city_list})
-- Services: WordPress development, custom plugins, consulting, agency services
+- Services: web development, WordPress, custom plugins, AI integrations, consulting, agency services
 - Company headquartered in Cedar Rapids, Iowa, serving clients nationwide
 
 REQUIREMENTS:
@@ -158,17 +158,17 @@ SPECIFICATIONS:
 1. PAGE TITLE (visible H1 on the page):
    - Must be unique and specific to {$state}
    - 40-60 characters
-   - Include \"WordPress\" and \"{$state}\"
+   - Include \"Web Development\", \"WordPress\", and \"{$state}\"
    - Professional, direct tone
    - NO pipe character, NO \"84EM\"
-   - Example format: \"WordPress Development Services in {$state}\"
+   - Example format: \"Web Development & WordPress Services in {$state}\"
 
 2. SEO TITLE (appears in browser tab and search results):
    - Must end with \" | 84EM\"
    - Total length: 50-60 characters (including \" | 84EM\")
-   - Include primary keyword \"WordPress\" and location \"{$state}\"
+   - Include \"WordPress\" or \"Web Development\" and location \"{$state}\"
    - Compelling but not clickbait
-   - Example format: \"Custom WordPress Development in {$state} | 84EM\"
+   - Example format: \"Web Development & WordPress Services in {$state} | 84EM\"
 
 3. META DESCRIPTION (appears in search results):
    - 150-160 characters exactly
@@ -195,12 +195,12 @@ OUTPUT: Return ONLY the JSON object, no other text or markdown formatting.";
      * @return string
      */
     private function buildCityMetadataPrompt( string $state, string $city ): string {
-        return "Generate SEO metadata for a WordPress development services page targeting businesses in {$city}, {$state}.
+        return "Generate SEO metadata for a web development and WordPress services page targeting businesses in {$city}, {$state}.
 
 CONTEXT:
-- Company: 84EM (WordPress development agency)
+- Company: 84EM (web engineering and WordPress consultancy)
 - Location focus: {$city}, {$state}
-- Services: WordPress development, custom plugins, consulting, agency services
+- Services: web development, WordPress, custom plugins, AI integrations, consulting, agency services
 - Company headquartered in Cedar Rapids, Iowa, serving clients nationwide
 
 REQUIREMENTS:
@@ -217,19 +217,19 @@ SPECIFICATIONS:
 1. PAGE TITLE (visible H1 on the page):
    - Must be unique and specific to {$city}
    - 40-70 characters
-   - Include \"WordPress\" and \"{$city}\"
+   - Include \"Web Development\", \"WordPress\", and \"{$city}\"
    - May optionally include \"{$state}\" if space allows
    - Professional, direct tone
    - NO pipe character, NO \"84EM\"
-   - Example format: \"WordPress Development Services in {$city}\"
+   - Example format: \"Web Development & WordPress Services in {$city}\"
 
 2. SEO TITLE (appears in browser tab and search results):
    - Must end with \" | 84EM\"
    - Total length: 50-60 characters (including \" | 84EM\")
-   - Include \"WordPress\" and \"{$city}\"
+   - Include \"WordPress\" or \"Web Development\" and \"{$city}\"
    - Include \"{$state}\" if space allows, otherwise abbreviate or omit
    - Compelling but not clickbait
-   - Example format: \"WordPress Development in {$city}, {$state} | 84EM\"
+   - Example format: \"Web Development & WordPress Services in {$city}, {$state} | 84EM\"
 
 3. META DESCRIPTION (appears in search results):
    - 150-160 characters exactly
@@ -292,9 +292,9 @@ OUTPUT: Return ONLY the JSON object, no other text or markdown formatting.";
      */
     public function getFallbackStateMetadata( string $state, string $city_list = '' ): array {
         return [
-            'page_title'       => "WordPress Development Services in {$state}",
-            'seo_title'        => "WordPress Development, Plugins, Consulting, Agency Services in {$state} | 84EM",
-            'meta_description' => "WordPress Development, Plugins, Consulting, Agency Services in {$state}" .
+            'page_title'       => "Web Development & WordPress Services in {$state}",
+            'seo_title'        => "Web Development & WordPress Services in {$state} | 84EM",
+            'meta_description' => "Web development and WordPress services in {$state}" .
                                   ( $city_list ? ", including {$city_list}" : '' ),
         ];
     }
@@ -309,9 +309,9 @@ OUTPUT: Return ONLY the JSON object, no other text or markdown formatting.";
      */
     public function getFallbackCityMetadata( string $state, string $city ): array {
         return [
-            'page_title'       => "WordPress Development Services in {$city}, {$state}",
-            'seo_title'        => "WordPress Development, Plugins, Consulting, Agency Services in {$city}, {$state} | 84EM",
-            'meta_description' => "WordPress Development, Plugins, Consulting, Agency Services in {$city}, {$state}",
+            'page_title'       => "Web Development & WordPress Services in {$city}, {$state}",
+            'seo_title'        => "Web Development & WordPress Services in {$city}, {$state} | 84EM",
+            'meta_description' => "Web development and WordPress services in {$city}, {$state}. Contact 84EM today.",
         ];
     }
 }
