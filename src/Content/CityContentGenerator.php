@@ -461,17 +461,17 @@ STRUCTURE:
 
 2. Why 84EM (1-2 sentences): Briefly explain the value of working with a specialist. Mention experience using the shortcodes above.
 
-3. H2: \"WordPress Services in {$city}\" followed by exactly:
+3. H2: \"Web Development & WordPress Services in {$city}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
 
-4. Insert a spacer: <!-- wp:spacer {\"height\":\"40px\"} --><div style=\"height:40px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div><!-- /wp:spacer -->
-Then H2: \"Why {$city} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
+4. H2: \"Why {$city} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
 - **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
 - **Deep WordPress expertise** – Custom plugins, API integrations, and enterprise solutions
 - **Agency partnerships** – White-label or client-facing, your choice
 - **Remote-first, nationwide service** – Based in Cedar Rapids, Iowa, serving {$city} and all 50 states
 
-5. Testimonial: Insert exactly:
+5. Insert a spacer after the bullet list: <!-- wp:spacer {\"height\":\"40px\"} --><div style=\"height:40px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div><!-- /wp:spacer -->
+Then testimonial: Insert exactly:
 {$testimonial_block}
 
 6. End with exactly:
