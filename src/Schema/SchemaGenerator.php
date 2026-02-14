@@ -67,7 +67,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
         $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => 'WebPage',
-            'name'        => "WordPress Development Services in {$state}",
+            'name'        => "Web Development & WordPress Services in {$state}",
             'description' => "Professional WordPress development, custom plugins, AI integration, and white-label agency services in {$state}. Cedar Rapids, Iowa-based agency with over 30 years of web development experience serving " . implode( ', ', array_slice( $cities, 0, 3 ) ) . " and businesses across {$state}.",
             'url'         => $url,
             'isPartOf'    => [
@@ -164,7 +164,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
         $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => 'WebPage',
-            'name'        => "WordPress Development Services in {$city}, {$state}",
+            'name'        => "Web Development & WordPress Services in {$city}, {$state}",
             'description' => "Professional WordPress development, custom plugins, AI integration, and white-label agency services in {$city}, {$state}. Cedar Rapids, Iowa-based agency with over 30 years of web development experience.",
             'url'         => $url,
             'isPartOf'    => [

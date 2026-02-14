@@ -803,10 +803,10 @@ class GenerateCommand {
      * @return void
      */
     public function handleIndexGeneration( array $args, array $assoc_args ): void {
-        WP_CLI::line( '📄 Generating index page for WordPress Development Services in USA...' );
+        WP_CLI::line( '📄 Generating index page for Web Development & WordPress Services in the USA...' );
 
         $page_slug  = 'wordpress-development-services-usa';
-        $page_title = 'WordPress Development Services in USA | 84EM';
+        $page_title = 'Web Development & WordPress Services in the USA | 84EM';
 
         // Check if page already exists
         $existing_page = get_page_by_path( $page_slug );
