@@ -5,6 +5,17 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.22.0] - 2026-02-14
+
+### Changed
+- **Broader Service Positioning**: Updated local page titles, metadata prompts, and schema from "WordPress Development Services" to "Web Development & WordPress Services" across all 350 location pages
+- **AI Prompt Updates**: Revised state and city content generator prompts to reference broader service offerings including web development, AI integrations, and consulting
+- **Metadata Generator**: Updated SEO title templates, meta descriptions, and fallback metadata to reflect expanded service positioning
+- **Schema.org Markup**: Updated WebPage schema `name` fields for both state and city pages
+
+### Fixed
+- **Content Layout**: Added spacer blocks after bullet lists in both state and city content templates for improved visual spacing
+
 ## [3.21.0] - 2026-02-05
 
 ### Added
