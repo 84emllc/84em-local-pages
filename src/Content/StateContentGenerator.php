@@ -448,7 +448,8 @@ STRUCTURE:
 5. H2: \"WordPress Services in {$state}\" followed by exactly:
 <!-- wp:block {\"ref\":{$services_block}} /-->
 
-6. H2: \"Why {$state} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
+6. Insert a spacer: <!-- wp:spacer {\"height\":\"40px\"} --><div style=\"height:40px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div><!-- /wp:spacer -->
+Then H2: \"Why {$state} Businesses Choose 84EM\" followed by a bullet list with these EXACT items (use wp:list with is-style-checkmark-list class):
 - **[dev_years] years of web development experience** – Programming since 1995, WordPress since 2012
 - **Deep WordPress architecture expertise** – Custom plugins, theme development, complex integrations, and performance optimization
 - **Agency partnerships** – White-label or client-facing, your choice
