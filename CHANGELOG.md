@@ -5,6 +5,11 @@ All notable changes to the 84EM Local Pages Generator plugin will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.22.1] - 2026-02-24
+
+### Changed
+- **Schema**: Switch local page pricing from fixed `price` to `minPrice` and `priceRange` from `$150-225/hour` to `$$$` in schema.org structured data
+
 ## [3.22.0] - 2026-02-14
 
 ### Changed
