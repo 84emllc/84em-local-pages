@@ -99,7 +99,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                     '@type'         => 'Offer',
                     'priceSpecification' => [
                         '@type'       => 'PriceSpecification',
-                        'price'       => '150',
+                        'minPrice'    => '150',
                         'priceCurrency' => 'USD',
                         'unitText'    => 'per hour',
                     ],
@@ -110,7 +110,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                 'name'        => '84EM WordPress Development',
                 'description' => "WordPress development agency founded in 2012, specializing in custom plugin development, AI integration, and agency partnerships. Over 30 years of web development experience since 1995. Serving {$state} businesses from Cedar Rapids, Iowa headquarters.",
                 'url'         => site_url( '/' ),
-                'priceRange'  => '$150-225/hour',
+                'priceRange'  => '$$$',
                 'areaServed'  => [
                     '@type' => 'State',
                     'name'  => $state,
@@ -221,7 +221,7 @@ class SchemaGenerator implements SchemaGeneratorInterface {
                     '@type'         => 'Offer',
                     'priceSpecification' => [
                         '@type'       => 'PriceSpecification',
-                        'price'       => '150',
+                        'minPrice'    => '150',
                         'priceCurrency' => 'USD',
                         'unitText'    => 'per hour',
                     ],
